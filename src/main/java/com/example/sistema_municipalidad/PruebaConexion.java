@@ -26,7 +26,6 @@ public class PruebaConexion {
 //                "juanperez@gmail.com",
 //                "Sin observaciones."
 //        );
-//
 
         TuristaDAO turistaDAO = new TuristaDAO();
 

@@ -10,4 +10,6 @@ module com.example.sistema_municipalidad {
     opens com.example.sistema_municipalidad.model to javafx.fxml;
     exports com.example.sistema_municipalidad.dao;
     opens com.example.sistema_municipalidad.dao to javafx.fxml;
+    exports com.example.sistema_municipalidad.controller;
+    opens com.example.sistema_municipalidad.controller to javafx.fxml;
 }

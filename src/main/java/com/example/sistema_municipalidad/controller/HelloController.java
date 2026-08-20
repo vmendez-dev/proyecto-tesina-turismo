@@ -1,4 +1,4 @@
-package com.example.sistema_municipalidad;
+package com.example.sistema_municipalidad.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

@@ -1,16 +1,249 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.sistema_municipalidad.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="728.0" prefWidth="1107.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <BorderPane prefHeight="728.0" prefWidth="1107.0">
+         <left>
+            <VBox prefHeight="728.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" BorderPane.alignment="CENTER">
+               <children>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="195.0" style="-fx-background-color: #b5d6fa;" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" styleClass="-fx-border-color: transparent #3b5998 transparent transparent; -fx-border-width: 0 2 0 0;" text="Inicio" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/home%2020.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" styleClass="-fx-border-color: transparent #3b5998 transparent transparent; -fx-border-width: 0 2 0 0;" text="Turistas" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Turistas.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Actividades" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Actividades.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Atractivos" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Atractivos.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Alojamientos" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Alojamientos.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Gastronomía" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Gastronomia.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Servicios" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Servicios.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Eventos" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Eventos.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Promociones" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Promociones.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="195.0" style="-fx-background-color: #b5d6fa;" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Reportes" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Reportes.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Usuarios" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Usuarios%202.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="13.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="186.0" style="-fx-background-color: #DBE8F2;" text="Configuración" textFill="#1d218d">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Configuracion.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <padding>
+                        <Insets left="35.0" />
+                     </padding>
+                     <font>
+                        <Font name="Verdana Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
+         </left>
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="1107.0" style="-fx-background-color: #DBE8F2;" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="70.0" fitWidth="96.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../icons/logo%20muni.png" />
+                     </image>
+                  </ImageView>
+                  <Label prefWidth="167.0" text="Sistema de Turismo" textFill="#222bb2">
+                     <font>
+                        <Font name="Verdana Bold" size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets left="15.0" />
+               </padding>
+            </HBox>
+         </top>
+         <center>
+            <VBox prefHeight="663.0" prefWidth="949.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
