@@ -2,6 +2,7 @@ module com.example.sistema_municipalidad {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires com.jfoenix;
 
 
     opens com.example.sistema_municipalidad to javafx.fxml;
