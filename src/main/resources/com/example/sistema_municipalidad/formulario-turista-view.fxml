@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="393.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="340.0" style="-fx-background-color: #E7F4FD; -fx-background-radius: 8;">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <children>
+            <ImageView fitHeight="37.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icons/Add%20User%203.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="15.0" />
+               </HBox.margin>
+            </ImageView>
+            <VBox prefHeight="62.0" prefWidth="216.0" stylesheets="@../../../estilos.css">
+               <children>
+                  <Label text="Registrar Turista" textFill="#3d609a">
+                     <font>
+                        <Font name="Verdana Bold" size="16.0" />
+                     </font></Label>
+                  <Label text="Complete los datos del nuevo turista" textFill="#5d6f83" />
+               </children>
+               <HBox.margin>
+                  <Insets left="15.0" top="13.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </HBox>
+      <VBox prefHeight="168.0" prefWidth="341.0">
+         <children>
+            <Label prefHeight="18.0" prefWidth="60.0" text="Nombre" textFill="#0e0640">
+               <font>
+                  <Font name="Verdana" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="13.0" />
+               </VBox.margin>
+            </Label>
+            <TextField prefHeight="30.0" prefWidth="328.0" promptText="Ingrese el nombre">
+               <VBox.margin>
+                  <Insets left="13.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label prefHeight="18.0" prefWidth="60.0" text="Apellido" textFill="#0e0640">
+               <font>
+                  <Font name="Verdana" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="13.0" top="7.0" />
+               </VBox.margin>
+            </Label>
+            <TextField prefHeight="30.0" prefWidth="274.0" promptText="Ingrese el apellido">
+               <VBox.margin>
+                  <Insets left="13.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label prefHeight="18.0" prefWidth="148.0" text="Fecha de nacimiento" textFill="#0e0640">
+               <font>
+                  <Font name="Verdana" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="13.0" top="7.0" />
+               </VBox.margin>
+            </Label>
+            <DatePicker prefHeight="29.0" prefWidth="342.0" promptText="dd/mm/aaaa">
+               <VBox.margin>
+                  <Insets left="13.0" top="5.0" />
+               </VBox.margin>
+            </DatePicker>
+         </children>
+      </VBox>
+      <HBox prefHeight="189.0" prefWidth="353.0">
+         <children>
+            <VBox prefHeight="130.0" prefWidth="163.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="Tipo de Documento" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="13.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXComboBox prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                     <VBox.margin>
+                        <Insets left="13.0" top="5.0" />
+                     </VBox.margin>
+                  </JFXComboBox>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="País" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="13.0" top="17.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXComboBox prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                     <VBox.margin>
+                        <Insets left="13.0" top="5.0" />
+                     </VBox.margin>
+                  </JFXComboBox>
+                  <Label prefHeight="18.0" prefWidth="60.0" text="Teléfono" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="13.0" top="17.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField prefHeight="30.0" prefWidth="173.0" promptText="Ingrese el teléfono">
+                     <VBox.margin>
+                        <Insets left="13.0" top="5.0" />
+                     </VBox.margin>
+                  </TextField>
+               </children>
+            </VBox>
+            <VBox prefHeight="153.0" prefWidth="190.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="Documento" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="15.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el documento">
+                     <VBox.margin>
+                        <Insets left="15.0" top="5.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="Procedencia" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="15.0" top="11.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXComboBox prefHeight="25.0" prefWidth="176.0" promptText="Seleccionar...">
+                     <VBox.margin>
+                        <Insets left="15.0" top="5.0" />
+                     </VBox.margin>
+                  </JFXComboBox>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="Email" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets left="15.0" top="18.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el email">
+                     <VBox.margin>
+                        <Insets left="15.0" top="5.0" />
+                     </VBox.margin>
+                  </TextField>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <VBox prefHeight="115.0" prefWidth="353.0">
+         <children>
+            <Label prefHeight="18.0" prefWidth="105.0" text="Observaciones" textFill="#0e0640">
+               <font>
+                  <Font name="Verdana" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="13.0" top="-5.0" />
+               </VBox.margin>
+            </Label>
+            <TextArea prefHeight="88.0" prefWidth="340.0" promptText="Observaciones adicionales...">
+               <VBox.margin>
+                  <Insets left="13.0" top="5.0" />
+               </VBox.margin>
+            </TextArea>
+         </children>
+      </VBox>
+      <HBox prefHeight="72.0" prefWidth="340.0">
+         <VBox.margin>
+            <Insets left="13.0" />
+         </VBox.margin>
+         <children>
+            <JFXButton prefHeight="43.0" prefWidth="147.0" style="-fx-background-color: #E60300;" text="Cancelar" textFill="WHITE">
+               <font>
+                  <Font name="Verdana Bold" size="12.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="6.0" />
+               </HBox.margin>
+            </JFXButton>
+            <JFXButton prefHeight="43.0" prefWidth="154.0" style="-fx-background-color: #2389DC;" text="Guardar Turista" textFill="WHITE">
+               <HBox.margin>
+                  <Insets left="25.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="Verdana Bold" size="12.0" />
+               </font>
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../icons/Save%203.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

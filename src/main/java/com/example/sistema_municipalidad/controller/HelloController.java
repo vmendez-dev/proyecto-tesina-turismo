@@ -38,7 +38,7 @@ public class HelloController {
     }
 
     @FXML
-    private void irATuristas(MouseEvent event) {
+    private void irATuristas() {
         cambiarPantalla("turistas-view.fxml");
     }
 

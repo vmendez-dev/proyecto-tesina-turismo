@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_18pt-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_18pt-Bold.ttf');
+    font-weight: bold;
+}
+
+/* Clase actualizada para corregir el pixelado */
+.fuente-inter {
+    -fx-font-family: 'Inter';
+    -fx-font-smoothing-type: gray;
+}
