@@ -213,8 +213,37 @@ public class TuristasController {
 
                 btnEditar.setOnAction(event -> {
                     Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-                    System.out.println("Editando a: " + turistaSeleccionado.getNombre());
-                    // Aquí puedes abrir el mismo formulario flotante pero en modo edición
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource(
+                                        "/com/example/sistema_municipalidad/formulario-turista-view.fxml"
+                                )
+                        );
+                        Scene scene = new Scene(loader.load());
+
+                        // Obtenemos el controller del formulario
+                        FormTuristaController controller =
+                                loader.getController();
+
+                        // Le pasamos el turista seleccionado
+                        controller.setTurista(turistaSeleccionado);
+
+                        Stage ventana = new Stage();
+
+                        ventana.setTitle("Modificar turista");
+                        ventana.setScene(scene);
+
+                        // Ventana modal
+                        ventana.initModality(Modality.APPLICATION_MODAL);
+                        ventana.showAndWait();
+
+                        // Actualizamos la tabla al cerrar
+                        cargarTuristas();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Error al abrir el formulario de modificación.");
+                    }
                 });
 
                 btnEliminar.setOnAction(event -> {

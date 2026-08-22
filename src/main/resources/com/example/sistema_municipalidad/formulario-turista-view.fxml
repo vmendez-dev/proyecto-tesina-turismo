@@ -20,7 +20,7 @@
             <Insets />
          </VBox.margin>
          <children>
-            <ImageView fitHeight="37.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgIcono" fitHeight="37.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../icons/Add%20User%203.png" />
                </image>
@@ -30,11 +30,11 @@
             </ImageView>
             <VBox prefHeight="62.0" prefWidth="216.0" stylesheets="@../../../estilos.css">
                <children>
-                  <Label text="Registrar Turista" textFill="#3d609a">
+                  <Label fx:id="lblTitulo" text="Registrar Turista" textFill="#3d609a">
                      <font>
                         <Font name="Verdana Bold" size="16.0" />
                      </font></Label>
-                  <Label text="Complete los datos del nuevo turista" textFill="#5d6f83" />
+                  <Label fx:id="lblSubtitulo" text="Complete los datos del nuevo turista" textFill="#5d6f83" />
                </children>
                <HBox.margin>
                   <Insets left="15.0" top="13.0" />

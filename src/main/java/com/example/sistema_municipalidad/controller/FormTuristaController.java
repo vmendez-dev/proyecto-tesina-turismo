@@ -10,12 +10,9 @@ import com.example.sistema_municipalidad.model.TipoDocumento;
 import com.example.sistema_municipalidad.dao.TipoDocumentoDAO;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
@@ -33,6 +30,10 @@ public class FormTuristaController {
     @FXML private TextField txtTelefono;
     @FXML private TextField txtEmail;
     @FXML private TextArea txtObservaciones;
+    @FXML private Label lblTitulo;
+    @FXML private Label lblSubtitulo;
+    @FXML private ImageView imgIcono;
+    @FXML private Button btnGuardar;
 
     // =====================================================
     // DAOs
@@ -42,6 +43,7 @@ public class FormTuristaController {
     private final ProvinciaDAO provinciaDAO = new ProvinciaDAO();
     private final TipoDocumentoDAO tipoDocumentoDAO = new TipoDocumentoDAO();
     private final TuristaDAO turistaDAO = new TuristaDAO();
+    private Turista turistaEdicion;
 
     // =====================================================
     // INICIALIZACIÓN
@@ -59,6 +61,27 @@ public class FormTuristaController {
         // Cuando se seleccione un país,
         // se cargarán sus provincias.
         cmbPais.setOnAction(event -> cargarProvincias());
+    }
+
+    public void setTurista(Turista turista) {
+
+        this.turistaEdicion = turista;
+
+        // Si es null, estamos registrando.
+        if (turista == null) {
+            limpiarFormulario();
+            return;
+        }
+
+        // Si tiene un objeto, estamos modificando.
+        cambiarEncabezado(
+                "Modificar turista",
+                "Edite los datos del turista seleccionado",
+                "Guardar cambios",
+                "/com/example/sistema_municipalidad/icons/modificar.png"
+        );
+
+        cargarDatosTurista(turista);
     }
 
     // =====================================================
@@ -137,13 +160,31 @@ public class FormTuristaController {
         // COMPROBAR DOCUMENTO DUPLICADO
         // =================================================
 
-        int idTipoDocumento = cmbTipoDocumento.getValue().getIdTipoDocumento();
-        String numeroDocumento = txtNumeroDocumento.getText().trim();
+        int idTipoDocumento =
+                cmbTipoDocumento.getValue().getIdTipoDocumento();
 
-        if (turistaDAO.existeDocumento(idTipoDocumento, numeroDocumento)) {
-            mostrarError("Ya existe un turista registrado con ese tipo y número de documento.");
-            txtNumeroDocumento.requestFocus();
-            return;
+        String numeroDocumento =
+                txtNumeroDocumento.getText().trim();
+
+        if (turistaEdicion == null) {
+
+            //Alta:
+            if (turistaDAO.existeDocumento(idTipoDocumento, numeroDocumento)) {
+                mostrarError("Ya existe un turista registrado con ese tipo y número de documento.");
+
+                txtNumeroDocumento.requestFocus();
+                return;
+            }
+
+        } else {
+
+            //Modificación:
+            if (turistaDAO.existeDocumentoExceptoId(idTipoDocumento, numeroDocumento, turistaEdicion.getIdTurista())) {
+                mostrarError("Otro turista ya tiene ese tipo y número de documento.");
+
+                txtNumeroDocumento.requestFocus();
+                return;
+            }
         }
 
         // =================================================
@@ -180,16 +221,49 @@ public class FormTuristaController {
         // GUARDAR EN LA BASE DE DATOS
         // =================================================
 
-        boolean guardado = turistaDAO.guardar(turista);
+        boolean guardado;
+
+        if (turistaEdicion == null) {
+
+            //Alta:
+            guardado = turistaDAO.guardar(turista);
+
+        } else {
+
+            //Modificación:
+            turista.setIdTurista(turistaEdicion.getIdTurista());
+            guardado = turistaDAO.modificar(turista);
+        }
+
+        // =================================================
+        // RESULTADO
+        // =================================================
+
         if (guardado) {
-            mostrarInformacion(
-                    "Registro exitoso",
-                    "El turista fue registrado correctamente."
-            );
+            if (turistaEdicion == null) {
+                mostrarInformacion(
+                        "Registro exitoso",
+                        "El turista fue registrado correctamente."
+                );
+            } else {
+                mostrarInformacion(
+                        "Modificación exitosa",
+                        "Los datos del turista fueron modificados correctamente."
+                );
+            }
+
             cerrarVentana();
 
         } else {
-            mostrarError("No se pudo registrar el turista.");
+            if (turistaEdicion == null) {
+                mostrarError(
+                        "No se pudo registrar el turista."
+                );
+            } else {
+                mostrarError(
+                        "No se pudo modificar el turista."
+                );
+            }
         }
     }
 
@@ -199,10 +273,6 @@ public class FormTuristaController {
 
     private boolean validarCampos() {
 
-        // -----------------------------------------------
-        // NOMBRE
-        // -----------------------------------------------
-
         String nombre = txtNombre.getText().trim();
         if (nombre.isEmpty()) {
             mostrarError("El nombre es obligatorio.");
@@ -210,10 +280,6 @@ public class FormTuristaController {
             txtNombre.requestFocus();
             return false;
         }
-
-        // -----------------------------------------------
-        // APELLIDO
-        // -----------------------------------------------
 
         String apellido = txtApellido.getText().trim();
 
@@ -224,9 +290,6 @@ public class FormTuristaController {
             return false;
         }
 
-        // -----------------------------------------------
-        // TIPO DE DOCUMENTO
-        // -----------------------------------------------
 
         if (cmbTipoDocumento.getValue() == null) {
 
@@ -235,11 +298,6 @@ public class FormTuristaController {
             cmbTipoDocumento.requestFocus();
             return false;
         }
-
-
-        // -----------------------------------------------
-        // NÚMERO DE DOCUMENTO
-        // -----------------------------------------------
 
         String numeroDocumento = txtNumeroDocumento.getText().trim();
 
@@ -256,9 +314,6 @@ public class FormTuristaController {
             return false;
         }
 
-        // -----------------------------------------------
-        // FECHA DE NACIMIENTO
-        // -----------------------------------------------
 
         LocalDate fechaNacimiento = dateFechaNacimiento.getValue();
 
@@ -270,9 +325,6 @@ public class FormTuristaController {
             return false;
         }
 
-        // -----------------------------------------------
-        // PAÍS
-        // -----------------------------------------------
 
         if (cmbPais.getValue() == null) {
 
@@ -282,10 +334,6 @@ public class FormTuristaController {
             return false;
         }
 
-        // -----------------------------------------------
-        // PROCEDENCIA
-        // -----------------------------------------------
-
         if (cmbProcedencia.getValue() == null) {
 
             mostrarError("Debe seleccionar una procedencia.");
@@ -294,9 +342,6 @@ public class FormTuristaController {
             return false;
         }
 
-        // -----------------------------------------------
-        // TELÉFONO
-        // -----------------------------------------------
 
         String telefono = txtTelefono.getText().trim();
 
@@ -306,11 +351,6 @@ public class FormTuristaController {
             txtTelefono.requestFocus();
             return false;
         }
-
-
-        // -----------------------------------------------
-        // EMAIL
-        // -----------------------------------------------
 
         String email = txtEmail.getText().trim();
 
@@ -332,11 +372,6 @@ public class FormTuristaController {
                 return false;
             }
         }
-
-
-        // -----------------------------------------------
-        // OBSERVACIONES
-        // -----------------------------------------------
 
         String observaciones = txtObservaciones.getText().trim();
 
@@ -407,4 +442,75 @@ public class FormTuristaController {
 
         alert.showAndWait();
     }
+
+    // =====================================================
+    // MÉTODOS AUXILIARES
+    // =====================================================
+    private void limpiarFormulario() {
+        txtNombre.clear();
+        txtApellido.clear();
+        cmbTipoDocumento.setValue(null);
+        txtNumeroDocumento.clear();
+        dateFechaNacimiento.setValue(null);
+        cmbPais.setValue(null);
+        cmbProcedencia.getItems().clear();
+        cmbProcedencia.setDisable(true);
+        txtTelefono.clear();
+        txtEmail.clear();
+        txtObservaciones.clear();
+    }
+
+    private void cargarDatosTurista(Turista turista) {
+        txtNombre.setText(turista.getNombre());
+        txtApellido.setText(turista.getApellido());
+        txtNumeroDocumento.setText(turista.getNumeroDocumento());
+        dateFechaNacimiento.setValue(turista.getFechaNacimiento());
+        txtTelefono.setText(turista.getTelefono());
+        txtEmail.setText(turista.getEmail());
+        txtObservaciones.setText(turista.getObservaciones());
+
+        // Seleccionar tipo de documento
+        for (TipoDocumento tipo : cmbTipoDocumento.getItems()) {
+            if (tipo.getIdTipoDocumento() == turista.getIdTipoDocumento()) {
+                cmbTipoDocumento.setValue(tipo);
+                break;
+            }
+        }
+
+        // Seleccionar país
+        for (Pais pais : cmbPais.getItems()) {
+
+            if (pais.getIdPais() == turista.getIdPais()) {
+                cmbPais.setValue(pais);
+                break;
+            }
+        }
+
+        // Cargar provincias del país seleccionado
+        cargarProvincias();
+
+        // Seleccionar procedencia
+        for (Provincia provincia : cmbProcedencia.getItems()) {
+
+            if (provincia.getIdProvincia() == turista.getIdProvincia()) {
+                cmbProcedencia.setValue(provincia);
+                break;
+            }
+        }
+    }
+
+    private void cambiarEncabezado(String titulo, String subtitulo, String textoBoton, String rutaImagen) {
+        lblTitulo.setText(titulo);
+        lblSubtitulo.setText(subtitulo);
+        btnGuardar.setText(textoBoton);
+
+        try {
+            Image imagen = new Image(getClass().getResourceAsStream(rutaImagen));
+            imgIcono.setImage(imagen);
+
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar la imagen: " + rutaImagen);
+        }
+    }
+
 }

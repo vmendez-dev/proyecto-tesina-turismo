@@ -381,10 +381,7 @@ public class TuristaDAO {
         return turista;
     }
 
-
-    public boolean existeDocumento(
-            int idTipoDocumento,
-            String numeroDocumento) {
+    public boolean existeDocumento(int idTipoDocumento, String numeroDocumento) {
 
         String sql = """
             SELECT 1
@@ -409,6 +406,36 @@ public class TuristaDAO {
 
         } catch (SQLException e) {
 
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean existeDocumentoExceptoId(int idTipoDocumento, String numeroDocumento, int idTurista) {
+
+        String sql = """
+            SELECT 1
+            FROM turistas
+            WHERE id_tipo_documento = ?
+              AND numero_documento = ?
+              AND id_turista <> ?
+              AND activo = TRUE
+            LIMIT 1
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement =
+                     conexion.prepareStatement(sql)) {
+
+            statement.setInt(1, idTipoDocumento);
+            statement.setString(2, numeroDocumento);
+            statement.setInt(3, idTurista);
+
+            try (ResultSet resultado = statement.executeQuery()) {
+                return resultado.next();
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
