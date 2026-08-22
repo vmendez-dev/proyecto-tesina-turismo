@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="393.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="393.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.FormTuristaController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="340.0" style="-fx-background-color: #E7F4FD; -fx-background-radius: 8;">
          <VBox.margin>
@@ -55,7 +55,7 @@
                   <Insets left="13.0" />
                </VBox.margin>
             </Label>
-            <TextField prefHeight="30.0" prefWidth="328.0" promptText="Ingrese el nombre">
+            <TextField fx:id="txtNombre" prefHeight="30.0" prefWidth="328.0" promptText="Ingrese el nombre">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
@@ -68,7 +68,7 @@
                   <Insets left="13.0" top="7.0" />
                </VBox.margin>
             </Label>
-            <TextField prefHeight="30.0" prefWidth="274.0" promptText="Ingrese el apellido">
+            <TextField fx:id="txtApellido" prefHeight="30.0" prefWidth="274.0" promptText="Ingrese el apellido">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
@@ -81,7 +81,7 @@
                   <Insets left="13.0" top="7.0" />
                </VBox.margin>
             </Label>
-            <DatePicker prefHeight="29.0" prefWidth="342.0" promptText="dd/mm/aaaa">
+            <DatePicker fx:id="dateFechaNacimiento" prefHeight="29.0" prefWidth="342.0" promptText="dd/mm/aaaa">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
@@ -100,7 +100,7 @@
                         <Insets left="13.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbTipoDocumento" prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
@@ -113,7 +113,7 @@
                         <Insets left="13.0" top="17.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbPais" prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
@@ -126,7 +126,7 @@
                         <Insets left="13.0" top="17.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField prefHeight="30.0" prefWidth="173.0" promptText="Ingrese el teléfono">
+                  <TextField fx:id="txtTelefono" prefHeight="30.0" prefWidth="173.0" promptText="Ingrese el teléfono">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
@@ -143,7 +143,7 @@
                         <Insets left="15.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el documento">
+                  <TextField fx:id="txtNumeroDocumento" prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el documento">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
                      </VBox.margin>
@@ -156,7 +156,7 @@
                         <Insets left="15.0" top="11.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox prefHeight="25.0" prefWidth="176.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbProcedencia" prefHeight="25.0" prefWidth="176.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
                      </VBox.margin>
@@ -169,7 +169,7 @@
                         <Insets left="15.0" top="18.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el email">
+                  <TextField fx:id="txtEmail" prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el email">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
                      </VBox.margin>
@@ -188,7 +188,7 @@
                   <Insets left="13.0" top="-5.0" />
                </VBox.margin>
             </Label>
-            <TextArea prefHeight="88.0" prefWidth="340.0" promptText="Observaciones adicionales...">
+            <TextArea fx:id="txtObservaciones" prefHeight="88.0" prefWidth="340.0" promptText="Observaciones adicionales...">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
@@ -200,7 +200,7 @@
             <Insets left="13.0" />
          </VBox.margin>
          <children>
-            <JFXButton prefHeight="43.0" prefWidth="147.0" style="-fx-background-color: #E60300;" text="Cancelar" textFill="WHITE">
+            <JFXButton fx:id="btnCancelar" onAction="#cancelar" prefHeight="43.0" prefWidth="147.0" style="-fx-background-color: #E60300;" text="Cancelar" textFill="WHITE">
                <font>
                   <Font name="Verdana Bold" size="12.0" />
                </font>
@@ -208,7 +208,7 @@
                   <Insets left="6.0" />
                </HBox.margin>
             </JFXButton>
-            <JFXButton prefHeight="43.0" prefWidth="154.0" style="-fx-background-color: #2389DC;" text="Guardar Turista" textFill="WHITE">
+            <JFXButton fx:id="btnGuardar" onAction="#guardar" prefHeight="43.0" prefWidth="154.0" style="-fx-background-color: #2389DC;" text="Guardar Turista" textFill="WHITE">
                <HBox.margin>
                   <Insets left="25.0" />
                </HBox.margin>

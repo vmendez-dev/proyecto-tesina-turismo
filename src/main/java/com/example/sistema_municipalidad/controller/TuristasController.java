@@ -237,7 +237,6 @@ public class TuristasController {
         });
     }
 
-
     @FXML
     private void abrirFormularioTurista() {
         try {
@@ -251,6 +250,7 @@ public class TuristasController {
             Scene scene = new Scene(loader.load());
             Stage ventana = new Stage();
 
+            //ventana.initStyle(StageStyle.UNDECORATED); //coloca la ventana sin bordes
             ventana.setTitle("Registrar turista");
             ventana.setScene(scene);
 
