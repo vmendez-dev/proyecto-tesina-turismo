@@ -14,3 +14,43 @@
     -fx-font-family: 'Inter';
     -fx-font-smoothing-type: gray;
 }
+/* Clase para el botón con marco azul y fondo blanco */
+.boton-marco-azul {
+    -fx-background-color: white;
+    -fx-border-color: #1a73e8;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #1a73e8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8px 25px 8px 25px;
+}
+
+/* Efecto opcional: cambia levemente el fondo al pasar el mouse por encima */
+.boton-marco-azul:hover {
+    -fx-background-color: #f4f8fd;
+}
+
+/* Se aplica al VBox principal que contiene TODO */
+.contenedor-emergente {
+    -fx-background-color: #F4F4F4;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: #e6e9ed;
+    -fx-border-width: 1px;
+
+    /* Corta los excesos de los hijos para que el encabezado no tape las esquinas redondeadas */
+    -fx-background-clip: padding-box;
+
+    /* Sombra exterior suave */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 15, 0, 0, 4);
+}
+
+/* Se aplica al HBox del encabezado azul */
+.encabezado-azul {
+    -fx-background-color: #eef5fc;
+    /* Redondea únicamente las esquinas superiores */
+    -fx-background-radius: 11px 11px 0px 0px;
+    -fx-padding: 15px;
+}

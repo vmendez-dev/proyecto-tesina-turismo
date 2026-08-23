@@ -17,6 +17,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,18 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Optional;
 
 public class TuristasController {
 
     // 1. Componentes de Filtrado y Búsqueda (JFoenix)
-    @FXML
-    private JFXTextField txtBuscar;
-    @FXML
-    private JFXComboBox<String> comboProcedencia;
-    @FXML
-    private JFXComboBox<String> comboPais;
-    @FXML
-    private JFXButton btnRegistrar;
+    @FXML private JFXTextField txtBuscar;
+    @FXML private JFXComboBox<String> comboProcedencia;
+    @FXML private JFXComboBox<String> comboPais;
+    @FXML private JFXButton btnRegistrar;
 
     // 2. Tabla Principal de Turistas (JavaFX Nativo)
     @FXML private TableView<Turista> tablaTuristas;
@@ -105,31 +105,17 @@ public class TuristasController {
 
     private void configurarColumnas() {
 
-        columnaNombre.setCellValueFactory(
-                new PropertyValueFactory<>("nombre")
-        );
-        columnaApellido.setCellValueFactory(
-                new PropertyValueFactory<>("apellido")
-        );
-        columnaDocumento.setCellValueFactory(
-                new PropertyValueFactory<>("numeroDocumento")
-        );
-        columnaTelefono.setCellValueFactory(
-                new PropertyValueFactory<>("telefono")
-        );
-        columnaEmail.setCellValueFactory(
-                new PropertyValueFactory<>("email")
-        );
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        columnaDocumento.setCellValueFactory(new PropertyValueFactory<>("numeroDocumento"));
+        columnaTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        columnaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // PROCEDENCIA
-
+        // PROCEDENCIA:
         columnaProcedencia.setCellValueFactory(
                 turista -> {
-                    Integer idProvincia =
-                            turista.getValue().getIdProvincia();
-
-                    String nombreProvincia =
-                            provincias.get(idProvincia);
+                    Integer idProvincia = turista.getValue().getIdProvincia();
+                    String nombreProvincia = provincias.get(idProvincia);
 
                     return new javafx.beans.property.SimpleStringProperty(
                             nombreProvincia != null
@@ -139,15 +125,11 @@ public class TuristasController {
                 }
         );
 
-        // PAÍS
-
+        // PAÍS:
         columnaPais.setCellValueFactory(
                 turista -> {
-                    Integer idPais =
-                            turista.getValue().getIdPais();
-
-                    String nombrePais =
-                            paises.get(idPais);
+                    Integer idPais = turista.getValue().getIdPais();
+                    String nombrePais = paises.get(idPais);
 
                     return new javafx.beans.property.SimpleStringProperty(
                             nombrePais != null
@@ -163,15 +145,8 @@ public class TuristasController {
     // =====================================================
 
     private void cargarTuristas() {
-
-        List<Turista> lista =
-                turistaDAO.listar();
-
-        System.out.println(
-                "Cantidad de turistas encontrados: "
-                        + lista.size()
-        );
-
+        List<Turista> lista = turistaDAO.listar();
+        System.out.println("Cantidad de turistas encontrados: " + lista.size());
         tablaTuristas.getItems().setAll(lista);
     }
 
@@ -206,9 +181,35 @@ public class TuristasController {
 
                 // 4. Programamos las acciones de los clics para cada botón
                 btnVer.setOnAction(event -> {
+
                     Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-                    System.out.println("Visualizando datos de: " + turistaSeleccionado.getNombre());
-                    // Aquí abres tu pantalla de consulta detallada
+
+                    try {
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource(
+                                        "/com/example/sistema_municipalidad/consulta-turista-view.fxml"
+                                )
+                        );
+
+                        Scene scene = new Scene(loader.load());
+                        ConsultaTuristaController controller = loader.getController();
+
+                        String nombreProvincia = provincias.get(turistaSeleccionado.getIdProvincia());
+                        String nombrePais = paises.get(turistaSeleccionado.getIdPais());
+
+                        controller.setTurista(turistaSeleccionado, nombreProvincia, nombrePais);
+
+                        Stage ventana = new Stage();
+
+                        ventana.setTitle("Consultar turista");
+                        ventana.setScene(scene);
+                        ventana.initModality(Modality.APPLICATION_MODAL);
+                        ventana.showAndWait();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Error al abrir consulta-turista-view.fxml");
+                    }
                 });
 
                 btnEditar.setOnAction(event -> {
@@ -247,9 +248,51 @@ public class TuristasController {
                 });
 
                 btnEliminar.setOnAction(event -> {
+
                     Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-                    System.out.println("Eliminando ID: " + turistaSeleccionado.getIdTurista());
-                    // Aquí llamas a tu DAO para borrarlo de la Base de Datos y refrescas la tabla
+
+                    // CONFIRMACIÓN:
+                    Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+
+                    confirmacion.setTitle("Eliminar turista");
+                    confirmacion.setHeaderText("¿Está seguro de eliminar este turista?");
+                    confirmacion.setContentText(turistaSeleccionado.getNombre() + " " + turistaSeleccionado.getApellido());
+
+                    ButtonType botonSi = new ButtonType("Eliminar");
+                    ButtonType botonNo =
+                            new ButtonType(
+                                    "Cancelar",
+                                    ButtonBar.ButtonData.CANCEL_CLOSE
+                            );
+
+                    confirmacion.getButtonTypes().setAll(botonSi, botonNo);
+
+                    // MOSTRAR CONFIRMACIÓN:
+                    Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+                    // COMPROBAR RESPUESTA:
+
+                    if (resultado.isPresent() && resultado.get() == botonSi) {
+
+                        boolean eliminado = turistaDAO.eliminar(turistaSeleccionado.getIdTurista());
+                        if (eliminado) {
+                            Alert informacion = new Alert(Alert.AlertType.INFORMATION);
+
+                            informacion.setTitle("Eliminación exitosa");
+                            informacion.setHeaderText(null);
+                            informacion.setContentText("El turista fue eliminado correctamente.");
+                            informacion.showAndWait();
+                            cargarTuristas(); // Actualizar la tabla
+
+                        } else {
+                            Alert error = new Alert(Alert.AlertType.ERROR);
+
+                            error.setTitle("Error");
+                            error.setHeaderText(null);
+                            error.setContentText("No se pudo eliminar el turista.");
+                            error.showAndWait();
+                        }
+                    }
                 });
             }
 

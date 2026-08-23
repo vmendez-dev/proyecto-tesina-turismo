@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="393.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.FormTuristaController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="393.0" spacing="15.0" styleClass="contenedor-emergente" stylesheets="@../../../estilos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.FormTuristaController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="340.0" style="-fx-background-color: #E7F4FD; -fx-background-radius: 8;">
+      <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="340.0" style="-fx-background-color: #E7F4FD; -fx-background-radius: 8;" stylesheets="@../../../estilos.css">
          <VBox.margin>
             <Insets />
          </VBox.margin>
