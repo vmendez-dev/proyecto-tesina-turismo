@@ -35,23 +35,14 @@ public class FormTuristaController {
     @FXML private ImageView imgIcono;
     @FXML private Button btnGuardar;
 
-    // =====================================================
-    // DAOs
-    // =====================================================
-
     private final PaisDAO paisDAO = new PaisDAO();
     private final ProvinciaDAO provinciaDAO = new ProvinciaDAO();
     private final TipoDocumentoDAO tipoDocumentoDAO = new TipoDocumentoDAO();
     private final TuristaDAO turistaDAO = new TuristaDAO();
     private Turista turistaEdicion;
 
-    // =====================================================
-    // INICIALIZACIÓN
-    // =====================================================
-
     @FXML
     private void initialize() {
-
         cargarTiposDocumento();
         cargarPaises();
 
@@ -84,94 +75,55 @@ public class FormTuristaController {
         cargarDatosTurista(turista);
     }
 
-    // =====================================================
-    // CARGAR TIPOS DE DOCUMENTO
-    // =====================================================
-
     private void cargarTiposDocumento() {
-
-        List<TipoDocumento> tipos =
-                tipoDocumentoDAO.listar();
-
+        List<TipoDocumento> tipos = tipoDocumentoDAO.listar();
         cmbTipoDocumento.getItems().setAll(tipos);
     }
 
-
-    // =====================================================
-    // CARGAR PAISES
-    // =====================================================
-
     private void cargarPaises() {
-
-        List<Pais> paises =
-                paisDAO.listar();
-
+        List<Pais> paises = paisDAO.listar();
         cmbPais.getItems().setAll(paises);
     }
 
-
-    // =====================================================
-    // CARGAR PROVINCIAS SEGÚN EL PAÍS
-    // =====================================================
+    // CARGAR PROVINCIAS SEGÚN EL PAÍS:
 
     private void cargarProvincias() {
-
-        Pais paisSeleccionado =
-                cmbPais.getValue();
+        Pais paisSeleccionado = cmbPais.getValue();
 
         // Limpiamos las provincias anteriores.
         cmbProcedencia.getItems().clear();
 
-        // Si no hay país seleccionado,
-        // deshabilitamos procedencia.
+        // Si no hay país seleccionado, deshabilitamos procedencia.
         if (paisSeleccionado == null) {
-
             cmbProcedencia.setDisable(true);
             return;
         }
 
-        // Buscamos las provincias correspondientes
-        // al país seleccionado.
-        List<Provincia> provincias =
-                provinciaDAO.listarPorPais(
-                        paisSeleccionado.getIdPais()
-                );
-
+        // Buscamos las provincias correspondientes al país seleccionado.
+        List<Provincia> provincias = provinciaDAO.listarPorPais(paisSeleccionado.getIdPais());
         cmbProcedencia.getItems().setAll(provincias);
 
         // Si encontramos provincias, habilitamos el ComboBox.
         cmbProcedencia.setDisable(provincias.isEmpty());
     }
 
-
-    // =====================================================
-    // BOTÓN GUARDAR
-    // =====================================================
-
     @FXML
     private void guardar() {
 
-        // Primero validamos todos los campos.
+        // Primero se validan todos los campos
         if (!validarCampos()) {
             return;
         }
 
-        // =================================================
-        // COMPROBAR DOCUMENTO DUPLICADO
-        // =================================================
-
-        int idTipoDocumento =
-                cmbTipoDocumento.getValue().getIdTipoDocumento();
-
-        String numeroDocumento =
-                txtNumeroDocumento.getText().trim();
+        // Se comprueba documento duplicado:
+        int idTipoDocumento = cmbTipoDocumento.getValue().getIdTipoDocumento();
+        String numeroDocumento = txtNumeroDocumento.getText().trim();
 
         if (turistaEdicion == null) {
 
             //Alta:
             if (turistaDAO.existeDocumento(idTipoDocumento, numeroDocumento)) {
                 mostrarError("Ya existe un turista registrado con ese tipo y número de documento.");
-
                 txtNumeroDocumento.requestFocus();
                 return;
             }
@@ -181,28 +133,18 @@ public class FormTuristaController {
             //Modificación:
             if (turistaDAO.existeDocumentoExceptoId(idTipoDocumento, numeroDocumento, turistaEdicion.getIdTurista())) {
                 mostrarError("Otro turista ya tiene ese tipo y número de documento.");
-
                 txtNumeroDocumento.requestFocus();
                 return;
             }
         }
 
-        // =================================================
-        // OBTENER VALORES DE LOS COMBOBOX
-        // =================================================
+        // OBTENER VALORES DE LOS COMBOBOX:
 
-        TipoDocumento tipoDocumento =
-                cmbTipoDocumento.getValue();
+        TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
+        Pais pais = cmbPais.getValue();
+        Provincia provincia = cmbProcedencia.getValue();
 
-        Pais pais =
-                cmbPais.getValue();
-
-        Provincia provincia =
-                cmbProcedencia.getValue();
-
-        // =================================================
-        // CREAR OBJETO TURISTA
-        // =================================================
+        // SE CREA EL OBJETO TURISTA:
 
         Turista turista = new Turista(
                 txtNombre.getText().trim(),
@@ -217,9 +159,8 @@ public class FormTuristaController {
                 txtObservaciones.getText().trim()
         );
 
-        // =================================================
-        // GUARDAR EN LA BASE DE DATOS
-        // =================================================
+
+        // SE GUARDA EN LA BASE DE DATOS:
 
         boolean guardado;
 
@@ -235,9 +176,7 @@ public class FormTuristaController {
             guardado = turistaDAO.modificar(turista);
         }
 
-        // =================================================
-        // RESULTADO
-        // =================================================
+        // RESULTADO:
 
         if (guardado) {
             if (turistaEdicion == null) {
@@ -267,22 +206,20 @@ public class FormTuristaController {
         }
     }
 
-    // =====================================================
-    // VALIDACIONES
-    // =====================================================
+    //
+    // VALIDACIONES:
+    //
 
     private boolean validarCampos() {
 
         String nombre = txtNombre.getText().trim();
         if (nombre.isEmpty()) {
             mostrarError("El nombre es obligatorio.");
-
             txtNombre.requestFocus();
             return false;
         }
 
         String apellido = txtApellido.getText().trim();
-
         if (apellido.isEmpty()) {
             mostrarError("El apellido es obligatorio.");
 
@@ -300,7 +237,6 @@ public class FormTuristaController {
         }
 
         String numeroDocumento = txtNumeroDocumento.getText().trim();
-
         if (numeroDocumento.isEmpty()) {
             mostrarError("El número de documento es obligatorio.");
 
@@ -316,7 +252,6 @@ public class FormTuristaController {
 
 
         LocalDate fechaNacimiento = dateFechaNacimiento.getValue();
-
         if (fechaNacimiento != null && fechaNacimiento.isAfter(LocalDate.now())) {
 
             mostrarError("La fecha de nacimiento no puede ser futura.");
@@ -329,67 +264,52 @@ public class FormTuristaController {
         if (cmbPais.getValue() == null) {
 
             mostrarError("Debe seleccionar un país.");
-
             cmbPais.requestFocus();
             return false;
         }
 
+
         if (cmbProcedencia.getValue() == null) {
 
             mostrarError("Debe seleccionar una procedencia.");
-
             cmbProcedencia.requestFocus();
             return false;
         }
 
 
         String telefono = txtTelefono.getText().trim();
-
         if (telefono.length() > 30) {
             mostrarError("El teléfono no puede superar los 30 caracteres.");
-
             txtTelefono.requestFocus();
             return false;
         }
 
         String email = txtEmail.getText().trim();
-
         if (!email.isEmpty()) {
-
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
 
                 mostrarError("El email no tiene un formato válido.");
-
                 txtEmail.requestFocus();
                 return false;
             }
-
             if (email.length() > 100) {
 
                 mostrarError("El email no puede superar los 100 caracteres.");
-
                 txtEmail.requestFocus();
                 return false;
             }
         }
 
         String observaciones = txtObservaciones.getText().trim();
-
-        if (observaciones.length() > 1000) {
+        if (observaciones.length() > 100) {
 
             mostrarError("Las observaciones son demasiado extensas.");
-
             txtObservaciones.requestFocus();
             return false;
         }
 
-
         return true;
     }
-
-    // =====================================================
-    // BOTÓN CANCELAR
-    // =====================================================
 
     @FXML
     private void cancelar() {
@@ -397,20 +317,12 @@ public class FormTuristaController {
         cerrarVentana();
     }
 
-    // =====================================================
-    // CERRAR VENTANA
-    // =====================================================
-
     private void cerrarVentana() {
 
         Stage ventana = (Stage) txtNombre.getScene().getWindow();
         ventana.close();
     }
 
-
-    // =====================================================
-    // MOSTRAR ERROR
-    // =====================================================
 
     private void mostrarError(String mensaje) {
 
@@ -422,13 +334,8 @@ public class FormTuristaController {
 
         alert.setTitle("Error");
         alert.setHeaderText(null);
-
         alert.showAndWait();
     }
-
-    // =====================================================
-    // MOSTRAR INFORMACIÓN
-    // =====================================================
 
     private void mostrarInformacion(String titulo, String mensaje) {
         Alert alert = new Alert(
@@ -439,13 +346,12 @@ public class FormTuristaController {
 
         alert.setTitle(titulo);
         alert.setHeaderText(null);
-
         alert.showAndWait();
     }
 
-    // =====================================================
-    // MÉTODOS AUXILIARES
-    // =====================================================
+    //
+    // MÉTODOS AUXILIARES:
+    //
     private void limpiarFormulario() {
         txtNombre.clear();
         txtApellido.clear();

@@ -45,29 +45,53 @@
             <Insets />
          </opaqueInsets>
       </HBox>
-      <VBox prefHeight="168.0" prefWidth="341.0">
+      <VBox prefHeight="168.0" prefWidth="351.0">
          <children>
-            <Label prefHeight="18.0" prefWidth="60.0" text="Nombre" textFill="#0e0640">
-               <font>
-                  <Font name="Verdana" size="14.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="13.0" />
-               </VBox.margin>
-            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="13.0" prefWidth="351.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="61.0" text="Nombre" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="13.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
             <TextField fx:id="txtNombre" prefHeight="30.0" prefWidth="328.0" promptText="Ingrese el nombre">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
             </TextField>
-            <Label prefHeight="18.0" prefWidth="60.0" text="Apellido" textFill="#0e0640">
-               <font>
-                  <Font name="Verdana" size="14.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="13.0" top="7.0" />
-               </VBox.margin>
-            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="13.0" prefWidth="351.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="61.0" text="Apellido" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="13.0" top="7.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
             <TextField fx:id="txtApellido" prefHeight="30.0" prefWidth="274.0" promptText="Ingrese el apellido">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />

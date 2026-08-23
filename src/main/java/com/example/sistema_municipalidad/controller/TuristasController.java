@@ -35,13 +35,13 @@ import java.util.Optional;
 
 public class TuristasController {
 
-    // 1. Componentes de Filtrado y Búsqueda (JFoenix)
+    // Componentes de Filtrado y Búsqueda (JFoenix)
     @FXML private JFXTextField txtBuscar;
     @FXML private JFXComboBox<String> comboProcedencia;
     @FXML private JFXComboBox<String> comboPais;
     @FXML private JFXButton btnRegistrar;
 
-    // 2. Tabla Principal de Turistas (JavaFX Nativo)
+    // Tabla Principal de Turistas (JavaFX Nativo)
     @FXML private TableView<Turista> tablaTuristas;
     @FXML private TableColumn<Turista, String> columnaNombre;
     @FXML private TableColumn<Turista, String> columnaApellido;
@@ -68,10 +68,6 @@ public class TuristasController {
         configurarColumnaAcciones();
     }
 
-    // =====================================================
-    // CARGAR PAISES
-    // =====================================================
-
     private void cargarPaises() {
 
         List<Pais> listaPaises = paisDAO.listar();
@@ -82,10 +78,6 @@ public class TuristasController {
             );
         }
     }
-
-    // =====================================================
-    // CARGAR PROVINCIAS
-    // =====================================================
 
     private void cargarProvincias() {
         List<Provincia> listaProvincias =
@@ -98,10 +90,6 @@ public class TuristasController {
             );
         }
     }
-
-    // =====================================================
-    // CONFIGURAR COLUMNAS
-    // =====================================================
 
     private void configurarColumnas() {
 
@@ -140,19 +128,15 @@ public class TuristasController {
         );
     }
 
-    // =====================================================
-    // CARGAR TURISTAS
-    // =====================================================
-
     private void cargarTuristas() {
         List<Turista> lista = turistaDAO.listar();
         System.out.println("Cantidad de turistas encontrados: " + lista.size());
         tablaTuristas.getItems().setAll(lista);
     }
 
-    // =====================================================
-    // crear e inyectar los botones del menú Acciones
-    // =====================================================
+    //
+    // Metodo para crear e inyectar los botones del menú Acciones:
+    //
 
     private void configurarColumnaAcciones() {
         // Definimos una fábrica de celdas personalizada para la columna de acciones
@@ -223,8 +207,7 @@ public class TuristasController {
                         Scene scene = new Scene(loader.load());
 
                         // Obtenemos el controller del formulario
-                        FormTuristaController controller =
-                                loader.getController();
+                        FormTuristaController controller = loader.getController();
 
                         // Le pasamos el turista seleccionado
                         controller.setTurista(turistaSeleccionado);
@@ -296,7 +279,7 @@ public class TuristasController {
                 });
             }
 
-            // Este método dibuja físicamente los botones en la fila si esta tiene datos
+            // Este método dibuja físicamente los botones en la fila si esta tiene datos.
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -340,9 +323,5 @@ public class TuristasController {
         }
     }
 
-    @FXML
-    private void manejarBuscar(MouseEvent event) {
-        String criterio = txtBuscar.getText();
-        System.out.println("Filtrando tabla por: " + criterio);
-    }
+
 }

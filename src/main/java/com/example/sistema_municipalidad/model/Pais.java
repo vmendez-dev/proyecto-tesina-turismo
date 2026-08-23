@@ -34,7 +34,5 @@ public class Pais {
     }
 
     @Override
-    public String toString() {
-        return this.nombrePais;
-    }
+    public String toString() { return this.nombrePais; }
 }
