@@ -9,7 +9,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class Dashboard extends Application {
 
     // Variables para guardar la posición del mouse al hacer clic
     private double xOffset = 0;
@@ -17,7 +17,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Dashboard.class.getResource("dashboard-view.fxml"));
 
         // 1. Guardamos el root en una variable (Region engloba a AnchorPane, VBox, BorderPane, etc.)
         Region root = fxmlLoader.load();

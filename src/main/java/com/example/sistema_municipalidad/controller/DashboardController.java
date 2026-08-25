@@ -3,17 +3,19 @@ package com.example.sistema_municipalidad.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 
-public class HelloController {
+public class DashboardController {
 
     // Enlaza el AnchorPane en Scene Builder
     @FXML private AnchorPane panelContenido;
+    @FXML private Label lblTituloSeccion;
+    @FXML private Label lblSubtituloSeccion;
 
     // Método para cambiar la pantalla en el fondo blanco
-    private void cambiarPantalla(String nombreArchivoFxml) {
+    private void cambiarPantalla(String nombreArchivoFxml, String titulo, String subtitulo) {
         try {
             // Se busca y se carga el archivo fxml secundario:
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistema_municipalidad/" + nombreArchivoFxml));
@@ -29,6 +31,10 @@ public class HelloController {
             AnchorPane.setLeftAnchor(nuevaVista, 0.0);
             AnchorPane.setRightAnchor(nuevaVista, 0.0);
 
+            // Cambiar encabezado:
+            lblTituloSeccion.setText(titulo);
+            lblSubtituloSeccion.setText(subtitulo);
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error crítico: No se pudo cargar el archivo " + nombreArchivoFxml);
@@ -37,7 +43,11 @@ public class HelloController {
 
     @FXML
     private void irATuristas() {
-        cambiarPantalla("turistas-view.fxml");
+        cambiarPantalla(
+                "turistas-view.fxml",
+                "Gestión de Turistas",
+                "Listado de turistas registrados en el sistema"
+        );
     }
 
 }

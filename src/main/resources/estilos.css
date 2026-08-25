@@ -54,3 +54,49 @@
     -fx-background-radius: 11px 11px 0px 0px;
     -fx-padding: 15px;
 }
+
+.boton-accion {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+    -fx-cursor: hand;
+}
+
+.boton-ver,
+.boton-editar {
+    -fx-border-color: #d9e5f5;
+}
+
+.boton-eliminar {
+    -fx-border-color: #ffd0d0;
+}
+
+.boton-accion:hover {
+    -fx-background-color: #f5f9ff;
+}
+
+.boton-eliminar:hover {
+    -fx-background-color: #fff5f5;
+}
+
+.separator *.line {
+    -fx-background-color: #85BEEE; /* Color azul tenue de la imagen */
+    -fx-pref-height: 2px;          /* Grosor mínimo y sutil */
+    -fx-border-color: transparent; /* Elimina sombras por defecto */
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1C4D85;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #DCECF8;
+}
+
+.menu-button-active {
+    -fx-background-color: #CFE6F7;
+}

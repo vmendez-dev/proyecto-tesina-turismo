@@ -18,11 +18,9 @@ public class ConexionDB {
                     USUARIO,
                     PASSWORD
             );
-            System.out.println("Conexión exitosa a la base de datos.");
             return conexion;
 
         } catch (SQLException e) {
-            System.out.println("Error al conectar con la base de datos.");
             e.printStackTrace();
             return null;
         }

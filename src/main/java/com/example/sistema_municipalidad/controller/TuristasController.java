@@ -15,6 +15,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -149,21 +151,27 @@ public class TuristasController {
             private final javafx.scene.layout.HBox contenedorBotonera = new javafx.scene.layout.HBox(btnVer, btnEditar, btnEliminar);
 
             {
-                // 1. Configuramos el contenedor HBox (Alineación y espacio entre botones)
+                //Configuramos el contenedor HBox (Alineación y espacio entre botones)
                 contenedorBotonera.setAlignment(javafx.geometry.Pos.CENTER);
-                contenedorBotonera.setSpacing(10);
+                contenedorBotonera.setSpacing(5);
 
-                // 2. Aplicamos estilos CSS nativos para que queden redondos y limpios como tu imagen
-                btnVer.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
-                btnEditar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
-                btnEliminar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #d93025;");
+                // Aplicamos estilos CSS
+//                btnVer.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
+//                btnEditar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
+//                btnEliminar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #d93025;");
+                btnVer.getStyleClass().addAll("boton-accion", "boton-ver");
+                btnEditar.getStyleClass().addAll("boton-accion", "boton-editar");
+                btnEliminar.getStyleClass().addAll("boton-accion", "boton-eliminar");
 
-                // 3. Colocamos los textos temporales (puedes reemplazarlos por imágenes/íconos más adelante)
-                btnVer.setText("👁");
-                btnEditar.setText("✏");
-                btnEliminar.setText("🗑");
+                //Colocamos los textos temporales
+//                btnVer.setText("👁");
+//                btnEditar.setText("✏");
+//                btnEliminar.setText("🗑");
+                btnVer.setGraphic(crearIcono("/icons/consulta.png", 20, 20));
+                btnEditar.setGraphic(crearIcono("/icons/modificar2.png", 20, 20));
+                btnEliminar.setGraphic(crearIcono("/icons/eliminar.png", 20, 20));
 
-                // 4. Programamos las acciones de los clics para cada botón
+                //Programamos las acciones de los clics para cada botón
                 btnVer.setOnAction(event -> {
 
                     Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
@@ -323,5 +331,12 @@ public class TuristasController {
         }
     }
 
+    private ImageView crearIcono(String ruta, double ancho, double alto) {
+        ImageView icono = new ImageView(new Image(getClass().getResourceAsStream(ruta)));
+        icono.setFitWidth(ancho);
+        icono.setFitHeight(alto);
+        icono.setPreserveRatio(true);
+        return icono;
+    }
 
 }

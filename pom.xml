@@ -95,7 +95,7 @@
 
                         <configuration>
                             <mainClass>
-                                com.example.sistema_municipalidad/com.example.sistema_municipalidad.HelloApplication
+                                com.example.sistema_municipalidad/com.example.sistema_municipalidad.Dashboard
                             </mainClass>
 
                             <launcher>app</launcher>

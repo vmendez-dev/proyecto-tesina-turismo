@@ -13,9 +13,7 @@ import java.util.List;
 
 public class TuristaDAO {
 
-    // =====================================================
-    // ALTA
-    // =====================================================
+    // ALTA:
 
     public boolean guardar(Turista turista) {
 
@@ -83,9 +81,8 @@ public class TuristaDAO {
         }
     }
 
-    // =====================================================
-    // LISTAR TODOS LOS TURISTAS ACTIVOS
-    // =====================================================
+
+    // LISTAR TODOS LOS TURISTAS ACTIVOS:
 
     public List<Turista> listar() {
 
@@ -130,9 +127,7 @@ public class TuristaDAO {
     }
 
 
-    // =====================================================
-    // BUSCAR POR ID
-    // =====================================================
+    // BUSCAR POR ID:
 
     public Turista buscarPorId(int idTurista) {
 
@@ -177,9 +172,7 @@ public class TuristaDAO {
     }
 
 
-    // =====================================================
-    // MODIFICAR
-    // =====================================================
+    // MODIFICAR:
 
     public boolean modificar(Turista turista) {
 
@@ -251,9 +244,7 @@ public class TuristaDAO {
     }
 
 
-    // =====================================================
-    // BAJA LÓGICA
-    // =====================================================
+    // BAJA LÓGICA:
 
     public boolean eliminar(int idTurista) {
 
@@ -285,63 +276,39 @@ public class TuristaDAO {
     }
 
 
-    // =====================================================
-    // MÉTODO AUXILIAR
-    // =====================================================
+    // MÉTODO AUXILIAR:
 
     private Turista convertirTurista(ResultSet resultado) throws SQLException {
 
         Turista turista = new Turista();
 
-        turista.setIdTurista(
-                resultado.getInt("id_turista")
-        );
-
-        turista.setNombre(
-                resultado.getString("nombre")
-        );
-
-        turista.setApellido(
-                resultado.getString("apellido")
-        );
-
-        turista.setIdTipoDocumento(
-                resultado.getInt("id_tipo_documento")
-        );
-
-        turista.setNumeroDocumento(
-                resultado.getString("numero_documento")
-        );
-
+        turista.setIdTurista(resultado.getInt("id_turista"));
+        turista.setNombre(resultado.getString("nombre"));
+        turista.setApellido(resultado.getString("apellido"));
+        turista.setIdTipoDocumento(resultado.getInt("id_tipo_documento"));
+        turista.setNumeroDocumento(resultado.getString("numero_documento"));
 
         // Fecha de nacimiento
 
-        Date fechaNacimiento =
-                resultado.getDate("fecha_nacimiento");
+        Date fechaNacimiento = resultado.getDate("fecha_nacimiento");
 
         if (fechaNacimiento != null) {
 
-            turista.setFechaNacimiento(
-                    fechaNacimiento.toLocalDate()
-            );
+            turista.setFechaNacimiento(fechaNacimiento.toLocalDate());
         }
-
 
         // Provincia
 
-        int idProvincia =
-                resultado.getInt("id_provincia");
+        int idProvincia = resultado.getInt("id_provincia");
 
         if (!resultado.wasNull()) {
 
             turista.setIdProvincia(idProvincia);
         }
 
-
         // País
 
-        int idPais =
-                resultado.getInt("id_pais");
+        int idPais = resultado.getInt("id_pais");
 
         if (!resultado.wasNull()) {
 
@@ -349,35 +316,20 @@ public class TuristaDAO {
         }
 
 
-        turista.setTelefono(
-                resultado.getString("telefono")
-        );
-
-        turista.setEmail(
-                resultado.getString("email")
-        );
-
-        turista.setObservaciones(
-                resultado.getString("observaciones")
-        );
-
+        turista.setTelefono(resultado.getString("telefono"));
+        turista.setEmail(resultado.getString("email"));
+        turista.setObservaciones(resultado.getString("observaciones"));
 
         // Fecha de registro
 
-        Date fechaRegistro =
-                resultado.getDate("fecha_registro");
+        Date fechaRegistro = resultado.getDate("fecha_registro");
 
         if (fechaRegistro != null) {
 
-            turista.setFechaRegistro(
-                    fechaRegistro.toLocalDate()
-            );
+            turista.setFechaRegistro(fechaRegistro.toLocalDate());
         }
 
-        turista.setActivo(
-                resultado.getBoolean("activo")
-        );
-
+        turista.setActivo(resultado.getBoolean("activo"));
         return turista;
     }
 

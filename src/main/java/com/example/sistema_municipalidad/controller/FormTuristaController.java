@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 public class FormTuristaController {
 
@@ -142,7 +143,10 @@ public class FormTuristaController {
 
         TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
         Pais pais = cmbPais.getValue();
+
         Provincia provincia = cmbProcedencia.getValue();
+        Integer idProvincia = null;
+        if (provincia != null) { idProvincia = provincia.getIdProvincia(); }
 
         // SE CREA EL OBJETO TURISTA:
 
@@ -152,7 +156,7 @@ public class FormTuristaController {
                 tipoDocumento.getIdTipoDocumento(),
                 txtNumeroDocumento.getText().trim(),
                 dateFechaNacimiento.getValue(),
-                provincia.getIdProvincia(),
+                idProvincia,
                 pais.getIdPais(),
                 txtTelefono.getText().trim(),
                 txtEmail.getText().trim(),
@@ -222,16 +226,13 @@ public class FormTuristaController {
         String apellido = txtApellido.getText().trim();
         if (apellido.isEmpty()) {
             mostrarError("El apellido es obligatorio.");
-
             txtApellido.requestFocus();
             return false;
         }
 
 
         if (cmbTipoDocumento.getValue() == null) {
-
             mostrarError("Debe seleccionar un tipo de documento.");
-
             cmbTipoDocumento.requestFocus();
             return false;
         }
@@ -239,13 +240,35 @@ public class FormTuristaController {
         String numeroDocumento = txtNumeroDocumento.getText().trim();
         if (numeroDocumento.isEmpty()) {
             mostrarError("El número de documento es obligatorio.");
-
             txtNumeroDocumento.requestFocus();
             return false;
         }
-        if (numeroDocumento.length() > 30) {
-            mostrarError("El número de documento no puede superar los 30 caracteres.");
 
+        String numeroDocumentoLimpio = numeroDocumento.replaceAll("[^A-Za-z0-9]", "");
+        txtNumeroDocumento.setText(numeroDocumentoLimpio);
+
+        String nombreTipoDocumento = cmbTipoDocumento.getValue().getNombreTipo();
+        if (nombreTipoDocumento == null) {
+            nombreTipoDocumento = "";
+        }
+        nombreTipoDocumento = nombreTipoDocumento.toUpperCase(Locale.ROOT);
+
+        boolean documentoValido;
+        String mensajeDocumentoInvalido;
+
+        if (nombreTipoDocumento.contains("DNI")) {
+            documentoValido = numeroDocumentoLimpio.matches("^\\d{7,9}$");
+            mensajeDocumentoInvalido = "El DNI debe contener entre 7 y 9 dígitos.";
+        } else if (nombreTipoDocumento.contains("PASAPORTE")) {
+            documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{6,15}$");
+            mensajeDocumentoInvalido = "El pasaporte debe ser alfanumérico y tener entre 6 y 15 caracteres.";
+        } else {
+            documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{5,20}$");
+            mensajeDocumentoInvalido = "El número de documento debe tener entre 5 y 20 caracteres alfanuméricos.";
+        }
+
+        if (!documentoValido) {
+            mostrarError(mensajeDocumentoInvalido);
             txtNumeroDocumento.requestFocus();
             return false;
         }
@@ -253,25 +276,30 @@ public class FormTuristaController {
 
         LocalDate fechaNacimiento = dateFechaNacimiento.getValue();
         if (fechaNacimiento != null && fechaNacimiento.isAfter(LocalDate.now())) {
-
             mostrarError("La fecha de nacimiento no puede ser futura.");
-
             dateFechaNacimiento.requestFocus();
             return false;
         }
 
 
         if (cmbPais.getValue() == null) {
-
             mostrarError("Debe seleccionar un país.");
             cmbPais.requestFocus();
             return false;
         }
 
 
-        if (cmbProcedencia.getValue() == null) {
+        Pais paisSeleccionado = cmbPais.getValue();
+        if (paisSeleccionado == null) {
+            mostrarError("Debe seleccionar un país.");
+            cmbPais.requestFocus();
+            return false;
+        }
 
-            mostrarError("Debe seleccionar una procedencia.");
+        if (paisSeleccionado.getNombrePais().equalsIgnoreCase("Argentina")
+                && cmbProcedencia.getValue() == null) {     //solo es obligatorio si el país es Argentina
+
+            mostrarError("Debe seleccionar una procedencia para Argentina.");
             cmbProcedencia.requestFocus();
             return false;
         }
@@ -302,7 +330,6 @@ public class FormTuristaController {
 
         String observaciones = txtObservaciones.getText().trim();
         if (observaciones.length() > 100) {
-
             mostrarError("Las observaciones son demasiado extensas.");
             txtObservaciones.requestFocus();
             return false;
