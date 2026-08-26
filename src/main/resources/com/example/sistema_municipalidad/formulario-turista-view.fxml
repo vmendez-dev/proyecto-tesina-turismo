@@ -112,9 +112,9 @@
             </DatePicker>
          </children>
       </VBox>
-      <HBox prefHeight="189.0" prefWidth="353.0">
+      <HBox prefHeight="206.0" prefWidth="351.0">
          <children>
-            <VBox prefHeight="130.0" prefWidth="163.0">
+            <VBox prefHeight="130.0" prefWidth="162.0">
                <children>
                   <Label prefHeight="18.0" prefWidth="148.0" text="Tipo de Documento" textFill="#0e0640">
                      <font>
@@ -124,7 +124,7 @@
                         <Insets left="13.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox fx:id="cmbTipoDocumento" prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbTipoDocumento" prefHeight="30.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
@@ -137,7 +137,7 @@
                         <Insets left="13.0" top="17.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox fx:id="cmbPais" prefHeight="25.0" prefWidth="146.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbPais" prefHeight="30.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
@@ -152,10 +152,13 @@
                   </Label>
                   <TextField fx:id="txtTelefono" prefHeight="30.0" prefWidth="173.0" promptText="Ingrese el teléfono">
                      <VBox.margin>
-                        <Insets left="13.0" top="5.0" />
+                        <Insets bottom="16.0" left="13.0" top="5.0" />
                      </VBox.margin>
                   </TextField>
                </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </VBox>
             <VBox prefHeight="153.0" prefWidth="190.0">
                <children>
@@ -177,10 +180,10 @@
                         <Font name="Verdana" size="14.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="15.0" top="11.0" />
+                        <Insets left="15.0" top="13.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXComboBox fx:id="cmbProcedencia" prefHeight="25.0" prefWidth="176.0" promptText="Seleccionar...">
+                  <JFXComboBox fx:id="cmbProcedencia" prefHeight="30.0" prefWidth="176.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
                      </VBox.margin>
@@ -202,7 +205,7 @@
             </VBox>
          </children>
       </HBox>
-      <VBox prefHeight="115.0" prefWidth="353.0">
+      <VBox prefHeight="109.0" prefWidth="351.0">
          <children>
             <Label prefHeight="18.0" prefWidth="105.0" text="Observaciones" textFill="#0e0640">
                <font>

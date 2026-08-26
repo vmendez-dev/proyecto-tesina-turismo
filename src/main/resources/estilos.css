@@ -100,3 +100,47 @@
 .menu-button-active {
     -fx-background-color: #CFE6F7;
 }
+
+
+/* Estilo general del contenedor del ComboBox */
+.jfx-combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E6E6E6; /* Gris muy fino */
+    -fx-border-width: 1px;
+    -fx-border-radius: 2px; /* Esquinas casi rectas */
+    -fx-background-radius: 2px;
+
+    /* Reducimos el padding drásticamente para que no se vea inflado */
+    -fx-padding: 4px 8px 4px 8px;
+
+    /* Fuente más pequeña y compacta */
+    -fx-font-family: "Arial", "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+}
+
+/* Modificar el color del texto seleccionado */
+.jfx-combo-box .list-cell {
+    -fx-text-fill: #000000; /* Azul grisáceo atenuado */
+    -fx-font-weight: regular;
+    -fx-padding: 0px; /* Elimina márgenes internos del texto */
+}
+
+/* Ocultar las líneas inferiores nativas de Material Design de JFX */
+.jfx-combo-box .input-line,
+.jfx-combo-box .focused-line {
+    -fx-background-color: transparent !important;
+    -fx-pref-height: 0px !important;
+    -fx-max-height: 0px !important;
+}
+
+/* Ajustar el botón de la flecha para que no estire el componente */
+.jfx-combo-box .arrow-button {
+    -fx-padding: 0px 4px 0px 4px;
+}
+
+/* Reducir el tamaño de la flecha azul */
+.jfx-combo-box .arrow-button .arrow {
+    -fx-background-color: #0F2C59; /* Azul oscuro */
+    -fx-padding: 2.5px 3.5px; /* Controla el tamaño de la 'V' */
+}
+

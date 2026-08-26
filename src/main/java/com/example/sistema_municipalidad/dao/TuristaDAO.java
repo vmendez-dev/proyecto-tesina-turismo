@@ -275,8 +275,190 @@ public class TuristaDAO {
         return false;
     }
 
+    // METODO PARA FILTRAR (NOMBRE, APELLIDO, DOCUMENTO O EMAIL):
 
-    // MÉTODO AUXILIAR:
+    public List<Turista> buscar(String texto) {
+
+        List<Turista> turistas = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                id_turista,
+                nombre,
+                apellido,
+                id_tipo_documento,
+                numero_documento,
+                fecha_nacimiento,
+                id_provincia,
+                id_pais,
+                telefono,
+                email,
+                observaciones,
+                fecha_registro,
+                activo
+            FROM turistas
+            WHERE activo = TRUE
+              AND (
+                    nombre LIKE ?
+                    OR apellido LIKE ?
+                    OR numero_documento LIKE ?
+                    OR email LIKE ?
+              )
+            ORDER BY apellido, nombre
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql)) {
+
+            String criterio = "%" + texto.trim() + "%";
+
+            statement.setString(1, criterio);
+            statement.setString(2, criterio);
+            statement.setString(3, criterio);
+            statement.setString(4, criterio);
+
+            try (ResultSet resultado = statement.executeQuery()) {
+
+                while (resultado.next()) {
+
+                    turistas.add(convertirTurista(resultado));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return turistas;
+    }
+
+    //METODOS PARA LAS 4 TARJETAS:
+    public int contarTuristasActivos() {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM turistas
+            WHERE activo = TRUE
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            if (resultado.next()) {
+                return resultado.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int contarRegistradosEsteMes() {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM turistas
+            WHERE activo = TRUE
+              AND MONTH(fecha_registro) = MONTH(CURRENT_DATE)
+              AND YEAR(fecha_registro) = YEAR(CURRENT_DATE)
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            if (resultado.next()) {
+                return resultado.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int contarProcedenciasDistintas() {
+
+        String sql = """
+            SELECT COUNT(DISTINCT id_provincia)
+            FROM turistas
+            WHERE activo = TRUE
+              AND id_provincia IS NOT NULL
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            if (resultado.next()) {
+                return resultado.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int contarPaisesDistintos() {
+
+        String sql = """
+            SELECT COUNT(DISTINCT id_pais)
+            FROM turistas
+            WHERE activo = TRUE
+              AND id_pais IS NOT NULL
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            if (resultado.next()) {
+                return resultado.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    //METODO PARA LISTAR LOS PAISES EN LA 4TA TARJETA:
+    public List<String> listarPaisesConTuristas() {
+
+        List<String> paises = new ArrayList<>();
+
+        String sql = """
+            SELECT DISTINCT p.nombre_pais
+            FROM turistas t
+            INNER JOIN paises p
+                ON t.id_pais = p.id_pais
+            WHERE t.activo = TRUE
+            ORDER BY p.nombre_pais
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            while (resultado.next()) {
+                paises.add(resultado.getString("nombre_pais"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return paises;
+    }
+
+    // METODO AUXILIAR:
 
     private Turista convertirTurista(ResultSet resultado) throws SQLException {
 
@@ -315,7 +497,6 @@ public class TuristaDAO {
             turista.setIdPais(idPais);
         }
 
-
         turista.setTelefono(resultado.getString("telefono"));
         turista.setEmail(resultado.getString("email"));
         turista.setObservaciones(resultado.getString("observaciones"));
@@ -330,6 +511,7 @@ public class TuristaDAO {
         }
 
         turista.setActivo(resultado.getBoolean("activo"));
+
         return turista;
     }
 

@@ -12,16 +12,13 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -29,19 +26,23 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 public class TuristasController {
 
     // Componentes de Filtrado y Búsqueda (JFoenix)
-    @FXML private JFXTextField txtBuscar;
-    @FXML private JFXComboBox<String> comboProcedencia;
-    @FXML private JFXComboBox<String> comboPais;
+    @FXML private TextField txtBuscar;
+    @FXML private JFXComboBox<Provincia> comboProcedencia;
+    @FXML private JFXComboBox<Pais> comboPais;
     @FXML private JFXButton btnRegistrar;
+    @FXML private ImageView imgLimpiarFiltros;
+    @FXML private Label lblTotalTuristas;
+    @FXML private Label lblRegistradosMes;
+    @FXML private Label lblProcedenciasDistintas;
+    @FXML private Label lblPaisesDistintos;
+    @FXML private Label lblMesActual;
+    @FXML private Label lblListaPaises;
 
     // Tabla Principal de Turistas (JavaFX Nativo)
     @FXML private TableView<Turista> tablaTuristas;
@@ -65,9 +66,23 @@ public class TuristasController {
     private void initialize() {
         cargarPaises();
         cargarProvincias();
+
         configurarColumnas();
-        cargarTuristas();
         configurarColumnaAcciones();
+
+        cargarTuristas();
+
+        cargarFiltroPaises();
+        cargarFiltroProcedencias();
+        cargarEstadisticas();
+        actualizarDashboardTuristas();
+        cargarListaPaises();
+        cargarMesActual();
+
+        configurarBusqueda();
+        configurarFiltros();
+        configurarLimpiarFiltros();
+
     }
 
     private void cargarPaises() {
@@ -132,9 +147,16 @@ public class TuristasController {
 
     private void cargarTuristas() {
         List<Turista> lista = turistaDAO.listar();
-        System.out.println("Cantidad de turistas encontrados: " + lista.size());
         tablaTuristas.getItems().setAll(lista);
+        actualizarTabla(lista);
     }
+    private void actualizarDashboardTuristas() {
+
+        cargarTuristas();
+        cargarEstadisticas();
+        cargarListaPaises();
+    }
+
 
     //
     // Metodo para crear e inyectar los botones del menú Acciones:
@@ -163,7 +185,7 @@ public class TuristasController {
                 btnEditar.getStyleClass().addAll("boton-accion", "boton-editar");
                 btnEliminar.getStyleClass().addAll("boton-accion", "boton-eliminar");
 
-                //Colocamos los textos temporales
+                //Texto temporal para probar los botones
 //                btnVer.setText("👁");
 //                btnEditar.setText("✏");
 //                btnEliminar.setText("🗑");
@@ -230,7 +252,7 @@ public class TuristasController {
                         ventana.showAndWait();
 
                         // Actualizamos la tabla al cerrar
-                        cargarTuristas();
+                        actualizarDashboardTuristas();
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -273,7 +295,7 @@ public class TuristasController {
                             informacion.setHeaderText(null);
                             informacion.setContentText("El turista fue eliminado correctamente.");
                             informacion.showAndWait();
-                            cargarTuristas(); // Actualizar la tabla
+                            actualizarDashboardTuristas(); // Actualizar la tabla
 
                         } else {
                             Alert error = new Alert(Alert.AlertType.ERROR);
@@ -300,6 +322,106 @@ public class TuristasController {
         });
     }
 
+    private void configurarBusqueda() {
+
+        txtBuscar.textProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    aplicarFiltros();
+                }
+        );
+    }
+
+    private void cargarFiltroPaises() {
+        List<Pais> listaPaises = paisDAO.listar();
+
+        comboPais.getItems().clear();
+        comboPais.getItems().addAll(listaPaises);
+        comboPais.setPromptText("Todos");
+    }
+
+    private void cargarFiltroProcedencias() {
+        comboProcedencia.getItems().clear();
+        comboProcedencia.setValue(null);
+        comboProcedencia.setPromptText("Todas");
+        comboProcedencia.setDisable(true);
+    }
+
+    private void cargarEstadisticas() {
+        lblTotalTuristas.setText(String.valueOf(turistaDAO.contarTuristasActivos()));
+        lblRegistradosMes.setText(String.valueOf(turistaDAO.contarRegistradosEsteMes()));
+        lblProcedenciasDistintas.setText(String.valueOf(turistaDAO.contarProcedenciasDistintas()));
+        lblPaisesDistintos.setText(String.valueOf(turistaDAO.contarPaisesDistintos()));
+    }
+
+    private void cargarListaPaises() {
+
+        List<String> paises = turistaDAO.listarPaisesConTuristas();
+
+        if (paises.isEmpty()) {
+            lblListaPaises.setText("Sin registros");
+            return;
+        }
+        lblListaPaises.setText(String.join(", ", paises));
+    }
+
+    private void configurarFiltros() {
+
+        comboPais.setOnAction(event -> {
+
+            Pais paisSeleccionado = comboPais.getValue();
+            comboProcedencia.getItems().clear();
+            comboProcedencia.setValue(null);
+
+            if (paisSeleccionado == null) {
+                comboProcedencia.setDisable(true);
+                comboProcedencia.setPromptText("Todas");
+            } else {
+                List<Provincia> provincias = provinciaDAO.listarPorPais(paisSeleccionado.getIdPais());
+                comboProcedencia.getItems().addAll(provincias);
+                comboProcedencia.setDisable(provincias.isEmpty());
+                comboProcedencia.setPromptText("Todas");
+            }
+
+            aplicarFiltros();
+        });
+
+        comboProcedencia.setOnAction(event -> {
+            aplicarFiltros();
+        });
+    }
+
+    private void aplicarFiltros() {
+
+        String criterio = txtBuscar.getText().trim();
+        Pais paisSeleccionado = comboPais.getValue();
+        Provincia provinciaSeleccionada = comboProcedencia.getValue();
+
+        List<Turista> turistas;
+
+        // BÚSQUEDA:
+        if (criterio.isEmpty()) {
+            turistas = turistaDAO.listar();
+        } else {
+            turistas = turistaDAO.buscar(criterio);
+        }
+
+
+        // FILTRO POR PAÍS:
+        if (paisSeleccionado != null) {
+
+            turistas.removeIf(turista -> paisSeleccionado.getIdPais() != turista.getIdPais());
+        }
+
+        // FILTRO POR PROCEDENCIA:
+        if (provinciaSeleccionada != null) {
+
+            turistas.removeIf(turista -> provinciaSeleccionada.getIdProvincia() != turista.getIdProvincia());
+        }
+
+        actualizarTabla(turistas);
+    }
+
+
     @FXML
     private void abrirFormularioTurista() {
         try {
@@ -323,7 +445,7 @@ public class TuristasController {
 
             // Cuando se cierre el formulario,
             // volvemos a cargar la tabla por si se registró un turista nuevo.
-            cargarTuristas();
+            actualizarDashboardTuristas();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -337,6 +459,56 @@ public class TuristasController {
         icono.setFitHeight(alto);
         icono.setPreserveRatio(true);
         return icono;
+    }
+
+    private void actualizarTabla(List<Turista> lista) {
+
+        tablaTuristas.getItems().setAll(lista);
+    }
+
+
+    private void configurarLimpiarFiltros() {
+
+        imgLimpiarFiltros.setOnMouseClicked(event -> {
+
+            // Limpiar búsqueda
+            txtBuscar.clear();
+
+            // Limpiar país
+            comboPais.setValue(null);
+
+            // Limpiar procedencia
+            comboProcedencia.getItems().clear();
+            comboProcedencia.setValue(null);
+            comboProcedencia.setDisable(true);
+            comboProcedencia.setPromptText("Todas");
+
+            // Mostrar nuevamente todos
+            cargarTuristas();
+        });
+    }
+
+    private void cargarMesActual() {
+
+        String[] meses = {
+                "enero",
+                "febrero",
+                "marzo",
+                "abril",
+                "mayo",
+                "junio",
+                "julio",
+                "agosto",
+                "septiembre",
+                "octubre",
+                "noviembre",
+                "diciembre"
+        };
+
+        LocalDate fechaActual = LocalDate.now();
+        String nombreMes = meses[fechaActual.getMonthValue() - 1];
+        int anio = fechaActual.getYear();
+        lblMesActual.setText("Durante " + nombreMes + " " + anio);
     }
 
 }

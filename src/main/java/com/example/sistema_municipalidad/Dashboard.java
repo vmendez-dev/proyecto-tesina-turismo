@@ -23,7 +23,7 @@ public class Dashboard extends Application {
         Region root = fxmlLoader.load();
 
         // 2. Pasamos el root a la escena
-        Scene scene = new Scene(root, 1107, 728);
+        Scene scene = new Scene(root, 1140, 728);
 
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Sistema de Turismo");

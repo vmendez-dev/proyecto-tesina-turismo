@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1107.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.DashboardController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.DashboardController">
    <children>
-      <BorderPane prefHeight="850.0" prefWidth="1107.0">
+      <BorderPane prefHeight="850.0" prefWidth="1200.0">
          <left>
             <VBox prefHeight="765.0" prefWidth="188.0" style="-fx-background-color: #DBE8F2;" BorderPane.alignment="CENTER">
                <children>
@@ -31,7 +31,7 @@
                         </ImageView>
                         <Label prefHeight="17.0" prefWidth="159.0" text="Sistema de Turismo" textFill="#285194">
                            <VBox.margin>
-                              <Insets left="15.0" top="3.0" />
+                              <Insets left="16.0" top="3.0" />
                            </VBox.margin>
                            <font>
                               <Font name="Verdana Bold" size="14.0" />
