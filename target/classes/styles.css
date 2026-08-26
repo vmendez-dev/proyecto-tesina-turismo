@@ -1,0 +1,147 @@
+/* Paleta General */
+.root {
+    -fx-font-family: "Segoe UI";
+    -fx-background-color: #f1f5f9;
+}
+
+/* Tarjetas y Contenedores */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-padding: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0.0, 0, 2);
+}
+
+.card-metric {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-padding: 15px;
+}
+
+/* Etiquetas de Filtros */
+.lbl-filtro {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+    -fx-font-weight: bold;
+}
+
+/* Botones Principales */
+.btn-primary {
+    -fx-background-color: #0284c7;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 18px;
+    -fx-cursor: hand;
+}
+.btn-primary:hover {
+    -fx-background-color: #0369a1;
+}
+
+.btn-secondary {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 18px;
+    -fx-cursor: hand;
+}
+.btn-secondary:hover {
+    -fx-background-color: #cbd5e1;
+}
+
+/* Botones de Acción en Tabla (Ojito, Lápiz, Tacho) */
+.btn-action {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-cursor: hand;
+    -fx-padding: 3px 8px;
+    -fx-font-size: 11px;
+}
+.btn-action:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.btn-action-delete {
+    -fx-background-color: #fef2f2;
+    -fx-border-color: #fca5a5;
+    -fx-text-fill: #dc2626;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-cursor: hand;
+    -fx-padding: 3px 8px;
+    -fx-font-size: 11px;
+}
+.btn-action-delete:hover {
+    -fx-background-color: #fee2e2;
+}
+
+/* Inputs y Selectores */
+.text-field, .combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 5px 8px;
+}
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #0284c7;
+}
+
+/* Tablas Modernas con Encabezado Celeste */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #dbeafe;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+.table-view .column-header-background {
+    -fx-background-color: #e0f2fe;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: transparent transparent #bae6fd transparent;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-pref-height: 38px;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #0369a1;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+.table-view .filler {
+    -fx-background-color: #e0f2fe;
+}
+.table-row-cell {
+    -fx-cell-size: 40px;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+}
+.table-row-cell:selected {
+    -fx-background-color: #f0f9ff;
+}
+
+/* Badges de Estado */
+.badge-activo {
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #15803d;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+.badge-inactivo {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}

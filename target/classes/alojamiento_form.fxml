@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToWidth="true" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.AlojamientoFormController">
+    <content>
+        <VBox spacing="20.0">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="20.0" />
+            </padding>
+            <children>
+                <VBox spacing="4.0">
+                    <children>
+                        <Label fx:id="lblTituloForm" text="Nuevo Alojamiento" textFill="#0f172a">
+                            <font>
+                                <Font name="Segoe UI Bold" size="22.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="lblSubtituloForm" text="Completar los datos para registrar un nuevo establecimiento." textFill="#64748b">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <VBox spacing="16.0" styleClass="card">
+                    <children>
+                        <Label text="Datos Generales" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
+                        <TextField fx:id="txtNombre" promptText="Nombre / Establecimiento" />
+
+                        <HBox spacing="15.0">
+                            <children>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Tipo *" textFill="#475569" />
+                                        <ComboBox fx:id="cbTipo" maxWidth="Infinity" promptText="Seleccionar Tipo" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Categoría *" textFill="#475569" />
+                                        <ComboBox fx:id="cbCategoria" maxWidth="Infinity" promptText="Seleccionar Categoría" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <TextField fx:id="txtDireccion" promptText="Dirección / Ubicación" />
+
+                        <Separator />
+
+                        <Label text="Capacidad y Contacto" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
+                        <HBox spacing="15.0">
+                            <children>
+                                <TextField fx:id="txtTelefono" promptText="Teléfono de Contacto" HBox.hgrow="ALWAYS" />
+                                <TextField fx:id="txtCapacidad" promptText="Plazas / Capacidad (ej. 4)" HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+
+                        <Separator />
+
+                        <Label text="Datos del Dueño" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
+                        <HBox spacing="15.0">
+                            <children>
+                                <TextField fx:id="txtNombreDueno" promptText="Nombre Completo del Dueño" HBox.hgrow="ALWAYS" />
+                                <TextField fx:id="txtDniDueno" promptText="DNI del Dueño" HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+
+                        <Separator />
+
+                        <Label text="Descripción y Estado" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
+                        <HBox spacing="15.0">
+                            <children>
+                                <TextArea fx:id="txtDescripcion" prefRowCount="3" promptText="Breve descripción del establecimiento..." HBox.hgrow="ALWAYS" />
+                                <VBox spacing="4.0" prefWidth="180.0">
+                                    <children>
+                                        <Label text="Estado" textFill="#475569" />
+                                        <ComboBox fx:id="cbEstado" maxWidth="Infinity" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Botones de Acción -->
+                        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                            <padding>
+                                <Insets top="10.0" />
+                            </padding>
+                            <children>
+                                <Button fx:id="btnCancelar" onAction="#cancelar" styleClass="btn-secondary" text="Cancelar" />
+                                <Button fx:id="btnGuardar" onAction="#guardar" styleClass="btn-primary" text="Confirmar Registro" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

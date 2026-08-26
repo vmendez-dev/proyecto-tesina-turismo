@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToWidth="true" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.AlojamientoDashboardController">
+    <content>
+        <VBox spacing="20.0">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+            </padding>
+            <children>
+
+                <VBox spacing="4.0">
+                    <children>
+                        <Label text="Gestión de Alojamientos" textFill="#0f172a">
+                            <font>
+                                <Font name="Segoe UI Bold" size="22.0" />
+                            </font>
+                        </Label>
+                        <Label text="Listado de alojamientos registrados en el sistema" textFill="#64748b">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+
+                <HBox alignment="BOTTOM_LEFT" spacing="15.0" styleClass="card">
+                    <children>
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="lbl-filtro" text="Buscar" />
+                                <TextField fx:id="txtBuscar" prefHeight="35.0" promptText="🔍 Buscar alojamiento..." />
+                            </children>
+                        </VBox>
+                        <VBox prefWidth="130.0" spacing="4.0">
+                            <children>
+                                <Label styleClass="lbl-filtro" text="Tipo" />
+                                <ComboBox fx:id="cbFiltroTipo" maxWidth="Infinity" prefHeight="35.0" />
+                            </children>
+                        </VBox>
+                        <VBox prefWidth="130.0" spacing="4.0">
+                            <children>
+                                <Label styleClass="lbl-filtro" text="Categoría" />
+                                <ComboBox fx:id="cbFiltroCategoria" maxWidth="Infinity" prefHeight="35.0" />
+                            </children>
+                        </VBox>
+                        <VBox prefWidth="130.0" spacing="4.0">
+                            <children>
+                                <Label styleClass="lbl-filtro" text="Estado" />
+                                <ComboBox fx:id="cbFiltroEstado" maxWidth="Infinity" prefHeight="35.0" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="BOTTOM_CENTER">
+                            <children>
+                                <Button fx:id="btnNuevo" onAction="#abrirFormularioNuevo" prefHeight="35.0" styleClass="btn-primary" text="+ Nuevo Alojamiento" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+
+                <VBox spacing="10.0" styleClass="card">
+                    <children>
+                        <TableView fx:id="tablaAlojamientos" minHeight="240.0" prefHeight="260.0">
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                            <columns>
+                                <TableColumn fx:id="colId" prefWidth="40.0" text="ID" />
+                                <TableColumn fx:id="colNombre" prefWidth="160.0" text="Nombre / Establecimiento" />
+                                <TableColumn fx:id="colTipo" prefWidth="80.0" text="Tipo" />
+                                <TableColumn fx:id="colDireccion" prefWidth="160.0" text="Dirección" />
+                                <TableColumn fx:id="colCapacidad" prefWidth="60.0" text="Plazas" />
+                                <TableColumn fx:id="colTelefono" prefWidth="110.0" text="Teléfono" />
+                                <TableColumn fx:id="colEstado" prefWidth="75.0" text="Estado" />
+                                <TableColumn fx:id="colAcciones" prefWidth="105.0" text="Acciones" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+
+
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox HBox.hgrow="ALWAYS" spacing="4.0" styleClass="card-metric">
+                            <children>
+                                <Label text="Total de alojamientos" textFill="#64748b">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                                <Label fx:id="lblTotalAlojamientos" text="0" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="22.0" /></font>
+                                </Label>
+                                <Label text="Alojamientos registrados" textFill="#94a3b8">
+                                    <font><Font size="11.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="4.0" styleClass="card-metric">
+                            <children>
+                                <Label text="Nuevos este mes" textFill="#64748b">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                                <Label fx:id="lblNuevosMes" text="0" textFill="#16a34a">
+                                    <font><Font name="System Bold" size="22.0" /></font>
+                                </Label>
+                                <Label text="Durante el mes actual" textFill="#94a3b8">
+                                    <font><Font size="11.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="4.0" styleClass="card-metric">
+                            <children>
+                                <Label text="Capacidad total (Plazas)" textFill="#64748b">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                                <Label fx:id="lblCapacidadTotal" text="0" textFill="#7c3aed">
+                                    <font><Font name="System Bold" size="22.0" /></font>
+                                </Label>
+                                <Label text="Plazas totales del municipio" textFill="#94a3b8">
+                                    <font><Font size="11.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="4.0" styleClass="card-metric">
+                            <children>
+                                <Label text="Alojamientos Activos" textFill="#64748b">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                                <Label fx:id="lblAlojamientosActivos" text="0" textFill="#0284c7">
+                                    <font><Font name="System Bold" size="22.0" /></font>
+                                </Label>
+                                <Label text="Operando normalmente" textFill="#94a3b8">
+                                    <font><Font size="11.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+
+                <VBox spacing="10.0" styleClass="card">
+                    <children>
+                        <Label text="🕒 Últimos alojamientos registrados" textFill="#0f172a">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <TableView fx:id="tablaRecientes" minHeight="140.0" prefHeight="150.0">
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                            <columns>
+                                <TableColumn fx:id="colRecienteNombre" prefWidth="180.0" text="Nombre" />
+                                <TableColumn fx:id="colRecienteTipo" prefWidth="90.0" text="Tipo" />
+                                <TableColumn fx:id="colRecienteDireccion" prefWidth="180.0" text="Dirección" />
+                                <TableColumn fx:id="colRecienteCapacidad" prefWidth="70.0" text="Capacidad" />
+                                <TableColumn fx:id="colRecienteFecha" prefWidth="100.0" text="Fecha de registro" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

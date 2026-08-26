@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15" style="-fx-background-color: #f1f5f9; -fx-padding: 20;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.AlojamientoController">
+
+
+    <VBox spacing="3">
+        <Label text="Gestión de Alojamientos" textFill="#0f172a">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+        </Label>
+        <Label text="Administración y registro de establecimientos turísticos" textFill="#64748b" />
+    </VBox>
+
+
+    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);">
+        <Label text="Datos del Alojamiento" textFill="#0284c7">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints minWidth="120" prefWidth="130" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints minWidth="120" prefWidth="130" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+
+
+            <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="txtNombre" promptText="Ej: Cabañas del Sol" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="Tipo:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cbTipo" maxWidth="Infinity" promptText="Seleccionar Tipo" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+
+            <Label text="Categoría:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ComboBox fx:id="cbCategoria" maxWidth="Infinity" promptText="Seleccionar Categoría" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label text="Plazas / Capacidad:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="txtCapacidad" promptText="Ej: 4" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+
+            <Label text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField fx:id="txtDireccion" promptText="Ej: Av. Costanera 123" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Label text="Teléfono:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="txtTelefono" promptText="Ej: (3541) 123456" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+
+
+            <Label text="Nombre Dueño:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextField fx:id="txtNombreDueno" promptText="Nombre y Apellido" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <Label text="DNI Dueño:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id="txtDniDueno" promptText="Ej: 30123456" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+
+
+            <Label text="Estado:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <ComboBox fx:id="cbEstado" maxWidth="Infinity" promptText="Estado" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+            <Label text="Descripción:" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <TextField fx:id="txtDescripcion" promptText="Breve detalle..." GridPane.columnIndex="3" GridPane.rowIndex="4" />
+        </GridPane>
+
+
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <padding>
+                <Insets top="10" />
+            </padding>
+            <Button fx:id="btnLimpiar" onAction="#limpiarCampos" style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155;" text="Limpiar / Nuevo" />
+            <Button fx:id="btnEliminar" onAction="#eliminarAlojamiento" style="-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold;" text="Dar de Baja" />
+            <Button fx:id="btnModificar" onAction="#modificarAlojamiento" style="-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold;" text="Guardar Cambios" />
+            <Button fx:id="btnGuardar" onAction="#guardarAlojamiento" style="-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;" text="Registrar Alojamiento" />
+        </HBox>
+    </VBox>
+
+
+    <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);">
+        <Label text="Listado de Establecimientos Registrados" textFill="#0f172a">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <TableView fx:id="tablaAlojamientos" prefHeight="260" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="50" text="ID" />
+                <TableColumn fx:id="colNombre" prefWidth="160" text="Nombre" />
+                <TableColumn fx:id="colTipo" prefWidth="90" text="Tipo" />
+                <TableColumn fx:id="colCategoria" prefWidth="90" text="Categoría" />
+                <TableColumn fx:id="colDireccion" prefWidth="160" text="Dirección" />
+                <TableColumn fx:id="colTelefono" prefWidth="110" text="Teléfono" />
+                <TableColumn fx:id="colCapacidad" prefWidth="70" text="Plazas" />
+                <TableColumn fx:id="colDueno" prefWidth="130" text="Dueño" />
+                <TableColumn fx:id="colEstado" prefWidth="80" text="Estado" />
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>
