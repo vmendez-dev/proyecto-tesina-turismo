@@ -458,6 +458,51 @@ public class TuristaDAO {
         return paises;
     }
 
+    public List<Turista> listarUltimosRegistrados(int limite) {
+
+        List<Turista> turistas = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                id_turista,
+                nombre,
+                apellido,
+                id_tipo_documento,
+                numero_documento,
+                fecha_nacimiento,
+                id_provincia,
+                id_pais,
+                telefono,
+                email,
+                observaciones,
+                fecha_registro,
+                activo
+            FROM turistas
+            WHERE activo = TRUE
+            ORDER BY fecha_registro DESC
+            LIMIT ?
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql)) {
+
+            statement.setInt(1, limite);
+
+            try (ResultSet resultado = statement.executeQuery()) {
+
+                while (resultado.next()) {
+
+                    turistas.add(convertirTurista(resultado));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return turistas;
+    }
+
     // METODO AUXILIAR:
 
     private Turista convertirTurista(ResultSet resultado) throws SQLException {

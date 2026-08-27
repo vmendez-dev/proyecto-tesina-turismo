@@ -9,6 +9,7 @@ import com.example.sistema_municipalidad.model.Turista;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import java.io.IOException;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class TuristasController {
@@ -55,6 +57,16 @@ public class TuristasController {
     @FXML private TableColumn<Turista, String> columnaEmail;
     @FXML private TableColumn<Turista, Void> columnaAcciones;   // Void xq no mapea un dato de texto directo
 
+    // Tabla últimos turistas registrados
+    @FXML private TableView<Turista> tablaUltimosTuristas;
+    @FXML private TableColumn<Turista, String> colUltimoNombre;
+    @FXML private TableColumn<Turista, String> colUltimoApellido;
+    @FXML private TableColumn<Turista, String> colUltimoDocumento;
+    @FXML private TableColumn<Turista, String> colUltimaProcedencia;
+    @FXML private TableColumn<Turista, String> colUltimoPais;
+    @FXML private TableColumn<Turista, String> colUltimaFecha;
+    @FXML private TableColumn<Turista, Void> colUltimasAcciones;
+
     private final TuristaDAO turistaDAO = new TuristaDAO();
     private final PaisDAO paisDAO = new PaisDAO();
     private final ProvinciaDAO provinciaDAO = new ProvinciaDAO();
@@ -78,10 +90,12 @@ public class TuristasController {
         actualizarDashboardTuristas();
         cargarListaPaises();
         cargarMesActual();
+        cargarUltimosTuristas();
 
         configurarBusqueda();
         configurarFiltros();
         configurarLimpiarFiltros();
+        configurarAccionesUltimosTuristas();
 
     }
 
@@ -110,11 +124,17 @@ public class TuristasController {
 
     private void configurarColumnas() {
 
+        //Primera tabla:
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         columnaDocumento.setCellValueFactory(new PropertyValueFactory<>("numeroDocumento"));
         columnaTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         columnaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        //Segunda tabla (últimos turistas):
+        colUltimoNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colUltimoApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        colUltimoDocumento.setCellValueFactory(new PropertyValueFactory<>("numeroDocumento"));
 
         // PROCEDENCIA:
         columnaProcedencia.setCellValueFactory(
@@ -126,6 +146,18 @@ public class TuristasController {
                             nombreProvincia != null
                                     ? nombreProvincia
                                     : ""
+                    );
+                }
+        );
+        colUltimaProcedencia.setCellValueFactory(
+                turista -> {
+                    Integer idProvincia = turista.getValue().getIdProvincia();
+                    String nombreProvincia = provincias.get(idProvincia);
+
+                    return new SimpleStringProperty(
+                            nombreProvincia != null
+                                    ? nombreProvincia
+                                    : "-"
                     );
                 }
         );
@@ -143,6 +175,36 @@ public class TuristasController {
                     );
                 }
         );
+        colUltimoPais.setCellValueFactory(
+                turista -> {
+                    Integer idPais = turista.getValue().getIdPais();
+                    String nombrePais = paises.get(idPais);
+
+                    return new SimpleStringProperty(
+                            nombrePais != null
+                                    ? nombrePais
+                                    : "-"
+                    );
+                }
+        );
+
+        //FECHA:
+        colUltimaFecha.setCellValueFactory(
+                turista -> {
+                    LocalDate fecha = turista.getValue().getFechaRegistro();
+
+                    String textoFecha =
+                            fecha != null
+                                    ? fecha.format(
+                                    DateTimeFormatter.ofPattern(
+                                            "dd/MM/yyyy"
+                                    )
+                            )
+                                    : "-";
+
+                    return new SimpleStringProperty(textoFecha);
+                }
+        );
     }
 
     private void cargarTuristas() {
@@ -150,11 +212,18 @@ public class TuristasController {
         tablaTuristas.getItems().setAll(lista);
         actualizarTabla(lista);
     }
+
+    private void cargarUltimosTuristas() {
+        List<Turista> turistas = turistaDAO.listarUltimosRegistrados(5);
+        tablaUltimosTuristas.getItems().setAll(turistas);
+    }
+
     private void actualizarDashboardTuristas() {
 
         cargarTuristas();
         cargarEstadisticas();
         cargarListaPaises();
+        cargarUltimosTuristas();
     }
 
 
@@ -197,33 +266,7 @@ public class TuristasController {
                 btnVer.setOnAction(event -> {
 
                     Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-
-                    try {
-                        FXMLLoader loader = new FXMLLoader(
-                                getClass().getResource(
-                                        "/com/example/sistema_municipalidad/consulta-turista-view.fxml"
-                                )
-                        );
-
-                        Scene scene = new Scene(loader.load());
-                        ConsultaTuristaController controller = loader.getController();
-
-                        String nombreProvincia = provincias.get(turistaSeleccionado.getIdProvincia());
-                        String nombrePais = paises.get(turistaSeleccionado.getIdPais());
-
-                        controller.setTurista(turistaSeleccionado, nombreProvincia, nombrePais);
-
-                        Stage ventana = new Stage();
-
-                        ventana.setTitle("Consultar turista");
-                        ventana.setScene(scene);
-                        ventana.initModality(Modality.APPLICATION_MODAL);
-                        ventana.showAndWait();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("Error al abrir consulta-turista-view.fxml");
-                    }
+                    abrirConsultaTurista(turistaSeleccionado);
                 });
 
                 btnEditar.setOnAction(event -> {
@@ -320,6 +363,34 @@ public class TuristasController {
                 }
             }
         });
+    }
+
+    private void configurarAccionesUltimosTuristas() {
+
+        colUltimasAcciones.setCellFactory(param ->
+                new TableCell<>() {
+                    private final Button btnVer = new Button();
+                    {
+                        btnVer.setGraphic(crearIcono("/icons/consulta.png", 20, 20));
+                        btnVer.setPrefSize(40, 40);
+                        btnVer.getStyleClass().addAll("boton-accion", "boton-ver");
+                        btnVer.setOnAction(event -> {
+                            Turista turista = getTableView().getItems().get(getIndex());
+                            abrirConsultaTurista(turista);
+                        });
+                    }
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnVer);
+                        }
+                    }
+                }
+        );
     }
 
     private void configurarBusqueda() {
@@ -450,6 +521,36 @@ public class TuristasController {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error al abrir formulario-turista-view.fxml");
+        }
+    }
+
+    private void abrirConsultaTurista(Turista turistaSeleccionado) {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/com/example/sistema_municipalidad/consulta-turista-view.fxml"
+                    )
+            );
+
+            Scene scene = new Scene(loader.load());
+            ConsultaTuristaController controller = loader.getController();
+
+            String nombreProvincia = provincias.get(turistaSeleccionado.getIdProvincia());
+            String nombrePais = paises.get(turistaSeleccionado.getIdPais());
+
+            controller.setTurista(turistaSeleccionado, nombreProvincia, nombrePais);
+
+            Stage ventana = new Stage();
+
+            ventana.setTitle("Consultar turista");
+            ventana.setScene(scene);
+            ventana.initModality(Modality.APPLICATION_MODAL);
+            ventana.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
