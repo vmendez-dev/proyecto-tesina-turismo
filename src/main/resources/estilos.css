@@ -144,3 +144,56 @@
     -fx-padding: 2.5px 3.5px; /* Controla el tamaño de la 'V' */
 }
 
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #E5E7EB;
+    -fx-border-radius: 10;
+}
+
+/* Encabezado */
+.table-view .column-header-background {
+    -fx-background-color: #D9EEF8;
+}
+
+.table-view .column-header {
+    -fx-background-color: #D9EEF8;
+    -fx-border-color: transparent transparent #C8E3EE transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #164E70;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+/* Filas */
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #EEF1F4 transparent;
+}
+
+/* Alternar color de filas */
+.table-view .table-row-cell:odd {
+    -fx-background-color: #FAFCFD;
+}
+
+/* Cuando pasás el mouse */
+.table-view .table-row-cell:hover {
+    -fx-background-color: #F0F7FA;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 5px;
+    -fx-text-fill: #374151;
+    -fx-alignment: CENTER;
+}
+
+/* Selección */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #DCEFF8;
+    -fx-text-fill: #163A4D;
+}
+
+

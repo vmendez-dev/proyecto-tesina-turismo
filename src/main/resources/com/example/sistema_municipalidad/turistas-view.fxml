@@ -13,30 +13,29 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
    <content>
       <AnchorPane prefHeight="1100.0" prefWidth="967.0" style="-fx-background-color: #F4F6F8;" stylesheets="@../../../estilos.css">
          <children>
             <AnchorPane layoutX="31.0" layoutY="114.0" prefHeight="306.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TableView fx:id="tablaTuristas" layoutX="20.0" layoutY="20.0" prefHeight="245.0" prefWidth="851.0" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="20.0">
+                  <TableView fx:id="tablaTuristas" layoutX="20.0" layoutY="20.0" prefHeight="245.0" prefWidth="872.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
                     <columns>
                       <TableColumn fx:id="columnaNombre" prefWidth="88.0" text="Nombre" />
                       <TableColumn fx:id="columnaApellido" prefWidth="93.0" text="Apellido" />
-                        <TableColumn fx:id="columnaDocumento" prefWidth="88.0" text="Documento" />
-                        <TableColumn fx:id="columnaProcedencia" prefWidth="95.0" text="Procedencia" />
-                        <TableColumn fx:id="columnaPais" prefWidth="79.0" text="País" />
-                        <TableColumn fx:id="columnaTelefono" prefWidth="104.0" text="Teléfono" />
-                        <TableColumn fx:id="columnaEmail" prefWidth="149.0" text="Email" />
-                        <TableColumn fx:id="columnaAcciones" prefWidth="143.0" text="Acciones" />
+                        <TableColumn fx:id="columnaDocumento" prefWidth="96.0" text="Documento" />
+                        <TableColumn fx:id="columnaProcedencia" prefWidth="102.0" text="Procedencia" />
+                        <TableColumn fx:id="columnaPais" prefWidth="106.0" text="País" />
+                        <TableColumn fx:id="columnaTelefono" prefWidth="94.0" text="Teléfono" />
+                        <TableColumn fx:id="columnaEmail" prefWidth="144.0" text="Email" />
+                        <TableColumn fx:id="columnaAcciones" prefWidth="147.0" text="Acciones" />
                     </columns>
                   </TableView>
                </children>
             </AnchorPane>
             <AnchorPane layoutX="31.0" layoutY="19.0" prefHeight="76.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TextField fx:id="txtBuscar" layoutX="15.0" layoutY="23.0" prefHeight="33.0" prefWidth="226.0" promptText="Buscar turista...">
+                  <TextField fx:id="txtBuscar" layoutX="15.0" layoutY="23.0" prefHeight="33.0" prefWidth="226.0" promptText="🔍 Buscar turista...">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
@@ -77,7 +76,7 @@
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblTotalTuristas" layoutX="48.0" layoutY="38.0" text="125" textFill="#14579a">
+                  <Label fx:id="lblTotalTuristas" layoutX="48.0" layoutY="38.0" text="0" textFill="#14579a">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
@@ -96,7 +95,7 @@
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblRegistradosMes" layoutX="38.0" layoutY="41.0" text="18" textFill="#319e78">
+                  <Label fx:id="lblRegistradosMes" layoutX="38.0" layoutY="41.0" text="0" textFill="#319e78">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
@@ -115,7 +114,7 @@
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblProcedenciasDistintas" layoutX="25.0" layoutY="42.0" text="12" textFill="#7755ab">
+                  <Label fx:id="lblProcedenciasDistintas" layoutX="25.0" layoutY="42.0" text="0" textFill="#7755ab">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
@@ -134,7 +133,7 @@
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblPaisesDistintos" layoutX="24.0" layoutY="42.0" text="3" textFill="#d39b42">
+                  <Label fx:id="lblPaisesDistintos" layoutX="24.0" layoutY="42.0" text="0" textFill="#d39b42">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
@@ -148,15 +147,15 @@
             </AnchorPane>
             <AnchorPane layoutX="32.0" layoutY="605.0" prefHeight="351.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="257.0" prefWidth="867.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="59.0">
+                  <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="257.0" prefWidth="867.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="59.0">
                      <columns>
-                        <TableColumn fx:id="colUltimoNombre" prefWidth="133.0" text="Nombre" />
-                        <TableColumn fx:id="colUltimoApellido" prefWidth="129.0" text="Apellido" />
-                        <TableColumn fx:id="colUltimoDocumento" minWidth="9.0" prefWidth="129.0" text="Documento" />
-                        <TableColumn fx:id="colUltimaProcedencia" minWidth="0.0" prefWidth="132.0" text="Procedencia" />
-                        <TableColumn fx:id="colUltimoPais" prefWidth="117.0" text="País" />
-                        <TableColumn fx:id="colUltimaFecha" prefWidth="160.0" text="Fecha de registro" />
-                        <TableColumn fx:id="colUltimasAcciones" prefWidth="59.0" text="Acciones" />
+                        <TableColumn fx:id="colUltimoNombre" prefWidth="128.0" text="Nombre" />
+                        <TableColumn fx:id="colUltimoApellido" prefWidth="117.0" text="Apellido" />
+                        <TableColumn fx:id="colUltimoDocumento" minWidth="9.0" prefWidth="138.0" text="Documento" />
+                        <TableColumn fx:id="colUltimaProcedencia" minWidth="0.0" prefWidth="125.0" text="Procedencia" />
+                        <TableColumn fx:id="colUltimoPais" prefWidth="122.0" text="País" />
+                        <TableColumn fx:id="colUltimaFecha" prefWidth="135.0" text="Fecha de registro" />
+                        <TableColumn fx:id="colUltimasAcciones" prefWidth="94.0" text="Acciones" />
                      </columns>
                   </TableView>
                   <Label layoutX="65.0" layoutY="21.0" text="Últimos turistas registrados" textFill="#566fa1">
