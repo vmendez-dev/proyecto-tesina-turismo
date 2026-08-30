@@ -53,13 +53,20 @@ public class FormTuristaController {
         // Cuando se seleccione un país,
         // se cargarán sus provincias.
         cmbPais.setOnAction(event -> cargarProvincias());
+
+        // Validar teléfono mientras el usuario escribe
+        txtTelefono.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\+?[0-9]*")) {
+                txtTelefono.setText(oldValue);
+            }
+        });
     }
 
     public void setTurista(Turista turista) {
 
         this.turistaEdicion = turista;
 
-        // Si es null, estamos registrando.
+        //Si el objeto es null, estamos registrando a un turista.
         if (turista == null) {
             limpiarFormulario();
             return;
@@ -70,7 +77,7 @@ public class FormTuristaController {
                 "Modificar turista",
                 "Edite los datos del turista seleccionado",
                 "Guardar cambios",
-                "/com/example/sistema_municipalidad/icons/modificar.png"
+                "/icons/modificar.png"
         );
 
         cargarDatosTurista(turista);
@@ -118,7 +125,13 @@ public class FormTuristaController {
 
         // Se comprueba documento duplicado:
         int idTipoDocumento = cmbTipoDocumento.getValue().getIdTipoDocumento();
+
         String numeroDocumento = txtNumeroDocumento.getText().trim();
+
+        String telefono = txtTelefono.getText().trim();
+        if (telefono.startsWith("+")) {
+            telefono = telefono.substring(1);
+        }
 
         if (turistaEdicion == null) {
 
@@ -139,6 +152,7 @@ public class FormTuristaController {
             }
         }
 
+
         // OBTENER VALORES DE LOS COMBOBOX:
 
         TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
@@ -158,7 +172,7 @@ public class FormTuristaController {
                 dateFechaNacimiento.getValue(),
                 idProvincia,
                 pais.getIdPais(),
-                txtTelefono.getText().trim(),
+                telefono,
                 txtEmail.getText().trim(),
                 txtObservaciones.getText().trim()
         );
@@ -304,12 +318,19 @@ public class FormTuristaController {
             return false;
         }
 
-
         String telefono = txtTelefono.getText().trim();
-        if (telefono.length() > 30) {
-            mostrarError("El teléfono no puede superar los 30 caracteres.");
-            txtTelefono.requestFocus();
-            return false;
+
+        if (!telefono.isEmpty()) {
+            if (!telefono.matches("\\+?[0-9]+")) {
+                mostrarError("El teléfono solo puede contener números y un signo '+' al comienzo.");
+                txtTelefono.requestFocus();
+                return false;
+            }
+            if (telefono.length() > 30) {
+                mostrarError("El teléfono no puede superar los 30 caracteres.");
+                txtTelefono.requestFocus();
+                return false;
+            }
         }
 
         String email = txtEmail.getText().trim();
