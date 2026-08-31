@@ -15,7 +15,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.DashboardController">
    <children>
-      <BorderPane prefHeight="850.0" prefWidth="1200.0">
+      <BorderPane prefHeight="850.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
             <VBox prefHeight="765.0" prefWidth="188.0" style="-fx-background-color: #DBE8F2;" BorderPane.alignment="CENTER">
                <children>
@@ -257,7 +257,7 @@
          <center>
             <VBox prefHeight="767.0" prefWidth="919.0" BorderPane.alignment="CENTER">
                <children>
-                  <BorderPane prefHeight="854.0" prefWidth="919.0">
+                  <BorderPane>
                      <center>
                         <AnchorPane fx:id="panelContenido" prefHeight="754.0" prefWidth="919.0" BorderPane.alignment="CENTER" />
                      </center>

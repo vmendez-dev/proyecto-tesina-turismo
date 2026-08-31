@@ -13,38 +13,38 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="1001.0" prefWidth="1175.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
    <content>
-      <AnchorPane prefHeight="1100.0" prefWidth="967.0" style="-fx-background-color: #F4F6F8;" stylesheets="@../../../estilos.css">
+      <AnchorPane style="-fx-background-color: #F4F6F8;" stylesheets="@../../../estilos.css">
          <children>
-            <AnchorPane layoutX="31.0" layoutY="114.0" prefHeight="306.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="31.0" layoutY="114.0" prefHeight="306.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TableView fx:id="tablaTuristas" layoutX="20.0" layoutY="20.0" prefHeight="245.0" prefWidth="872.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
+                  <TableView fx:id="tablaTuristas" layoutX="31.0" layoutY="22.0" prefHeight="245.0" prefWidth="993.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="39.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="67.0" AnchorPane.topAnchor="22.0">
                     <columns>
-                      <TableColumn fx:id="columnaNombre" prefWidth="88.0" text="Nombre" />
-                      <TableColumn fx:id="columnaApellido" prefWidth="93.0" text="Apellido" />
-                        <TableColumn fx:id="columnaDocumento" prefWidth="96.0" text="Documento" />
-                        <TableColumn fx:id="columnaProcedencia" prefWidth="102.0" text="Procedencia" />
-                        <TableColumn fx:id="columnaPais" prefWidth="106.0" text="País" />
-                        <TableColumn fx:id="columnaTelefono" prefWidth="94.0" text="Teléfono" />
+                      <TableColumn fx:id="columnaNombre" prefWidth="122.0" text="Nombre" />
+                      <TableColumn fx:id="columnaApellido" prefWidth="114.0" text="Apellido" />
+                        <TableColumn fx:id="columnaDocumento" prefWidth="111.0" text="Documento" />
+                        <TableColumn fx:id="columnaProcedencia" prefWidth="119.0" text="Procedencia" />
+                        <TableColumn fx:id="columnaPais" prefWidth="127.0" text="País" />
+                        <TableColumn fx:id="columnaTelefono" prefWidth="118.0" text="Teléfono" />
                         <TableColumn fx:id="columnaEmail" prefWidth="144.0" text="Email" />
-                        <TableColumn fx:id="columnaAcciones" prefWidth="147.0" text="Acciones" />
+                        <TableColumn fx:id="columnaAcciones" prefWidth="135.0" text="Acciones" />
                     </columns>
                   </TableView>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="31.0" layoutY="19.0" prefHeight="76.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="31.0" layoutY="19.0" prefHeight="76.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TextField fx:id="txtBuscar" layoutX="15.0" layoutY="23.0" prefHeight="33.0" prefWidth="226.0" promptText="🔍 Buscar turista...">
+                  <TextField fx:id="txtBuscar" layoutX="36.0" layoutY="23.0" prefHeight="33.0" prefWidth="279.0" promptText="🔍 Buscar turista...">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
                   </TextField>
-                  <JFXComboBox fx:id="comboPais" layoutX="260.0" layoutY="23.0" prefHeight="33.0" prefWidth="166.0" promptText="Todos" styleClass="jfx-combo-box" />
-                  <Label layoutX="270.0" layoutY="4.0" text="País" />
-                  <JFXComboBox fx:id="comboProcedencia" layoutX="444.0" layoutY="23.0" prefHeight="33.0" prefWidth="166.0" promptText="Todas" />
-                  <Label layoutX="452.0" layoutY="4.0" text="Procedencia" />
-                  <JFXButton layoutX="697.0" layoutY="17.0" onAction="#abrirFormularioTurista" prefHeight="40.0" prefWidth="173.0" style="-fx-background-color: #1281DF;" text=" Registrar Turista" textFill="WHITE">
+                  <JFXComboBox fx:id="comboPais" layoutX="378.0" layoutY="23.0" prefHeight="33.0" prefWidth="166.0" promptText="Todos" styleClass="jfx-combo-box" />
+                  <Label layoutX="388.0" layoutY="4.0" text="País" />
+                  <JFXComboBox fx:id="comboProcedencia" layoutX="580.0" layoutY="23.0" prefHeight="33.0" prefWidth="166.0" promptText="Todas" />
+                  <Label layoutX="588.0" layoutY="4.0" text="Procedencia" />
+                  <JFXButton layoutX="842.0" layoutY="18.0" onAction="#abrirFormularioTurista" prefHeight="40.0" prefWidth="173.0" style="-fx-background-color: #1281DF;" text=" Registrar Turista" textFill="WHITE">
                      <font>
                         <Font name="Verdana Bold" size="12.0" />
                      </font>
@@ -62,52 +62,52 @@
                         </Label>
                      </graphic>
                   </JFXButton>
-                  <ImageView fx:id="imgLimpiarFiltros" fitHeight="33.0" fitWidth="37.0" layoutX="613.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgLimpiarFiltros" fitHeight="33.0" fitWidth="37.0" layoutX="754.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../../icons/clean.png" />
                      </image>
                   </ImageView>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="31.0" layoutY="445.0" prefHeight="118.0" prefWidth="213.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="32.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <Label layoutX="50.0" layoutY="14.0" text="Total de turistas" textFill="#637cb0">
+                  <Label layoutX="37.0" layoutY="14.0" text="Total de turistas" textFill="#637cb0">
                      <font>
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblTotalTuristas" layoutX="48.0" layoutY="38.0" text="0" textFill="#14579a">
+                  <Label fx:id="lblTotalTuristas" layoutX="35.0" layoutY="38.0" text="0" textFill="#14579a">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
                   </Label>
-                  <Label layoutX="49.0" layoutY="77.0" text="Turistas registrados" textFill="#889dbc">
+                  <Label layoutX="36.0" layoutY="77.0" text="Turistas registrados" textFill="#889dbc">
                      <font>
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="265.0" layoutY="445.0" prefHeight="118.0" prefWidth="213.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="314.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <Label layoutX="40.0" layoutY="17.0" text="Registrados este mes" textFill="#637cb0">
+                  <Label layoutX="31.0" layoutY="17.0" text="Registrados este mes" textFill="#637cb0">
                      <font>
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblRegistradosMes" layoutX="38.0" layoutY="41.0" text="0" textFill="#319e78">
+                  <Label fx:id="lblRegistradosMes" layoutX="29.0" layoutY="41.0" text="0" textFill="#319e78">
                      <font>
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblMesActual" layoutX="39.0" layoutY="80.0" text="Durante agosto 2026" textFill="#889dbc">
+                  <Label fx:id="lblMesActual" layoutX="30.0" layoutY="80.0" prefHeight="16.0" prefWidth="204.0" text="Durante agosto 2026" textFill="#889dbc">
                      <font>
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="493.0" layoutY="445.0" prefHeight="118.0" prefWidth="213.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="596.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="27.0" layoutY="18.0" text="Procedencias distintas" textFill="#637cb0">
                      <font>
@@ -126,7 +126,7 @@
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="721.0" layoutY="445.0" prefHeight="118.0" prefWidth="213.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="878.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="26.0" layoutY="18.0" text="Países distintos" textFill="#637cb0">
                      <font>
@@ -138,24 +138,24 @@
                         <Font name="Verdana Bold" size="25.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblListaPaises" layoutX="25.0" layoutY="81.0" prefHeight="16.0" prefWidth="178.0" text="Argentina, Brasil, Chile" textFill="#889dbc">
+                  <Label fx:id="lblListaPaises" layoutX="25.0" layoutY="81.0" prefHeight="16.0" prefWidth="210.0" text="Argentina, Brasil, Chile" textFill="#889dbc">
                      <font>
                         <Font name="Verdana Bold" size="13.0" />
                      </font>
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="32.0" layoutY="605.0" prefHeight="351.0" prefWidth="902.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="32.0" layoutY="605.0" prefHeight="343.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
-                  <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="257.0" prefWidth="867.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="59.0">
+                  <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="259.0" prefWidth="995.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="76.0" AnchorPane.topAnchor="59.0">
                      <columns>
-                        <TableColumn fx:id="colUltimoNombre" prefWidth="128.0" text="Nombre" />
-                        <TableColumn fx:id="colUltimoApellido" prefWidth="117.0" text="Apellido" />
-                        <TableColumn fx:id="colUltimoDocumento" minWidth="9.0" prefWidth="138.0" text="Documento" />
-                        <TableColumn fx:id="colUltimaProcedencia" minWidth="0.0" prefWidth="125.0" text="Procedencia" />
-                        <TableColumn fx:id="colUltimoPais" prefWidth="122.0" text="País" />
-                        <TableColumn fx:id="colUltimaFecha" prefWidth="135.0" text="Fecha de registro" />
-                        <TableColumn fx:id="colUltimasAcciones" prefWidth="94.0" text="Acciones" />
+                        <TableColumn fx:id="colUltimoNombre" prefWidth="141.0" text="Nombre" />
+                        <TableColumn fx:id="colUltimoApellido" prefWidth="141.0" text="Apellido" />
+                        <TableColumn fx:id="colUltimoDocumento" minWidth="9.0" prefWidth="151.0" text="Documento" />
+                        <TableColumn fx:id="colUltimaProcedencia" minWidth="0.0" prefWidth="169.0" text="Procedencia" />
+                        <TableColumn fx:id="colUltimoPais" prefWidth="139.0" text="País" />
+                        <TableColumn fx:id="colUltimaFecha" prefWidth="171.0" text="Fecha de registro" />
+                        <TableColumn fx:id="colUltimasAcciones" prefWidth="79.0" text="Acciones" />
                      </columns>
                   </TableView>
                   <Label layoutX="65.0" layoutY="21.0" text="Últimos turistas registrados" textFill="#566fa1">
