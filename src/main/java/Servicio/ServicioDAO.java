@@ -18,7 +18,7 @@ public class ServicioDAO {
     private Database db;
     private TableView<Servicio> table;
     private TextField txtSearch;
-    private ComboBox<String> cbEstado;
+    private ComboBox<String> cbTipo, cbEstado;
 
     public ServicioDAO() {
         this.db = Database.getInstance();
@@ -28,10 +28,10 @@ public class ServicioDAO {
         VBox container = new VBox(15);
         container.setPadding(new Insets(15));
 
-        Label lblTitle = new Label("🔧 Gestión de Servicios");
+        Label lblTitle = new Label("🚨 Gestión de Servicios de Seguridad y Emergencia");
         lblTitle.setFont(Font.font("System", FontWeight.BOLD, 22));
         lblTitle.setTextFill(Color.web("#0f172a"));
-        Label lblSubtitle = new Label("Listado de servicios turísticos complementarios");
+        Label lblSubtitle = new Label("Listado de servicios de seguridad y emergencia del municipio");
         lblSubtitle.setFont(Font.font("System", 13));
         lblSubtitle.setTextFill(Color.web("#64748b"));
 
@@ -58,6 +58,13 @@ public class ServicioDAO {
         txtSearch.setStyle("-fx-background-radius: 4; -fx-border-color: #cbd5e1; -fx-border-radius: 4; -fx-padding: 4 8; -fx-font-size: 12px;");
         txtSearch.textProperty().addListener((obs, old, val) -> filtrar());
 
+        cbTipo = new ComboBox<>();
+        cbTipo.getItems().addAll("Todos", "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica");
+        cbTipo.getSelectionModel().selectFirst();
+        cbTipo.setPrefWidth(120);
+        cbTipo.setStyle("-fx-font-size: 12px;");
+        cbTipo.setOnAction(e -> filtrar());
+
         cbEstado = new ComboBox<>();
         cbEstado.getItems().addAll("Todos", "Activo", "Inactivo");
         cbEstado.getSelectionModel().selectFirst();
@@ -72,30 +79,59 @@ public class ServicioDAO {
         btnNuevo.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 4 12; -fx-font-size: 12px;");
         btnNuevo.setOnAction(e -> mostrarDialogoAlta());
 
-        filterBar.getChildren().addAll(txtSearch, new Label("Estado"), cbEstado, spacer, btnNuevo);
+        filterBar.getChildren().addAll(txtSearch, new Label("Tipo"), cbTipo, new Label("Estado"), cbEstado, spacer, btnNuevo);
 
         table = new TableView<>();
         table.setPrefHeight(280);
 
         TableColumn<Servicio, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c -> c.getValue().idProperty());
-        colId.setPrefWidth(70);
+        colId.setPrefWidth(60);
 
         TableColumn<Servicio, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
         colNombre.setPrefWidth(150);
 
-        TableColumn<Servicio, String> colDesc = new TableColumn<>("Descripción");
-        colDesc.setCellValueFactory(c -> c.getValue().descripcionProperty());
-        colDesc.setPrefWidth(180);
+        TableColumn<Servicio, String> colTipo = new TableColumn<>("Tipo");
+        colTipo.setCellValueFactory(c -> c.getValue().tipoProperty());
+        colTipo.setPrefWidth(120);
+        colTipo.setCellFactory(col -> new TableCell<Servicio, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    String color = switch (item) {
+                        case "Policía" -> "#1e40af";
+                        case "Bomberos" -> "#dc2626";
+                        case "Hospital" -> "#16a34a";
+                        case "Defensa Civil" -> "#f59e0b";
+                        case "Protección Civil" -> "#8b5cf6";
+                        default -> "#64748b";
+                    };
+                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-font-size: 12px;");
+                }
+            }
+        });
 
-        TableColumn<Servicio, String> colPrecio = new TableColumn<>("Precio");
-        colPrecio.setCellValueFactory(c -> c.getValue().precioProperty());
-        colPrecio.setPrefWidth(80);
+        TableColumn<Servicio, String> colDireccion = new TableColumn<>("Dirección");
+        colDireccion.setCellValueFactory(c -> c.getValue().direccionProperty());
+        colDireccion.setPrefWidth(180);
+
+        TableColumn<Servicio, String> colTelefono = new TableColumn<>("Teléfono");
+        colTelefono.setCellValueFactory(c -> c.getValue().telefonoProperty());
+        colTelefono.setPrefWidth(120);
+
+        TableColumn<Servicio, String> colHorario = new TableColumn<>("Horario");
+        colHorario.setCellValueFactory(c -> c.getValue().horarioProperty());
+        colHorario.setPrefWidth(100);
 
         TableColumn<Servicio, String> colEstado = new TableColumn<>("Estado");
         colEstado.setCellValueFactory(c -> c.getValue().estadoProperty());
-        colEstado.setPrefWidth(70);
+        colEstado.setPrefWidth(80);
         colEstado.setCellFactory(col -> new TableCell<Servicio, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -149,7 +185,7 @@ public class ServicioDAO {
             }
         });
 
-        table.getColumns().addAll(colId, colNombre, colDesc, colPrecio, colEstado, colAcciones);
+        table.getColumns().addAll(colId, colNombre, colTipo, colDireccion, colTelefono, colHorario, colEstado, colAcciones);
         table.setItems(db.getServicios());
 
         container.getChildren().addAll(filterBar, table);
@@ -158,15 +194,17 @@ public class ServicioDAO {
 
     private void filtrar() {
         String search = txtSearch.getText();
+        String tipo = cbTipo.getValue();
         String estado = cbEstado.getValue();
 
         ObservableList<Servicio> filtrados = FXCollections.observableArrayList();
         for (Servicio s : db.getServicios()) {
             boolean matchSearch = search.isEmpty() ||
                     s.getNombre().toLowerCase().contains(search.toLowerCase()) ||
-                    s.getDescripcion().toLowerCase().contains(search.toLowerCase());
+                    s.getDireccion().toLowerCase().contains(search.toLowerCase());
+            boolean matchTipo = tipo.equals("Todos") || s.getTipo().equals(tipo);
             boolean matchEstado = estado.equals("Todos") || s.getEstado().equals(estado);
-            if (matchSearch && matchEstado) {
+            if (matchSearch && matchTipo && matchEstado) {
                 filtrados.add(s);
             }
         }
@@ -175,7 +213,7 @@ public class ServicioDAO {
 
     private void mostrarDialogoAlta() {
         Dialog<Servicio> dialog = new Dialog<>();
-        dialog.setTitle("Nuevo Servicio");
+        dialog.setTitle("Nuevo Servicio de Emergencia");
         dialog.setHeaderText("Complete los datos");
 
         ButtonType guardarBtn = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
@@ -189,32 +227,49 @@ public class ServicioDAO {
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre");
         txtNombre.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField();
-        txtDesc.setPromptText("Descripción");
-        txtDesc.setStyle("-fx-font-size: 12px;");
-        TextField txtPrecio = new TextField();
-        txtPrecio.setPromptText("Precio");
-        txtPrecio.setStyle("-fx-font-size: 12px;");
+
+        ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList(
+                "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica"));
+        cbTipo.setValue("Policía");
+        cbTipo.setStyle("-fx-font-size: 12px;");
+
+        TextField txtDireccion = new TextField();
+        txtDireccion.setPromptText("Dirección");
+        txtDireccion.setStyle("-fx-font-size: 12px;");
+
+        TextField txtTelefono = new TextField();
+        txtTelefono.setPromptText("Teléfono");
+        txtTelefono.setStyle("-fx-font-size: 12px;");
+
+        TextField txtHorario = new TextField();
+        txtHorario.setPromptText("Horario (ej: 24h / 8-20hs)");
+        txtHorario.setStyle("-fx-font-size: 12px;");
+
         ComboBox<String> cbEstado = new ComboBox<>(FXCollections.observableArrayList("Activo", "Inactivo"));
         cbEstado.setValue("Activo");
         cbEstado.setStyle("-fx-font-size: 12px;");
 
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Descripción:"), 0, 1);
-        grid.add(txtDesc, 1, 1);
-        grid.add(new Label("Precio:"), 0, 2);
-        grid.add(txtPrecio, 1, 2);
-        grid.add(new Label("Estado:"), 0, 3);
-        grid.add(cbEstado, 1, 3);
+        grid.add(new Label("Tipo:"), 0, 1);
+        grid.add(cbTipo, 1, 1);
+        grid.add(new Label("Dirección:"), 0, 2);
+        grid.add(txtDireccion, 1, 2);
+        grid.add(new Label("Teléfono:"), 0, 3);
+        grid.add(txtTelefono, 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(txtHorario, 1, 4);
+        grid.add(new Label("Estado:"), 0, 5);
+        grid.add(cbEstado, 1, 5);
 
         dialog.getDialogPane().setContent(grid);
 
         dialog.setResultConverter(btn -> {
             if (btn == guardarBtn) {
                 String id = db.getNextServicioId();
-                return new Servicio(id, txtNombre.getText(), txtDesc.getText(),
-                        txtPrecio.getText(), cbEstado.getValue());
+                return new Servicio(id, txtNombre.getText(), cbTipo.getValue(),
+                        txtDireccion.getText(), txtTelefono.getText(), txtHorario.getText(),
+                        cbEstado.getValue());
             }
             return null;
         });
@@ -240,29 +295,45 @@ public class ServicioDAO {
 
         TextField txtNombre = new TextField(servicio.getNombre());
         txtNombre.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField(servicio.getDescripcion());
-        txtDesc.setStyle("-fx-font-size: 12px;");
-        TextField txtPrecio = new TextField(servicio.getPrecio());
-        txtPrecio.setStyle("-fx-font-size: 12px;");
+
+        ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList(
+                "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica"));
+        cbTipo.setValue(servicio.getTipo());
+        cbTipo.setStyle("-fx-font-size: 12px;");
+
+        TextField txtDireccion = new TextField(servicio.getDireccion());
+        txtDireccion.setStyle("-fx-font-size: 12px;");
+
+        TextField txtTelefono = new TextField(servicio.getTelefono());
+        txtTelefono.setStyle("-fx-font-size: 12px;");
+
+        TextField txtHorario = new TextField(servicio.getHorario());
+        txtHorario.setStyle("-fx-font-size: 12px;");
+
         ComboBox<String> cbEstado = new ComboBox<>(FXCollections.observableArrayList("Activo", "Inactivo"));
         cbEstado.setValue(servicio.getEstado());
         cbEstado.setStyle("-fx-font-size: 12px;");
 
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Descripción:"), 0, 1);
-        grid.add(txtDesc, 1, 1);
-        grid.add(new Label("Precio:"), 0, 2);
-        grid.add(txtPrecio, 1, 2);
-        grid.add(new Label("Estado:"), 0, 3);
-        grid.add(cbEstado, 1, 3);
+        grid.add(new Label("Tipo:"), 0, 1);
+        grid.add(cbTipo, 1, 1);
+        grid.add(new Label("Dirección:"), 0, 2);
+        grid.add(txtDireccion, 1, 2);
+        grid.add(new Label("Teléfono:"), 0, 3);
+        grid.add(txtTelefono, 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(txtHorario, 1, 4);
+        grid.add(new Label("Estado:"), 0, 5);
+        grid.add(cbEstado, 1, 5);
 
         dialog.getDialogPane().setContent(grid);
 
         dialog.setResultConverter(btn -> {
             if (btn == guardarBtn) {
-                return new Servicio(servicio.getId(), txtNombre.getText(), txtDesc.getText(),
-                        txtPrecio.getText(), cbEstado.getValue());
+                return new Servicio(servicio.getId(), txtNombre.getText(), cbTipo.getValue(),
+                        txtDireccion.getText(), txtTelefono.getText(), txtHorario.getText(),
+                        cbEstado.getValue());
             }
             return null;
         });

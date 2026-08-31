@@ -87,15 +87,18 @@ public class Database {
             gastronomiasMap.put(data[0], g);
         }
 
-        // SERVICIOS
+        // ===== SERVICIOS DE EMERGENCIA (con 7 parámetros) =====
         String[][] servicios = {
-                {"S001", "Guía Turístico", "Servicio de guía profesional", "$1500/h", "Activo"},
-                {"S002", "Transporte", "Traslados al aeropuerto", "$5000", "Activo"},
-                {"S003", "Fotógrafo", "Sesión fotográfica profesional", "$8000", "Inactivo"}
+                {"S001", "Comisaría N°1", "Policía", "Av. Principal 123", "101", "24h", "Activo"},
+                {"S002", "Cuartel de Bomberos Voluntarios", "Bomberos", "Calle del Fuego 456", "100", "24h", "Activo"},
+                {"S003", "Hospital Municipal", "Hospital", "Av. Salud 789", "107", "24h", "Activo"},
+                {"S004", "Defensa Civil", "Defensa Civil", "Calle de los Rescatistas 321", "103", "24h", "Activo"},
+                {"S005", "Protección Civil", "Protección Civil", "Av. Seguridad 654", "108", "24h", "Inactivo"},
+                {"S006", "Emergencias Médicas", "Emergencia Médica", "Calle Rápida 999", "911", "24h", "Activo"}
         };
 
         for (String[] data : servicios) {
-            Servicio s = new Servicio(data[0], data[1], data[2], data[3], data[4]);
+            Servicio s = new Servicio(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
             serviciosMap.put(data[0], s);
         }
 
