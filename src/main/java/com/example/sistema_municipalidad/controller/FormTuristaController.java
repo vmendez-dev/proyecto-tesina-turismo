@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -229,130 +230,114 @@ public class FormTuristaController {
     //
 
     private boolean validarCampos() {
+        List<String> errores = new ArrayList<>();
+        Control primerError = null;
 
-        String nombre = txtNombre.getText().trim();
-        if (nombre.isEmpty()) {
-            mostrarError("El nombre es obligatorio.");
-            txtNombre.requestFocus();
-            return false;
+        if (txtNombre.getText().trim().isEmpty()) {
+            errores.add("El campo 'Nombre' es obligatorio.");
+            if (primerError == null) primerError = txtNombre;
         }
 
-        String apellido = txtApellido.getText().trim();
-        if (apellido.isEmpty()) {
-            mostrarError("El apellido es obligatorio.");
-            txtApellido.requestFocus();
-            return false;
+        if (txtApellido.getText().trim().isEmpty()) {
+            errores.add("El campo 'Apellido' es obligatorio.");
+            if (primerError == null) primerError = txtApellido;
         }
-
 
         if (cmbTipoDocumento.getValue() == null) {
-            mostrarError("Debe seleccionar un tipo de documento.");
-            cmbTipoDocumento.requestFocus();
-            return false;
+            errores.add("Debe seleccionar un 'Tipo de documento'.");
+            if (primerError == null) primerError = cmbTipoDocumento;
         }
 
         String numeroDocumento = txtNumeroDocumento.getText().trim();
         if (numeroDocumento.isEmpty()) {
-            mostrarError("El número de documento es obligatorio.");
-            txtNumeroDocumento.requestFocus();
-            return false;
-        }
-
-        String numeroDocumentoLimpio = numeroDocumento.replaceAll("[^A-Za-z0-9]", "");
-        txtNumeroDocumento.setText(numeroDocumentoLimpio);
-
-        String nombreTipoDocumento = cmbTipoDocumento.getValue().getNombreTipo();
-        if (nombreTipoDocumento == null) {
-            nombreTipoDocumento = "";
-        }
-        nombreTipoDocumento = nombreTipoDocumento.toUpperCase(Locale.ROOT);
-
-        boolean documentoValido;
-        String mensajeDocumentoInvalido;
-
-        if (nombreTipoDocumento.contains("DNI")) {
-            documentoValido = numeroDocumentoLimpio.matches("^\\d{7,9}$");
-            mensajeDocumentoInvalido = "El DNI debe contener entre 7 y 9 dígitos.";
-        } else if (nombreTipoDocumento.contains("PASAPORTE")) {
-            documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{6,15}$");
-            mensajeDocumentoInvalido = "El pasaporte debe ser alfanumérico y tener entre 6 y 15 caracteres.";
+            errores.add("El campo 'Documento' es obligatorio.");
+            if (primerError == null) primerError = txtNumeroDocumento;
         } else {
-            documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{5,20}$");
-            mensajeDocumentoInvalido = "El número de documento debe tener entre 5 y 20 caracteres alfanuméricos.";
-        }
+            String numeroDocumentoLimpio = numeroDocumento.replaceAll("[^A-Za-z0-9]", "");
+            txtNumeroDocumento.setText(numeroDocumentoLimpio);
 
-        if (!documentoValido) {
-            mostrarError(mensajeDocumentoInvalido);
-            txtNumeroDocumento.requestFocus();
-            return false;
-        }
+            String nombreTipoDocumento = cmbTipoDocumento.getValue() != null
+                    ? cmbTipoDocumento.getValue().getNombreTipo() : "";
+            if (nombreTipoDocumento == null) {
+                nombreTipoDocumento = "";
+            }
+            nombreTipoDocumento = nombreTipoDocumento.toUpperCase(Locale.ROOT);
 
+            boolean documentoValido;
+            String mensajeDocumentoInvalido;
+
+            if (nombreTipoDocumento.contains("DNI")) {
+                documentoValido = numeroDocumentoLimpio.matches("^\\d{7,9}$");
+                mensajeDocumentoInvalido = "El DNI debe contener entre 7 y 9 dígitos.";
+            } else if (nombreTipoDocumento.contains("PASAPORTE")) {
+                documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{6,15}$");
+                mensajeDocumentoInvalido = "El pasaporte debe ser alfanumérico y tener entre 6 y 15 caracteres.";
+            } else {
+                documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{5,20}$");
+                mensajeDocumentoInvalido = "El número de documento debe tener entre 5 y 20 caracteres alfanuméricos.";
+            }
+
+            if (!documentoValido) {
+                errores.add(mensajeDocumentoInvalido);
+                if (primerError == null) primerError = txtNumeroDocumento;
+            }
+        }
 
         LocalDate fechaNacimiento = dateFechaNacimiento.getValue();
-        if (fechaNacimiento != null && fechaNacimiento.isAfter(LocalDate.now())) {
-            mostrarError("La fecha de nacimiento no puede ser futura.");
-            dateFechaNacimiento.requestFocus();
-            return false;
+        if (fechaNacimiento == null) {
+            errores.add("Debe seleccionar una 'Fecha de nacimiento'.");
+            if (primerError == null) primerError = dateFechaNacimiento;
+        } else if (fechaNacimiento.isAfter(LocalDate.now())) {
+            errores.add("La fecha de nacimiento no puede ser futura.");
+            if (primerError == null) primerError = dateFechaNacimiento;
         }
-
 
         if (cmbPais.getValue() == null) {
-            mostrarError("Debe seleccionar un país.");
-            cmbPais.requestFocus();
-            return false;
+            errores.add("Debe seleccionar un 'País'.");
+            if (primerError == null) primerError = cmbPais;
         }
-
 
         Pais paisSeleccionado = cmbPais.getValue();
-        if (paisSeleccionado == null) {
-            mostrarError("Debe seleccionar un país.");
-            cmbPais.requestFocus();
-            return false;
-        }
-
-        if (paisSeleccionado.getNombrePais().equalsIgnoreCase("Argentina")
-                && cmbProcedencia.getValue() == null) {     //solo es obligatorio si el país es Argentina
-
-            mostrarError("Debe seleccionar una procedencia para Argentina.");
-            cmbProcedencia.requestFocus();
-            return false;
+        if (paisSeleccionado != null
+                && paisSeleccionado.getNombrePais().equalsIgnoreCase("Argentina")
+                && cmbProcedencia.getValue() == null) {
+            errores.add("Para turistas argentinos, debe seleccionar la 'Procedencia' (Provincia).");
+            if (primerError == null) primerError = cmbProcedencia;
         }
 
         String telefono = txtTelefono.getText().trim();
-
         if (!telefono.isEmpty()) {
             if (!telefono.matches("\\+?[0-9]+")) {
-                mostrarError("El teléfono solo puede contener números y un signo '+' al comienzo.");
-                txtTelefono.requestFocus();
-                return false;
-            }
-            if (telefono.length() > 30) {
-                mostrarError("El teléfono no puede superar los 30 caracteres.");
-                txtTelefono.requestFocus();
-                return false;
+                errores.add("El teléfono solo puede contener números y un signo '+' al comienzo.");
+                if (primerError == null) primerError = txtTelefono;
+            } else if (telefono.length() > 30) {
+                errores.add("El teléfono no puede superar los 30 caracteres.");
+                if (primerError == null) primerError = txtTelefono;
             }
         }
 
         String email = txtEmail.getText().trim();
         if (!email.isEmpty()) {
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-
-                mostrarError("El email no tiene un formato válido.");
-                txtEmail.requestFocus();
-                return false;
-            }
-            if (email.length() > 100) {
-
-                mostrarError("El email no puede superar los 100 caracteres.");
-                txtEmail.requestFocus();
-                return false;
+                errores.add("El email no tiene un formato válido.");
+                if (primerError == null) primerError = txtEmail;
+            } else if (email.length() > 100) {
+                errores.add("El email no puede superar los 100 caracteres.");
+                if (primerError == null) primerError = txtEmail;
             }
         }
 
         String observaciones = txtObservaciones.getText().trim();
-        if (observaciones.length() > 100) {
-            mostrarError("Las observaciones son demasiado extensas.");
-            txtObservaciones.requestFocus();
+        if (observaciones.length() > 500) {
+            errores.add("Las observaciones son demasiado extensas.");
+            if (primerError == null) primerError = txtObservaciones;
+        }
+
+        if (!errores.isEmpty()) {
+            mostrarError(String.join("\n", errores));
+            if (primerError != null) {
+                primerError.requestFocus();
+            }
             return false;
         }
 
