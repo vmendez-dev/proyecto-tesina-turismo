@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -290,6 +291,14 @@ public class FormTuristaController {
         } else if (fechaNacimiento.isAfter(LocalDate.now())) {
             errores.add("La fecha de nacimiento no puede ser futura.");
             if (primerError == null) primerError = dateFechaNacimiento;
+        } else {
+            // --- NUEVA REGLA DE NEGOCIO: TURISTA MAYOR DE EDAD ---
+            // Se calculan los años exactos entre la fecha de nacimiento y hoy
+            int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
+            if (edad < 18) {
+                errores.add("El turista debe ser mayor de edad (tiene " + edad + " años).");
+                if (primerError == null) primerError = dateFechaNacimiento;
+            }
         }
 
         if (cmbPais.getValue() == null) {
