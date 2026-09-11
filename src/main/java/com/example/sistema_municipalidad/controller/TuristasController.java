@@ -74,12 +74,6 @@ public class TuristasController {
     private final Map<Integer, String> paises = new HashMap<>();
     private final Map<Integer, String> provincias = new HashMap<>();
 
-    // Paginación
-    @FXML private Pagination paginador;
-    @FXML private Label lblMostrando;
-    private final int filasPorPagina = 5;
-    private List<Turista> listaActualTuristas = new ArrayList<>(); // Guarda la lista filtrada completa
-
     @FXML
     private void initialize() {
         cargarPaises();
@@ -102,13 +96,6 @@ public class TuristasController {
         configurarFiltros();
         configurarLimpiarFiltros();
         configurarAccionesUltimosTuristas();
-
-        // NUEVO: Escuchar cambios en la página
-        if (paginador != null) {
-            paginador.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-                mostrarPagina(newIndex.intValue());
-            });
-        }
 
     }
 
@@ -576,51 +563,10 @@ public class TuristasController {
     }
 
     private void actualizarTabla(List<Turista> lista) {
-        // Guardamos la lista completa (ya sea todos, o los filtrados)
-        this.listaActualTuristas = lista;
 
-        if (paginador != null) {
-            // Calcular páginas necesarias
-            int totalTuristas = lista.size();
-            int totalPaginas = (int) Math.ceil((double) totalTuristas / filasPorPagina);
-
-            paginador.setPageCount(totalPaginas == 0 ? 1 : totalPaginas);
-
-            // Conservar la página actual si sigue siendo válida; si no, ajustar a la última válida.
-            int paginaActual = paginador.getCurrentPageIndex();
-            int ultimaPagina = paginador.getPageCount() - 1;
-            int paginaObjetivo = Math.max(0, Math.min(paginaActual, ultimaPagina));
-
-            // Actualizar el paginador a la página objetivo (disparará el listener que muestra la página)
-            paginador.setCurrentPageIndex(paginaObjetivo);
-            return; // mostrarPagina será llamado por el listener del paginador
-        }
-
-        // Si no hay paginador, mostrar la primera página por defecto
-        mostrarPagina(0); // Mostrar los primeros 5
+        tablaTuristas.getItems().setAll(lista);
     }
 
-    private void mostrarPagina(int indicePagina) {
-        if (listaActualTuristas == null || listaActualTuristas.isEmpty()) {
-            tablaTuristas.getItems().clear();
-            if (lblMostrando != null) lblMostrando.setText("Mostrando 0 turistas");
-            return;
-        }
-
-        // Calcular desde qué registro hasta qué registro cortar la lista
-        int desde = indicePagina * filasPorPagina;
-        int hasta = Math.min(desde + filasPorPagina, listaActualTuristas.size());
-
-        // Extraer los 5 de esta página y mostrarlos
-        List<Turista> subLista = listaActualTuristas.subList(desde, hasta);
-        tablaTuristas.getItems().setAll(subLista);
-
-        // Actualizar el texto del Label
-        if (lblMostrando != null) {
-            lblMostrando.setText(String.format("Mostrando %d a %d de %d turistas",
-                    (desde + 1), hasta, listaActualTuristas.size()));
-        }
-    }
 
     private void configurarLimpiarFiltros() {
 
