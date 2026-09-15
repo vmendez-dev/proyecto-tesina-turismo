@@ -97,14 +97,26 @@
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>
             </TextField>
-            <Label prefHeight="18.0" prefWidth="148.0" text="Fecha de nacimiento" textFill="#0e0640">
-               <font>
-                  <Font name="Verdana" size="14.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="13.0" top="7.0" />
-               </VBox.margin>
-            </Label>
+            <HBox prefHeight="11.0" prefWidth="351.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="148.0" text="Fecha de nacimiento" textFill="#0e0640">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="13.0" top="7.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                     <font>
+                        <Font name="Verdana" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
             <DatePicker fx:id="dateFechaNacimiento" prefHeight="29.0" prefWidth="342.0" promptText="dd/mm/aaaa">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
@@ -114,29 +126,53 @@
       </VBox>
       <HBox prefHeight="206.0" prefWidth="351.0">
          <children>
-            <VBox prefHeight="130.0" prefWidth="162.0">
+            <VBox prefHeight="206.0" prefWidth="166.0">
                <children>
-                  <Label prefHeight="18.0" prefWidth="148.0" text="Tipo de Documento" textFill="#0e0640">
-                     <font>
-                        <Font name="Verdana" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets left="13.0" />
-                     </VBox.margin>
-                  </Label>
+                  <HBox prefHeight="18.0" prefWidth="179.0">
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="168.0" text="Tipo de Documento" textFill="#0e0640">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="13.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
                   <JFXComboBox fx:id="cmbTipoDocumento" prefHeight="30.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
                   </JFXComboBox>
-                  <Label prefHeight="18.0" prefWidth="148.0" text="País" textFill="#0e0640">
-                     <font>
-                        <Font name="Verdana" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets left="13.0" top="17.0" />
-                     </VBox.margin>
-                  </Label>
+                  <HBox prefHeight="31.0" prefWidth="163.0">
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="148.0" text="País" textFill="#0e0640">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="13.0" top="13.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets right="108.0" top="13.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
                   <JFXComboBox fx:id="cmbPais" prefHeight="30.0" prefWidth="146.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
@@ -162,27 +198,48 @@
             </VBox>
             <VBox prefHeight="153.0" prefWidth="190.0">
                <children>
-                  <Label prefHeight="18.0" prefWidth="148.0" text="Documento" textFill="#0e0640">
-                     <font>
-                        <Font name="Verdana" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets left="15.0" />
-                     </VBox.margin>
-                  </Label>
+                  <HBox prefHeight="0.0" prefWidth="188.0">
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="85.0" text="Documento" textFill="#0e0640">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="15.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                   <TextField fx:id="txtNumeroDocumento" prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el documento">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
                      </VBox.margin>
                   </TextField>
-                  <Label prefHeight="18.0" prefWidth="148.0" text="Procedencia" textFill="#0e0640">
-                     <font>
-                        <Font name="Verdana" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets left="15.0" top="13.0" />
-                     </VBox.margin>
-                  </Label>
+                  <HBox prefHeight="31.0" prefWidth="188.0">
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="89.0" text="Procedencia" textFill="#0e0640">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="15.0" top="13.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label prefHeight="18.0" prefWidth="15.0" text="*" textFill="#bc0707">
+                           <font>
+                              <Font name="Verdana" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="13.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
                   <JFXComboBox fx:id="cmbProcedencia" prefHeight="30.0" prefWidth="176.0" promptText="Seleccionar...">
                      <VBox.margin>
                         <Insets left="15.0" top="5.0" />
@@ -193,7 +250,7 @@
                         <Font name="Verdana" size="14.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="15.0" top="18.0" />
+                        <Insets left="15.0" top="17.0" />
                      </VBox.margin>
                   </Label>
                   <TextField fx:id="txtEmail" prefHeight="30.0" prefWidth="161.0" promptText="Ingrese el email">
@@ -215,7 +272,7 @@
                   <Insets left="13.0" top="-5.0" />
                </VBox.margin>
             </Label>
-            <TextArea fx:id="txtObservaciones" prefHeight="88.0" prefWidth="340.0" promptText="Observaciones adicionales...">
+            <TextArea fx:id="txtObservaciones" prefHeight="88.0" prefWidth="340.0" promptText="Observaciones adicionales..." wrapText="true">
                <VBox.margin>
                   <Insets left="13.0" top="5.0" />
                </VBox.margin>

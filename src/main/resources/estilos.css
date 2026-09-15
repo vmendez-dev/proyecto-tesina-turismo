@@ -196,4 +196,11 @@
     -fx-text-fill: #163A4D;
 }
 
+.pagination .pagination-control {
+    -fx-background-color: transparent;
+}
+.pagination .number-button:selected {
+    -fx-background-color: #2196F3; /* Tu color azul */
+    -fx-text-fill: white;
+}
 
