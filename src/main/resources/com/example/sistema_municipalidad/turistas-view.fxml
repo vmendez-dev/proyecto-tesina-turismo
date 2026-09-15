@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="1001.0" prefWidth="1175.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="1019.0" prefWidth="1175.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
    <content>
       <AnchorPane style="-fx-background-color: #F4F6F8;" stylesheets="@../../../estilos.css">
          <children>
@@ -31,6 +32,12 @@
                         <TableColumn fx:id="columnaAcciones" prefWidth="135.0" text="Acciones" />
                     </columns>
                   </TableView>
+                  <Pagination fx:id="paginador" layoutX="845.0" layoutY="296.0" maxPageIndicatorCount="5" prefHeight="44.0" prefWidth="185.0" stylesheets="@../../../estilos.css" />
+                  <Label fx:id="lblMostrando" layoutX="38.0" layoutY="311.0" prefHeight="17.0" prefWidth="238.0" text="Mostrando 1 a 5 de 25 turistas" textFill="#5e6e86">
+                     <font>
+                        <Font name="Verdana" size="11.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
             <AnchorPane layoutX="31.0" layoutY="19.0" prefHeight="76.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
@@ -69,7 +76,7 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="32.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="32.0" layoutY="491.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="37.0" layoutY="14.0" text="Total de turistas" textFill="#637cb0">
                      <font>
@@ -88,7 +95,7 @@
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="314.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="314.0" layoutY="491.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="31.0" layoutY="17.0" text="Registrados este mes" textFill="#637cb0">
                      <font>
@@ -107,7 +114,7 @@
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="596.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="596.0" layoutY="492.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="27.0" layoutY="18.0" text="Procedencias distintas" textFill="#637cb0">
                      <font>
@@ -126,7 +133,7 @@
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="878.0" layoutY="445.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="878.0" layoutY="492.0" prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <Label layoutX="26.0" layoutY="18.0" text="Países distintos" textFill="#637cb0">
                      <font>
@@ -145,7 +152,7 @@
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="32.0" layoutY="605.0" prefHeight="343.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
+            <AnchorPane layoutX="32.0" layoutY="643.0" prefHeight="343.0" prefWidth="1091.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;">
                <children>
                   <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="259.0" prefWidth="995.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="76.0" AnchorPane.topAnchor="59.0">
                      <columns>
