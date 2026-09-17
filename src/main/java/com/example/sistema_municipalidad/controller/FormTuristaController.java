@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -254,29 +255,40 @@ public class FormTuristaController {
             errores.add("El campo 'Documento' es obligatorio.");
             if (primerError == null) primerError = txtNumeroDocumento;
         } else {
-            String numeroDocumentoLimpio = numeroDocumento.replaceAll("[^A-Za-z0-9]", "");
-            txtNumeroDocumento.setText(numeroDocumentoLimpio);
-
             String nombreTipoDocumento = cmbTipoDocumento.getValue() != null
                     ? cmbTipoDocumento.getValue().getNombreTipo() : "";
             if (nombreTipoDocumento == null) {
                 nombreTipoDocumento = "";
             }
-            nombreTipoDocumento = nombreTipoDocumento.toUpperCase(Locale.ROOT);
 
+            String nombreTipoDocumentoNormalizado = Normalizer.normalize(nombreTipoDocumento, Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}", "")
+                    .toUpperCase(Locale.ROOT);
+
+            String numeroDocumentoLimpio = numeroDocumento.toUpperCase(Locale.ROOT);
             boolean documentoValido;
             String mensajeDocumentoInvalido;
 
-            if (nombreTipoDocumento.contains("DNI")) {
+            if (nombreTipoDocumentoNormalizado.contains("DNI")) {
+                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
                 documentoValido = numeroDocumentoLimpio.matches("^\\d{7,9}$");
                 mensajeDocumentoInvalido = "El DNI debe contener entre 7 y 9 dígitos.";
-            } else if (nombreTipoDocumento.contains("PASAPORTE")) {
-                documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{6,15}$");
+            } else if (nombreTipoDocumentoNormalizado.contains("PASAPORTE")) {
+                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
+                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9]{6,15}$");
                 mensajeDocumentoInvalido = "El pasaporte debe ser alfanumérico y tener entre 6 y 15 caracteres.";
+            } else if (nombreTipoDocumentoNormalizado.contains("CEDULA")
+                    && nombreTipoDocumentoNormalizado.contains("IDENTIDAD")) {
+                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9-]", "");
+                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9-]{5,15}$");
+                mensajeDocumentoInvalido = "La cédula de identidad debe contener solo letras, números y guion medio, con un largo entre 5 y 15 caracteres.";
             } else {
-                documentoValido = numeroDocumentoLimpio.matches("^[A-Za-z0-9]{5,20}$");
+                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
+                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9]{5,20}$");
                 mensajeDocumentoInvalido = "El número de documento debe tener entre 5 y 20 caracteres alfanuméricos.";
             }
+
+            txtNumeroDocumento.setText(numeroDocumentoLimpio);
 
             if (!documentoValido) {
                 errores.add(mensajeDocumentoInvalido);
@@ -337,7 +349,7 @@ public class FormTuristaController {
         }
 
         String observaciones = txtObservaciones.getText().trim();
-        if (observaciones.length() > 500) {
+        if (observaciones.length() > 255) {
             errores.add("Las observaciones son demasiado extensas.");
             if (primerError == null) primerError = txtObservaciones;
         }
