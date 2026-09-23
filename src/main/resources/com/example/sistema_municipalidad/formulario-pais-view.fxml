@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- VBox Principal -->
+
+<VBox prefHeight="230" prefWidth="400" styleClass="contenedor-emergente" stylesheets="@/estilos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.FormPaisController">
+
+    <!-- 1. ENCABEZADO AZUL -->
+    <HBox alignment="CENTER_LEFT" styleClass="encabezado-azul">
+        <!-- Uso de la nueva clase titulo-modal -->
+        <Label fx:id="lblTitulo" styleClass="titulo-modal, fuente-inter" text="Registrar país" />
+    </HBox>
+
+    <!-- 2. CUERPO DEL FORMULARIO -->
+    <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="25" left="30" right="30" top="20" />
+        </padding>
+
+        <!-- Campo de entrada -->
+        <VBox maxWidth="340" spacing="8">
+            <Label style="-fx-text-fill: #374151; -fx-font-weight: bold;" styleClass="fuente-inter" text="Nombre del país" />
+
+            <!-- Uso de la nueva clase campo-texto -->
+            <TextField fx:id="txtNombrePais" maxWidth="340" promptText="Ej: Argentina" styleClass="campo-texto, fuente-inter" />
+        </VBox>
+
+        <!-- 3. BOTONERA -->
+        <HBox alignment="CENTER_RIGHT" maxWidth="340" spacing="15">
+            <padding>
+                <Insets top="10" />
+            </padding>
+
+            <!-- Botón Cancelar (Clase existente) -->
+            <Button fx:id="btnCancelar" onAction="#cancelar" styleClass="boton-marco-azul, fuente-inter" text="Cancelar" />
+
+            <!-- Botón Guardar (Uso de la nueva clase boton-primario) -->
+            <Button fx:id="btnGuardar" onAction="#guardar" styleClass="boton-primario, fuente-inter" text="Guardar" />
+        </HBox>
+
+    </VBox>
+
+</VBox>

@@ -42,7 +42,7 @@ CREATE TABLE provincias (
 
 CREATE TABLE tipos_documento (
     id_tipo_documento INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_tipo VARCHAR(50) NOT NULL,
+    nombre_tipo VARCHAR(50) NULL,
 
     CONSTRAINT uq_tipo_documento_nombre
         UNIQUE (nombre_tipo)
@@ -60,9 +60,9 @@ CREATE TABLE turistas (
 
     apellido VARCHAR(50) NOT NULL,
 
-    id_tipo_documento INT NOT NULL,
+    id_tipo_documento INT NULL,
 
-    numero_documento VARCHAR(30) NOT NULL,
+    numero_documento VARCHAR(30) NULL,
 
     fecha_nacimiento DATE NULL,
 

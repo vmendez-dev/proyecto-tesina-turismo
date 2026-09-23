@@ -38,7 +38,6 @@ public class ProvinciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al listar provincias.");
             e.printStackTrace();
         }
 
@@ -76,7 +75,6 @@ public class ProvinciaDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al listar provincias del país.");
             e.printStackTrace();
         }
 

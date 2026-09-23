@@ -3,51 +3,80 @@ package com.example.sistema_municipalidad.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 
 public class DashboardController {
 
-    // Enlaza el AnchorPane en Scene Builder
-    @FXML private AnchorPane panelContenido;
-    @FXML private Label lblTituloSeccion;
-    @FXML private Label lblSubtituloSeccion;
+    @FXML
+    private AnchorPane panelContenido;
 
-    // Método para cambiar la pantalla en el fondo blanco
-    private void cambiarPantalla(String nombreArchivoFxml, String titulo, String subtitulo) {
-        try {
-            // Se busca y se carga el archivo fxml secundario:
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistema_municipalidad/" + nombreArchivoFxml));
-            Parent nuevaVista = loader.load();
+    @FXML
+    private Button btnLogout;
 
-            // Se limpia el fondo blanco actual y se carga el nuevo:
-            panelContenido.getChildren().clear();
-            panelContenido.getChildren().add(nuevaVista);
+    @FXML
+    private void cerrarSesion() {
 
-            // Se ajusta la subpantalla para que cubra todo el espacio disponible
-            AnchorPane.setTopAnchor(nuevaVista, 0.0);
-            AnchorPane.setBottomAnchor(nuevaVista, 0.0);
-            AnchorPane.setLeftAnchor(nuevaVista, 0.0);
-            AnchorPane.setRightAnchor(nuevaVista, 0.0);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
 
-            // Cambiar encabezado:
-            lblTituloSeccion.setText(titulo);
-            lblSubtituloSeccion.setText(subtitulo);
+        confirm.setTitle("Cerrar sesión");
+        confirm.setHeaderText("¿Está seguro que desea cerrar sesión?");
+        confirm.setContentText(
+                "Todos los cambios guardados permanecerán."
+        );
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error crítico: No se pudo cargar el archivo " + nombreArchivoFxml);
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+
+            Stage stage = (Stage) btnLogout.getScene().getWindow();
+            stage.close();
         }
     }
 
     @FXML
-    private void irATuristas() {
-        cambiarPantalla(
-                "turistas-view.fxml",
-                "Gestión de Turistas",
-                "Listado de turistas registrados en el sistema"
-        );
+    private void abrirTuristas() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/com/example/sistema_municipalidad/turistas-view.fxml"
+                    )
+            );
+
+            Parent vistaTuristas = loader.load();
+
+            AnchorPane.setTopAnchor(vistaTuristas, 0.0);
+            AnchorPane.setRightAnchor(vistaTuristas, 0.0);
+            AnchorPane.setBottomAnchor(vistaTuristas, 0.0);
+            AnchorPane.setLeftAnchor(vistaTuristas, 0.0);
+
+            panelContenido.getChildren().setAll(vistaTuristas);
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+            mostrarError(
+                    "No se pudo cargar la pantalla de Gestión de Turistas."
+            );
+        }
     }
 
+    private void mostrarError(String mensaje) {
+
+        Alert alert = new Alert(
+                Alert.AlertType.ERROR,
+                mensaje,
+                ButtonType.OK
+        );
+
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }

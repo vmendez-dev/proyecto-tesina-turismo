@@ -63,7 +63,8 @@
 }
 
 .boton-ver,
-.boton-editar {
+.boton-editar,
+.boton-reactivar {
     -fx-border-color: #d9e5f5;
 }
 
@@ -172,6 +173,10 @@
     -fx-background-color: white;
     -fx-border-color: transparent transparent #EEF1F4 transparent;
 }
+/* Tabla de gestión de países */
+.tabla-paises .table-row-cell {
+    -fx-cell-size: 32px;
+}
 
 /* Alternar color de filas */
 .table-view .table-row-cell:odd {
@@ -203,4 +208,39 @@
     -fx-background-color: #2196F3; /* Tu color azul */
     -fx-text-fill: white;
 }
+
+/* Botón principal de acción (Guardar, Confirmar, etc.) */
+.boton-primario {
+    -fx-background-color: #1a73e8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 25px 8px 25px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.boton-primario:hover {
+    -fx-background-color: #155dbb; /* Un azul un poco más oscuro al pasar el mouse */
+}
+
+/* Estilo unificado para las cajas de texto de los formularios */
+.campo-texto {
+    -fx-padding: 8px;
+    -fx-background-radius: 4px;
+    -fx-border-color: #E5E7EB;
+    -fx-border-radius: 4px;
+    -fx-background-color: white;
+}
+
+.campo-texto:focused {
+    -fx-border-color: #1a73e8; /* Borde azul al hacer clic para escribir */
+}
+
+/* Título para los encabezados de las ventanas modales */
+.titulo-modal {
+    -fx-text-fill: #164E70;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
 

@@ -8,12 +8,18 @@ import com.example.sistema_municipalidad.model.Provincia;
 import com.example.sistema_municipalidad.dao.ProvinciaDAO;
 import com.example.sistema_municipalidad.model.TipoDocumento;
 import com.example.sistema_municipalidad.dao.TipoDocumentoDAO;
+import com.example.sistema_municipalidad.helper.AlertHelper;
+import com.example.sistema_municipalidad.helper.ValidacionHelper;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -38,6 +44,7 @@ public class FormTuristaController {
     @FXML private Label lblSubtitulo;
     @FXML private ImageView imgIcono;
     @FXML private Button btnGuardar;
+    @FXML private Button btnAgregarPais;
 
     private final PaisDAO paisDAO = new PaisDAO();
     private final ProvinciaDAO provinciaDAO = new ProvinciaDAO();
@@ -56,13 +63,17 @@ public class FormTuristaController {
         // Cuando se seleccione un país,
         // se cargarán sus provincias.
         cmbPais.setOnAction(event -> cargarProvincias());
-
-        // Validar teléfono mientras el usuario escribe
-        txtTelefono.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\+?[0-9]*")) {
-                txtTelefono.setText(oldValue);
-            }
-        });
+        // --- NUEVO: LÍMITES DE CARACTERES ---
+        ValidacionHelper.limitarLongitud(txtNombre, 50);
+        ValidacionHelper.limitarLongitud(txtApellido, 50);
+        ValidacionHelper.limitarLongitud(txtNumeroDocumento, 30);
+        ValidacionHelper.limitarLongitud(txtTelefono, 30);
+        ValidacionHelper.limitarLongitud(txtEmail, 100);
+        ValidacionHelper.limitarLongitud(txtObservaciones, 255);
+        // --- NUEVO: SOLO LETRAS Y NÚMEROS ---
+        ValidacionHelper.permitirSoloLetras(txtNombre);
+        ValidacionHelper.permitirSoloLetras(txtApellido);
+        ValidacionHelper.permitirSoloTelefono(txtTelefono);
     }
 
     public void setTurista(Turista turista) {
@@ -139,17 +150,33 @@ public class FormTuristaController {
         if (turistaEdicion == null) {
 
             //Alta:
-            if (turistaDAO.existeDocumento(idTipoDocumento, numeroDocumento)) {
-                mostrarError("Ya existe un turista registrado con ese tipo y número de documento.");
-                txtNumeroDocumento.requestFocus();
-                return;
+            Turista turistaExistente = turistaDAO.buscarPorDocumento(idTipoDocumento, numeroDocumento);
+
+            if (turistaExistente != null) {
+                //El documento pertenece a un turista ACTIVO
+                if(turistaExistente.isActivo()) {
+                    AlertHelper.mostrarError("Ya existe un turista con ese tipo y número de documento.");
+                    txtNumeroDocumento.requestFocus();
+                    return;
+
+                } else {
+                    //El documento pertenece a un turista INACTIVO
+                    AlertHelper.mostrarError(
+                            "Ya existe un turista con ese documento, "
+                                    + "pero se encuentra inactivo.\n\n"
+                                    + "Puede reactivarlo desde el filtro "
+                                    + "'Inactivos' de la pantalla de turistas."
+                    );
+                    txtNumeroDocumento.requestFocus();
+                    return;
+                }
             }
 
         } else {
 
             //Modificación:
             if (turistaDAO.existeDocumentoExceptoId(idTipoDocumento, numeroDocumento, turistaEdicion.getIdTurista())) {
-                mostrarError("Otro turista ya tiene ese tipo y número de documento.");
+                AlertHelper.mostrarError("Otro turista ya tiene ese tipo y número de documento.");
                 txtNumeroDocumento.requestFocus();
                 return;
             }
@@ -201,12 +228,12 @@ public class FormTuristaController {
 
         if (guardado) {
             if (turistaEdicion == null) {
-                mostrarInformacion(
+                AlertHelper.mostrarInformacion(
                         "Registro exitoso",
                         "El turista fue registrado correctamente."
                 );
             } else {
-                mostrarInformacion(
+                AlertHelper.mostrarInformacion(
                         "Modificación exitosa",
                         "Los datos del turista fueron modificados correctamente."
                 );
@@ -216,191 +243,212 @@ public class FormTuristaController {
 
         } else {
             if (turistaEdicion == null) {
-                mostrarError(
+                AlertHelper.mostrarError(
                         "No se pudo registrar el turista."
                 );
             } else {
-                mostrarError(
+                AlertHelper.mostrarError(
                         "No se pudo modificar el turista."
                 );
             }
         }
     }
 
-    //
     // VALIDACIONES:
-    //
 
     private boolean validarCampos() {
+
         List<String> errores = new ArrayList<>();
         Control primerError = null;
 
+        // NOMBRE
         if (txtNombre.getText().trim().isEmpty()) {
+
             errores.add("El campo 'Nombre' es obligatorio.");
-            if (primerError == null) primerError = txtNombre;
+
+            if (primerError == null) {
+                primerError = txtNombre;
+            }
         }
 
+        // APELLIDO
         if (txtApellido.getText().trim().isEmpty()) {
+
             errores.add("El campo 'Apellido' es obligatorio.");
-            if (primerError == null) primerError = txtApellido;
+
+            if (primerError == null) {
+                primerError = txtApellido;
+            }
         }
 
+        // TIPO DE DOCUMENTO
         if (cmbTipoDocumento.getValue() == null) {
+
             errores.add("Debe seleccionar un 'Tipo de documento'.");
-            if (primerError == null) primerError = cmbTipoDocumento;
+
+            if (primerError == null) {
+                primerError = cmbTipoDocumento;
+            }
         }
 
+        // DOCUMENTO
         String numeroDocumento = txtNumeroDocumento.getText().trim();
+
         if (numeroDocumento.isEmpty()) {
+
             errores.add("El campo 'Documento' es obligatorio.");
-            if (primerError == null) primerError = txtNumeroDocumento;
+
+            if (primerError == null) {
+                primerError = txtNumeroDocumento;
+            }
+
         } else {
-            String nombreTipoDocumento = cmbTipoDocumento.getValue() != null
-                    ? cmbTipoDocumento.getValue().getNombreTipo() : "";
-            if (nombreTipoDocumento == null) {
-                nombreTipoDocumento = "";
-            }
 
-            String nombreTipoDocumentoNormalizado = Normalizer.normalize(nombreTipoDocumento, Normalizer.Form.NFD)
-                    .replaceAll("\\p{M}", "")
-                    .toUpperCase(Locale.ROOT);
+            String nombreTipoDocumento =
+                    cmbTipoDocumento.getValue() != null
+                            ? cmbTipoDocumento.getValue().getNombreTipo()
+                            : "";
 
-            String numeroDocumentoLimpio = numeroDocumento.toUpperCase(Locale.ROOT);
-            boolean documentoValido;
-            String mensajeDocumentoInvalido;
+            // Normalizar documento
+            String documentoNormalizado =
+                    ValidacionHelper.normalizarDocumento(
+                            nombreTipoDocumento,
+                            numeroDocumento
+                    );
 
-            if (nombreTipoDocumentoNormalizado.contains("DNI")) {
-                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
-                documentoValido = numeroDocumentoLimpio.matches("^\\d{7,9}$");
-                mensajeDocumentoInvalido = "El DNI debe contener entre 7 y 9 dígitos.";
-            } else if (nombreTipoDocumentoNormalizado.contains("PASAPORTE")) {
-                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
-                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9]{6,15}$");
-                mensajeDocumentoInvalido = "El pasaporte debe ser alfanumérico y tener entre 6 y 15 caracteres.";
-            } else if (nombreTipoDocumentoNormalizado.contains("CEDULA")
-                    && nombreTipoDocumentoNormalizado.contains("IDENTIDAD")) {
-                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9-]", "");
-                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9-]{5,15}$");
-                mensajeDocumentoInvalido = "La cédula de identidad debe contener solo letras, números y guion medio, con un largo entre 5 y 15 caracteres.";
-            } else {
-                numeroDocumentoLimpio = numeroDocumentoLimpio.replaceAll("[^A-Z0-9]", "");
-                documentoValido = numeroDocumentoLimpio.matches("^[A-Z0-9]{5,20}$");
-                mensajeDocumentoInvalido = "El número de documento debe tener entre 5 y 20 caracteres alfanuméricos.";
-            }
+            txtNumeroDocumento.setText(documentoNormalizado);
 
-            txtNumeroDocumento.setText(numeroDocumentoLimpio);
+            // Validar documento
+            boolean documentoValido =
+                    ValidacionHelper.esDocumentoValido(
+                            nombreTipoDocumento,
+                            documentoNormalizado
+                    );
 
             if (!documentoValido) {
-                errores.add(mensajeDocumentoInvalido);
-                if (primerError == null) primerError = txtNumeroDocumento;
+
+                errores.add(ValidacionHelper.obtenerMensajeDocumentoInvalido(nombreTipoDocumento));
+
+                if (primerError == null) {
+                    primerError = txtNumeroDocumento;
+                }
             }
         }
 
+        // FECHA DE NACIMIENTO
         LocalDate fechaNacimiento = dateFechaNacimiento.getValue();
         if (fechaNacimiento == null) {
+
             errores.add("Debe seleccionar una 'Fecha de nacimiento'.");
-            if (primerError == null) primerError = dateFechaNacimiento;
+
+            if (primerError == null) {
+                primerError = dateFechaNacimiento;
+            }
+
         } else if (fechaNacimiento.isAfter(LocalDate.now())) {
+
             errores.add("La fecha de nacimiento no puede ser futura.");
-            if (primerError == null) primerError = dateFechaNacimiento;
-        } else {
-            // --- NUEVA REGLA DE NEGOCIO: TURISTA MAYOR DE EDAD ---
-            // Se calculan los años exactos entre la fecha de nacimiento y hoy
-            int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
-            if (edad < 18) {
-                errores.add("El turista debe ser mayor de edad (tiene " + edad + " años).");
-                if (primerError == null) primerError = dateFechaNacimiento;
+
+            if (primerError == null) {
+                primerError = dateFechaNacimiento;
+            }
+
+        } else if (!ValidacionHelper.esMayorDeEdad(fechaNacimiento)) {
+
+            int edad = ValidacionHelper.calcularEdad(fechaNacimiento);
+            errores.add("El turista debe ser mayor de edad (tiene " + edad + " años).");
+
+            if (primerError == null) {
+                primerError = dateFechaNacimiento;
             }
         }
 
+        // PAÍS
         if (cmbPais.getValue() == null) {
+
             errores.add("Debe seleccionar un 'País'.");
-            if (primerError == null) primerError = cmbPais;
+
+            if (primerError == null) {
+                primerError = cmbPais;
+            }
         }
 
+        // PROCEDENCIA
         Pais paisSeleccionado = cmbPais.getValue();
+
         if (paisSeleccionado != null
-                && paisSeleccionado.getNombrePais().equalsIgnoreCase("Argentina")
+                && paisSeleccionado.getNombrePais()
+                .equalsIgnoreCase("Argentina")
                 && cmbProcedencia.getValue() == null) {
-            errores.add("Para turistas argentinos, debe seleccionar la 'Procedencia' (Provincia).");
-            if (primerError == null) primerError = cmbProcedencia;
+
+            errores.add(
+                    "Para turistas argentinos, debe seleccionar la 'Procedencia' (Provincia)."
+            );
+
+            if (primerError == null) {
+                primerError = cmbProcedencia;
+            }
         }
 
+        // TELÉFONO
         String telefono = txtTelefono.getText().trim();
-        if (!telefono.isEmpty()) {
-            if (!telefono.matches("\\+?[0-9]+")) {
-                errores.add("El teléfono solo puede contener números y un signo '+' al comienzo.");
-                if (primerError == null) primerError = txtTelefono;
-            } else if (telefono.length() > 30) {
-                errores.add("El teléfono no puede superar los 30 caracteres.");
-                if (primerError == null) primerError = txtTelefono;
+        if (!ValidacionHelper.esTelefonoValido(telefono)) {
+            errores.add(
+                    "El teléfono solo puede contener números y un signo '+' al comienzo."
+            );
+
+            if (primerError == null) {
+                primerError = txtTelefono;
             }
         }
 
+        // EMAIL
         String email = txtEmail.getText().trim();
-        if (!email.isEmpty()) {
-            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add("El email no tiene un formato válido.");
-                if (primerError == null) primerError = txtEmail;
-            } else if (email.length() > 100) {
-                errores.add("El email no puede superar los 100 caracteres.");
-                if (primerError == null) primerError = txtEmail;
+        if (!ValidacionHelper.esEmailValido(email)) {
+
+            errores.add(
+                    "El email no tiene un formato válido."
+            );
+
+            if (primerError == null) {
+                primerError = txtEmail;
             }
         }
 
+        // OBSERVACIONES
         String observaciones = txtObservaciones.getText().trim();
         if (observaciones.length() > 255) {
-            errores.add("Las observaciones son demasiado extensas.");
-            if (primerError == null) primerError = txtObservaciones;
+
+            errores.add(
+                    "Las observaciones son demasiado extensas."
+            );
+
+            if (primerError == null) {
+                primerError = txtObservaciones;
+            }
         }
 
+        // MOSTRAR ERRORES
         if (!errores.isEmpty()) {
-            mostrarError(String.join("\n", errores));
+
+            AlertHelper.mostrarError(
+                    String.join("\n", errores)
+            );
+
             if (primerError != null) {
                 primerError.requestFocus();
             }
+
             return false;
         }
 
         return true;
     }
 
-    @FXML
-    private void cancelar() {
-
-        cerrarVentana();
-    }
-
     private void cerrarVentana() {
 
         Stage ventana = (Stage) txtNombre.getScene().getWindow();
         ventana.close();
-    }
-
-
-    private void mostrarError(String mensaje) {
-
-        Alert alert = new Alert(
-                        Alert.AlertType.ERROR,
-                        mensaje,
-                        ButtonType.OK
-                );
-
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.showAndWait();
-    }
-
-    private void mostrarInformacion(String titulo, String mensaje) {
-        Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION,
-                        mensaje,
-                        ButtonType.OK
-                );
-
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.showAndWait();
     }
 
     //
@@ -471,6 +519,62 @@ public class FormTuristaController {
         } catch (Exception e) {
             System.out.println("No se pudo cargar la imagen: " + rutaImagen);
         }
+    }
+
+    // ============================================================
+    // AGREGAR NUEVO PAÍS
+    // ============================================================
+
+    @FXML
+    private void abrirFormularioPais() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sistema_municipalidad/formulario-pais-view.fxml"));
+            Parent root = loader.load();
+            FormPaisController controller = loader.getController();
+
+            // Abrimos el formulario en modo ALTA
+            controller.setPaisEdicion(null);
+
+            Stage ventana = new Stage();
+
+            ventana.setTitle("Registrar país");
+            ventana.setScene(new Scene(root));
+            ventana.initModality(Modality.APPLICATION_MODAL);
+            ventana.showAndWait();
+
+            // RECUPERAR EL PAÍS NUEVO:
+            Pais paisNuevo = controller.getPaisGuardado();
+
+            // ACTUALIZAR COMBOBOX:
+            cargarPaises();
+
+            // SELECCIONAR EL PAÍS NUEVO:
+
+            if (paisNuevo != null) {
+
+                for (Pais pais : cmbPais.getItems()) {
+
+                    if (pais.getIdPais() == paisNuevo.getIdPais()) {
+
+                        cmbPais.setValue(pais);
+
+                        break;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertHelper.mostrarError("No se pudo abrir el formulario para registrar el país.");
+        }
+    }
+
+    @FXML
+    private void cancelar() {
+
+        cerrarVentana();
     }
 
 }

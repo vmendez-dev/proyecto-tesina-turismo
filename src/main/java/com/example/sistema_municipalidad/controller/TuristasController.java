@@ -1,11 +1,15 @@
 package com.example.sistema_municipalidad.controller;
 
+import com.example.sistema_municipalidad.helper.AlertHelper;
 import com.example.sistema_municipalidad.dao.PaisDAO;
 import com.example.sistema_municipalidad.dao.ProvinciaDAO;
 import com.example.sistema_municipalidad.dao.TuristaDAO;
+import com.example.sistema_municipalidad.helper.TooltipHelper;
 import com.example.sistema_municipalidad.model.Pais;
 import com.example.sistema_municipalidad.model.Provincia;
 import com.example.sistema_municipalidad.model.Turista;
+import com.example.sistema_municipalidad.helper.ValidacionHelper;
+import com.example.sistema_municipalidad.helper.ImageHelper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
@@ -13,13 +17,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,8 +44,9 @@ public class TuristasController {
     @FXML private TextField txtBuscar;
     @FXML private JFXComboBox<Provincia> comboProcedencia;
     @FXML private JFXComboBox<Pais> comboPais;
+    @FXML private JFXComboBox<String> comboEstado;
     @FXML private JFXButton btnRegistrar;
-    @FXML private ImageView imgLimpiarFiltros;
+    @FXML private Button btnLimpiarFiltros;
     @FXML private Label lblTotalTuristas;
     @FXML private Label lblRegistradosMes;
     @FXML private Label lblProcedenciasDistintas;
@@ -92,6 +100,7 @@ public class TuristasController {
 
         cargarFiltroPaises();
         cargarFiltroProcedencias();
+        cargarFiltroEstado();
         cargarEstadisticas();
         actualizarDashboardTuristas();
         cargarListaPaises();
@@ -102,6 +111,8 @@ public class TuristasController {
         configurarFiltros();
         configurarLimpiarFiltros();
         configurarAccionesUltimosTuristas();
+
+        ValidacionHelper.limitarLongitud(txtBuscar, 50);
 
         // NUEVO: Escuchar cambios en la página
         if (paginador != null) {
@@ -138,11 +149,41 @@ public class TuristasController {
     private void configurarColumnas() {
 
         //Primera tabla:
-        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
-        columnaDocumento.setCellValueFactory(new PropertyValueFactory<>("numeroDocumento"));
-        columnaTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-        columnaEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        columnaNombre.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(
+                                turista.getValue().getNombre()
+                        )
+                )
+        );
+        columnaApellido.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(
+                                turista.getValue().getApellido()
+                        )
+                )
+        );
+        columnaDocumento.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(
+                                turista.getValue().getNumeroDocumento()
+                        )
+                )
+        );
+        columnaTelefono.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(
+                                turista.getValue().getTelefono()
+                        )
+                )
+        );
+        columnaEmail.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(
+                                turista.getValue().getEmail()
+                        )
+                )
+        );
 
         //Segunda tabla (últimos turistas):
         colUltimoNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -155,11 +196,7 @@ public class TuristasController {
                     Integer idProvincia = turista.getValue().getIdProvincia();
                     String nombreProvincia = provincias.get(idProvincia);
 
-                    return new javafx.beans.property.SimpleStringProperty(
-                            nombreProvincia != null
-                                    ? nombreProvincia
-                                    : ""
-                    );
+                    return new SimpleStringProperty(mostrarGuionSiVacio(nombreProvincia));
                 }
         );
         colUltimaProcedencia.setCellValueFactory(
@@ -181,11 +218,7 @@ public class TuristasController {
                     Integer idPais = turista.getValue().getIdPais();
                     String nombrePais = paises.get(idPais);
 
-                    return new javafx.beans.property.SimpleStringProperty(
-                            nombrePais != null
-                                    ? nombrePais
-                                    : ""
-                    );
+                    return new SimpleStringProperty(mostrarGuionSiVacio(nombrePais));
                 }
         );
         colUltimoPais.setCellValueFactory(
@@ -220,6 +253,15 @@ public class TuristasController {
         );
     }
 
+    private String mostrarGuionSiVacio(String valor) {
+
+        if (valor == null || valor.trim().isEmpty()) {
+            return "-";
+        }
+
+        return valor;
+    }
+
     private void cargarTuristas() {
         List<Turista> lista = turistaDAO.listar();
         tablaTuristas.getItems().setAll(lista);
@@ -245,137 +287,302 @@ public class TuristasController {
     //
 
     private void configurarColumnaAcciones() {
-        // Definimos una fábrica de celdas personalizada para la columna de acciones
-        columnaAcciones.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
 
-            // Creamos los botones de forma nativa
-            private final javafx.scene.control.Button btnVer = new javafx.scene.control.Button();
-            private final javafx.scene.control.Button btnEditar = new javafx.scene.control.Button();
-            private final javafx.scene.control.Button btnEliminar = new javafx.scene.control.Button();
-            private final javafx.scene.layout.HBox contenedorBotonera = new javafx.scene.layout.HBox(btnVer, btnEditar, btnEliminar);
+        columnaAcciones.setCellFactory(param ->
+                new TableCell<Turista, Void>() {
 
-            {
-                //Configuramos el contenedor HBox (Alineación y espacio entre botones)
-                contenedorBotonera.setAlignment(javafx.geometry.Pos.CENTER);
-                contenedorBotonera.setSpacing(5);
+                    private final Button btnVer = new Button();
+                    private final Button btnEditar = new Button();
+                    private final Button btnEliminar = new Button();
+                    private final Button btnReactivar = new Button();
 
-                // Aplicamos estilos CSS
-//                btnVer.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
-//                btnEditar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #1a73e8;");
-//                btnEliminar.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #d93025;");
-                btnVer.getStyleClass().addAll("boton-accion", "boton-ver");
-                btnEditar.getStyleClass().addAll("boton-accion", "boton-editar");
-                btnEliminar.getStyleClass().addAll("boton-accion", "boton-eliminar");
-
-                //Texto temporal para probar los botones
-//                btnVer.setText("👁");
-//                btnEditar.setText("✏");
-//                btnEliminar.setText("🗑");
-                btnVer.setGraphic(crearIcono("/icons/consulta.png", 20, 20));
-                btnEditar.setGraphic(crearIcono("/icons/modificar2.png", 20, 20));
-                btnEliminar.setGraphic(crearIcono("/icons/eliminar.png", 20, 20));
-
-                //Programamos las acciones de los clics para cada botón
-                btnVer.setOnAction(event -> {
-
-                    Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-                    abrirConsultaTurista(turistaSeleccionado);
-                });
-
-                btnEditar.setOnAction(event -> {
-                    Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-                    try {
-                        FXMLLoader loader = new FXMLLoader(
-                                getClass().getResource(
-                                        "/com/example/sistema_municipalidad/formulario-turista-view.fxml"
-                                )
-                        );
-                        Scene scene = new Scene(loader.load());
-
-                        // Obtenemos el controller del formulario
-                        FormTuristaController controller = loader.getController();
-
-                        // Le pasamos el turista seleccionado
-                        controller.setTurista(turistaSeleccionado);
-
-                        Stage ventana = new Stage();
-
-                        ventana.setTitle("Modificar turista");
-                        ventana.setScene(scene);
-
-                        // Ventana modal
-                        ventana.initModality(Modality.APPLICATION_MODAL);
-                        ventana.showAndWait();
-
-                        // Actualizamos la tabla al cerrar
-                        actualizarDashboardTuristas();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("Error al abrir el formulario de modificación.");
-                    }
-                });
-
-                btnEliminar.setOnAction(event -> {
-
-                    Turista turistaSeleccionado = getTableView().getItems().get(getIndex());
-
-                    // CONFIRMACIÓN:
-                    Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-
-                    confirmacion.setTitle("Eliminar turista");
-                    confirmacion.setHeaderText("¿Está seguro de eliminar este turista?");
-                    confirmacion.setContentText(turistaSeleccionado.getNombre() + " " + turistaSeleccionado.getApellido());
-
-                    ButtonType botonSi = new ButtonType("Eliminar");
-                    ButtonType botonNo =
-                            new ButtonType(
-                                    "Cancelar",
-                                    ButtonBar.ButtonData.CANCEL_CLOSE
+                    private final HBox contenedorBotonera =
+                            new HBox(
+                                    btnVer,
+                                    btnEditar,
+                                    btnEliminar,
+                                    btnReactivar
                             );
 
-                    confirmacion.getButtonTypes().setAll(botonSi, botonNo);
+                    {
+                        // ==========================================
+                        // CONFIGURACIÓN DEL CONTENEDOR
+                        // ==========================================
 
-                    // MOSTRAR CONFIRMACIÓN:
-                    Optional<ButtonType> resultado = confirmacion.showAndWait();
+                        contenedorBotonera.setAlignment(Pos.CENTER);
+                        contenedorBotonera.setSpacing(5);
 
-                    // COMPROBAR RESPUESTA:
 
-                    if (resultado.isPresent() && resultado.get() == botonSi) {
+                        // ==========================================
+                        // ESTILOS
+                        // ==========================================
 
-                        boolean eliminado = turistaDAO.eliminar(turistaSeleccionado.getIdTurista());
-                        if (eliminado) {
-                            Alert informacion = new Alert(Alert.AlertType.INFORMATION);
+                        btnVer.getStyleClass().addAll("boton-accion", "boton-ver");
+                        btnEditar.getStyleClass().addAll("boton-accion", "boton-editar");
+                        btnEliminar.getStyleClass().addAll("boton-accion", "boton-eliminar");
+                        btnReactivar.getStyleClass().addAll("boton-accion", "boton-reactivar");
 
-                            informacion.setTitle("Eliminación exitosa");
-                            informacion.setHeaderText(null);
-                            informacion.setContentText("El turista fue eliminado correctamente.");
-                            informacion.showAndWait();
-                            actualizarDashboardTuristas(); // Actualizar la tabla
+                        // ==========================================
+                        // AGREGAR TOOLTIPS RÁPIDOS
+                        // ==========================================
+
+                        TooltipHelper.registrarTooltipRapido(btnVer, "Ver detalles", 600);
+                        TooltipHelper.registrarTooltipRapido(btnEditar, "Modificar turista", 600);
+                        TooltipHelper.registrarTooltipRapido(btnEliminar, "Eliminar turista", 600);
+                        TooltipHelper.registrarTooltipRapido(btnReactivar, "Reactivar turista", 600);
+
+                        // ==========================================
+                        // ICONOS
+                        // ==========================================
+
+                        btnVer.setGraphic(
+                                ImageHelper.crearIcono(
+                                        "/icons/consulta.png",
+                                        20,
+                                        20
+                                )
+                        );
+
+                        btnEditar.setGraphic(
+                                ImageHelper.crearIcono(
+                                        "/icons/modificar2.png",
+                                        20,
+                                        20
+                                )
+                        );
+
+                        btnEliminar.setGraphic(
+                                ImageHelper.crearIcono(
+                                        "/icons/eliminar.png",
+                                        20,
+                                        20
+                                )
+                        );
+
+                        btnReactivar.setGraphic(
+                                ImageHelper.crearIcono(
+                                        "/icons/reactivar.png",
+                                        20,
+                                        20
+                                )
+                        );
+
+
+                        // ==========================================
+                        // VER
+                        // ==========================================
+
+                        btnVer.setOnAction(event -> {
+
+                            Turista turistaSeleccionado =
+                                    getTableView()
+                                            .getItems()
+                                            .get(getIndex());
+
+                            abrirConsultaTurista(
+                                    turistaSeleccionado
+                            );
+                        });
+
+
+                        // ==========================================
+                        // EDITAR
+                        // ==========================================
+
+                        btnEditar.setOnAction(event -> {
+
+                            Turista turistaSeleccionado =
+                                    getTableView()
+                                            .getItems()
+                                            .get(getIndex());
+
+                            try {
+
+                                FXMLLoader loader =
+                                        new FXMLLoader(
+                                                getClass().getResource(
+                                                        "/com/example/sistema_municipalidad/formulario-turista-view.fxml"
+                                                )
+                                        );
+
+                                Scene scene =
+                                        new Scene(loader.load());
+
+                                FormTuristaController controller =
+                                        loader.getController();
+
+                                controller.setTurista(
+                                        turistaSeleccionado
+                                );
+
+                                Stage ventana =
+                                        new Stage();
+
+                                ventana.setTitle(
+                                        "Modificar turista"
+                                );
+
+                                ventana.setScene(scene);
+
+                                ventana.initModality(
+                                        Modality.APPLICATION_MODAL
+                                );
+
+                                ventana.showAndWait();
+
+                                actualizarDashboardTuristas();
+
+                            } catch (IOException e) {
+
+                                e.printStackTrace();
+
+                                System.out.println(
+                                        "Error al abrir el formulario de modificación."
+                                );
+                            }
+                        });
+
+
+                        // ==========================================
+                        // ELIMINAR
+                        // ==========================================
+
+                        btnEliminar.setOnAction(event -> {
+
+                            Turista turistaSeleccionado =
+                                    getTableView()
+                                            .getItems()
+                                            .get(getIndex());
+
+
+                            boolean confirmar =
+                                    AlertHelper.mostrarConfirmacion(
+                                            "Eliminar turista",
+                                            "¿Está seguro de eliminar este turista?\n\n"
+                                                    + turistaSeleccionado.getNombre()
+                                                    + " "
+                                                    + turistaSeleccionado.getApellido()
+                                    );
+
+
+                            if (confirmar) {
+
+                                boolean eliminado =
+                                        turistaDAO.eliminar(
+                                                turistaSeleccionado
+                                                        .getIdTurista()
+                                        );
+
+
+                                if (eliminado) {
+
+                                    AlertHelper.mostrarInformacion(
+                                            "Eliminación exitosa",
+                                            "El turista fue eliminado correctamente."
+                                    );
+
+                                    actualizarDashboardTuristas();
+
+                                } else {
+
+                                    AlertHelper.mostrarError(
+                                            "No se pudo eliminar el turista."
+                                    );
+                                }
+                            }
+                        });
+
+
+                        // ==========================================
+                        // REACTIVAR
+                        // ==========================================
+
+                        btnReactivar.setOnAction(event -> {
+
+                            Turista turistaSeleccionado =
+                                    getTableView()
+                                            .getItems()
+                                            .get(getIndex());
+
+
+                            boolean confirmar =
+                                    AlertHelper.mostrarConfirmacion(
+                                            "Reactivar turista",
+                                            "¿Está seguro de reactivar este turista?\n\n"
+                                                    + turistaSeleccionado.getNombre()
+                                                    + " "
+                                                    + turistaSeleccionado.getApellido()
+                                    );
+
+
+                            if (confirmar) {
+
+                                boolean reactivado =
+                                        turistaDAO.reactivar(
+                                                turistaSeleccionado
+                                                        .getIdTurista()
+                                        );
+
+
+                                if (reactivado) {
+
+                                    AlertHelper.mostrarInformacion(
+                                            "Reactivación exitosa",
+                                            "El turista fue reactivado correctamente."
+                                    );
+
+                                    actualizarDashboardTuristas();
+
+                                } else {
+
+                                    AlertHelper.mostrarError(
+                                            "No se pudo reactivar el turista."
+                                    );
+                                }
+                            }
+                        });
+                    }
+
+                    // ==========================================
+                    // MOSTRAR BOTONES SEGÚN ESTADO
+                    // ==========================================
+
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty) {
+
+                            setGraphic(null);
 
                         } else {
-                            Alert error = new Alert(Alert.AlertType.ERROR);
 
-                            error.setTitle("Error");
-                            error.setHeaderText(null);
-                            error.setContentText("No se pudo eliminar el turista.");
-                            error.showAndWait();
+                            Turista turista =
+                                    getTableView()
+                                            .getItems()
+                                            .get(getIndex());
+
+
+                            if (turista.isActivo()) {
+
+                                // TURISTA ACTIVO
+                                contenedorBotonera.getChildren().setAll(
+                                                btnVer,
+                                                btnEditar,
+                                                btnEliminar
+                                        );
+
+                            } else {
+
+                                // TURISTA INACTIVO
+                                contenedorBotonera.getChildren().setAll(btnReactivar);
+                            }
+
+                            setGraphic(contenedorBotonera);
                         }
                     }
-                });
-            }
-
-            // Este método dibuja físicamente los botones en la fila si esta tiene datos.
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(contenedorBotonera);
                 }
-            }
-        });
+        );
     }
 
     private void configurarAccionesUltimosTuristas() {
@@ -384,14 +591,16 @@ public class TuristasController {
                 new TableCell<>() {
                     private final Button btnVer = new Button();
                     {
-                        btnVer.setGraphic(crearIcono("/icons/consulta.png", 20, 20));
+                        btnVer.setGraphic(ImageHelper.crearIcono("/icons/consulta.png", 20, 20));
                         btnVer.setPrefSize(40, 40);
                         btnVer.getStyleClass().addAll("boton-accion", "boton-ver");
                         btnVer.setOnAction(event -> {
                             Turista turista = getTableView().getItems().get(getIndex());
                             abrirConsultaTurista(turista);
                         });
+                        TooltipHelper.registrarTooltipRapido(btnVer, "Ver detalles", 600);
                     }
+
                     @Override
                     protected void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
@@ -428,6 +637,12 @@ public class TuristasController {
         comboProcedencia.setValue(null);
         comboProcedencia.setPromptText("Todas");
         comboProcedencia.setDisable(true);
+    }
+
+    private void cargarFiltroEstado() {
+        comboEstado.getItems().clear();
+        comboEstado.getItems().addAll("Todos", "Activos", "Inactivos");
+        comboEstado.setValue("Activos"); // Valor por defecto
     }
 
     private void cargarEstadisticas() {
@@ -472,34 +687,88 @@ public class TuristasController {
         comboProcedencia.setOnAction(event -> {
             aplicarFiltros();
         });
+        comboEstado.setOnAction(event -> {
+            aplicarFiltros();
+        });
     }
 
     private void aplicarFiltros() {
-
         String criterio = txtBuscar.getText().trim();
         Pais paisSeleccionado = comboPais.getValue();
         Provincia provinciaSeleccionada = comboProcedencia.getValue();
+        String estadoSeleccionado = comboEstado.getValue();
 
         List<Turista> turistas;
 
-        // BÚSQUEDA:
-        if (criterio.isEmpty()) {
-            turistas = turistaDAO.listar();
+        // FILTRO POR ESTADO + BÚSQUEDA:
+
+        if ("Inactivos".equals(estadoSeleccionado)) {
+
+            turistas = turistaDAO.listarInactivos();
+
+        } else if ("Todos".equals(estadoSeleccionado)) {
+
+            turistas = turistaDAO.listarTodos();
+
         } else {
-            turistas = turistaDAO.buscar(criterio);
+
+            // Activos
+            turistas = turistaDAO.listar();
         }
 
 
+        // BÚSQUEDA:
+
+        if (!criterio.isEmpty()) {
+
+            String criterioNormalizado = criterio.toLowerCase();
+
+            turistas.removeIf(turista ->
+                    !turista.getNombre()
+                            .toLowerCase()
+                            .contains(criterioNormalizado)
+
+                            &&
+
+                            !turista.getApellido()
+                                    .toLowerCase()
+                                    .contains(criterioNormalizado)
+
+                            &&
+
+                            !turista.getNumeroDocumento()
+                                    .toLowerCase()
+                                    .contains(criterioNormalizado)
+
+                            &&
+
+                            (turista.getEmail() == null
+                                    ||
+                                    !turista.getEmail()
+                                            .toLowerCase()
+                                            .contains(criterioNormalizado))
+            );
+        }
+
         // FILTRO POR PAÍS:
+
         if (paisSeleccionado != null) {
 
-            turistas.removeIf(turista -> paisSeleccionado.getIdPais() != turista.getIdPais());
+            turistas.removeIf(turista ->
+                            paisSeleccionado.getIdPais()
+                                    != turista.getIdPais()
+            );
         }
 
         // FILTRO POR PROCEDENCIA:
+
         if (provinciaSeleccionada != null) {
 
-            turistas.removeIf(turista -> provinciaSeleccionada.getIdProvincia() != turista.getIdProvincia());
+            turistas.removeIf(
+                    turista ->
+                            provinciaSeleccionada.getIdProvincia()
+                                    != turista.getIdProvincia()
+            );
         }
 
         actualizarTabla(turistas);
@@ -567,13 +836,6 @@ public class TuristasController {
         }
     }
 
-    private ImageView crearIcono(String ruta, double ancho, double alto) {
-        ImageView icono = new ImageView(new Image(getClass().getResourceAsStream(ruta)));
-        icono.setFitWidth(ancho);
-        icono.setFitHeight(alto);
-        icono.setPreserveRatio(true);
-        return icono;
-    }
 
     private void actualizarTabla(List<Turista> lista) {
         // Guardamos la lista completa (ya sea todos, o los filtrados)
@@ -614,22 +876,26 @@ public class TuristasController {
     }
 
     private void configurarLimpiarFiltros() {
+        TooltipHelper.registrarTooltipRapido(btnLimpiarFiltros, "Limpiar filtros");
 
-        imgLimpiarFiltros.setOnMouseClicked(event -> {
+        btnLimpiarFiltros.setOnAction(event -> {
 
-            // Limpiar búsqueda
+            // Limpiar búsqueda:
             txtBuscar.clear();
 
-            // Limpiar país
+            // Limpiar país:
             comboPais.setValue(null);
 
-            // Limpiar procedencia
+            // Limpiar procedencia:
             comboProcedencia.getItems().clear();
             comboProcedencia.setValue(null);
             comboProcedencia.setDisable(true);
             comboProcedencia.setPromptText("Todas");
 
-            // Mostrar nuevamente todos
+            // Restaurar estado:
+            comboEstado.setValue("Activos");
+
+            // Actualizar tabla:
             cargarTuristas();
         });
     }
@@ -655,6 +921,47 @@ public class TuristasController {
         String nombreMes = meses[fechaActual.getMonthValue() - 1];
         int anio = fechaActual.getYear();
         lblMesActual.setText("Durante " + nombreMes + " " + anio);
+    }
+
+    @FXML
+    private void abrirGestionPaises() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/com/example/sistema_municipalidad/paises-view.fxml"
+                    )
+            );
+
+            Parent root = loader.load();
+
+            Stage ventana = new Stage();
+
+            ventana.setTitle("Gestión de países");
+
+            ventana.initModality(
+                    Modality.APPLICATION_MODAL
+            );
+
+            ventana.setScene(
+                    new Scene(root)
+            );
+
+            ventana.showAndWait();
+
+            // Al cerrar Gestión de Países,
+            // actualizamos la información del módulo.
+            cargarPaises();
+            cargarFiltroPaises();
+            cargarFiltroProcedencias();
+            actualizarDashboardTuristas();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            AlertHelper.mostrarError("No se pudo abrir la gestión de países.");
+        }
     }
 
 }

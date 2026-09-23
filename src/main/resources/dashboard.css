@@ -1,0 +1,120 @@
+.root {
+    -fx-background-color: #f5f5f5;
+}
+
+
+/* =========================
+   BARRA SUPERIOR
+   ========================= */
+
+.top-bar {
+    -fx-background-color: #0284c7;
+}
+
+.top-title {
+    -fx-font-family: "System";
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.top-user {
+    -fx-font-family: "System";
+    -fx-font-size: 13px;
+    -fx-text-fill: #bfdbfe;
+}
+
+.logout-button {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #ef4444;
+    -fx-background-radius: 4;
+    -fx-padding: 4 12;
+}
+
+
+/* =========================
+   SIDEBAR
+   ========================= */
+
+.sidebar {
+    -fx-background-color: #e0f2fe;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 0 1 0 0;
+}
+
+.municipalidad-title {
+    -fx-font-family: "System";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0369a1;
+    -fx-padding: 0 0 15 0;
+}
+
+.municipalidad-subtitle {
+    -fx-font-family: "System";
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+    -fx-padding: -10 0 15 0;
+}
+
+.catalogo-title {
+    -fx-font-family: "System";
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748b;
+    -fx-padding: 10 0 5 0;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #334155;
+    -fx-font-size: 13px;
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 4;
+}
+
+.menu-button:hover {
+    -fx-background-color: #bfdbfe;
+    -fx-text-fill: #0369a1;
+}
+
+.backup-label {
+    -fx-font-size: 9px;
+    -fx-text-fill: #94a3b8;
+    -fx-padding: 10 0 5 0;
+}
+
+
+/* =========================
+   CONTENIDO
+   ========================= */
+
+.contenido {
+    -fx-background-color: #f5f5f5;
+}
+
+
+/* =========================
+   BARRA INFERIOR
+   ========================= */
+
+.status-bar {
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1 0 0 0;
+}
+
+.status-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+}
+
+.version-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94a3b8;
+}
+
+.conexion-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #22c55e;
+}

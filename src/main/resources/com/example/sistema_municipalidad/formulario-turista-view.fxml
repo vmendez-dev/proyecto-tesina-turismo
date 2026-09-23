@@ -173,11 +173,19 @@
                         </Label>
                      </children>
                   </HBox>
-                  <JFXComboBox fx:id="cmbPais" prefHeight="30.0" prefWidth="146.0" promptText="Seleccionar...">
+                  <HBox alignment="CENTER_LEFT" spacing="5.0">
                      <VBox.margin>
                         <Insets left="13.0" top="5.0" />
                      </VBox.margin>
-                  </JFXComboBox>
+                     <children>
+                        <JFXComboBox fx:id="cmbPais" prefHeight="30.0" prefWidth="116.0" promptText="Seleccionar..." />
+                        <JFXButton fx:id="btnAgregarPais" onAction="#abrirFormularioPais" prefHeight="22.0" prefWidth="32.0" styleClass="boton-editar" stylesheets="@../../../estilos.css" text="+">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </JFXButton>
+                     </children>
+                  </HBox>
                   <Label prefHeight="18.0" prefWidth="60.0" text="Teléfono" textFill="#0e0640">
                      <font>
                         <Font name="Verdana" size="14.0" />
@@ -284,7 +292,7 @@
             <Insets left="13.0" />
          </VBox.margin>
          <children>
-            <JFXButton fx:id="btnCancelar" onAction="#cancelar" prefHeight="43.0" prefWidth="147.0" style="-fx-background-color: #E60300;" text="Cancelar" textFill="WHITE">
+            <JFXButton fx:id="btnCancelar" onAction="#cancelar" prefHeight="43.0" prefWidth="149.0" styleClass="boton-marco-azul" stylesheets="@../../../estilos.css" text="Cancelar" textFill="WHITE">
                <font>
                   <Font name="Verdana Bold" size="12.0" />
                </font>
@@ -292,7 +300,7 @@
                   <Insets left="6.0" />
                </HBox.margin>
             </JFXButton>
-            <JFXButton fx:id="btnGuardar" onAction="#guardar" prefHeight="43.0" prefWidth="154.0" style="-fx-background-color: #2389DC;" text="Guardar Turista" textFill="WHITE">
+            <JFXButton fx:id="btnGuardar" onAction="#guardar" prefHeight="43.0" prefWidth="176.0" styleClass="boton-primario" stylesheets="@../../../estilos.css" text="Guardar Turista" textFill="WHITE" wrapText="true">
                <HBox.margin>
                   <Insets left="25.0" />
                </HBox.margin>
@@ -302,13 +310,6 @@
                <padding>
                   <Insets left="3.0" />
                </padding>
-               <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../icons/Save%203.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
             </JFXButton>
          </children>
       </HBox>

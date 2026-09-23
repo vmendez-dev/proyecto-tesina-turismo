@@ -37,7 +37,6 @@ public class TipoDocumentoDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al listar tipos de documento.");
             e.printStackTrace();
         }
 

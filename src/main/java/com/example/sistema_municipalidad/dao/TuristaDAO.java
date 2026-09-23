@@ -68,13 +68,10 @@ public class TuristaDAO {
 
             statement.executeUpdate();
 
-            System.out.println("Turista guardado correctamente.");
-
             return true;
 
         } catch (SQLException e) {
 
-            System.out.println("Error al guardar el turista.");
             e.printStackTrace();
 
             return false;
@@ -119,7 +116,88 @@ public class TuristaDAO {
 
         } catch (SQLException e) {
 
-            System.out.println("Error al listar los turistas.");
+            e.printStackTrace();
+        }
+
+        return turistas;
+    }
+
+    // LISTAR TODOS LOS TURISTAS (Incluye activos e inactivos):
+
+    public List<Turista> listarTodos() {
+
+        List<Turista> turistas = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                id_turista,
+                nombre,
+                apellido,
+                id_tipo_documento,
+                numero_documento,
+                fecha_nacimiento,
+                id_provincia,
+                id_pais,
+                telefono,
+                email,
+                observaciones,
+                fecha_registro,
+                activo
+            FROM turistas
+            ORDER BY apellido, nombre
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            while (resultado.next()) {
+                turistas.add(convertirTurista(resultado));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return turistas;
+    }
+
+    // LISTAR TURISTAS INACTIVOS:
+
+    public List<Turista> listarInactivos() {
+
+        List<Turista> turistas = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                id_turista,
+                nombre,
+                apellido,
+                id_tipo_documento,
+                numero_documento,
+                fecha_nacimiento,
+                id_provincia,
+                id_pais,
+                telefono,
+                email,
+                observaciones,
+                fecha_registro,
+                activo
+            FROM turistas
+            WHERE activo = FALSE
+            ORDER BY apellido, nombre
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
+
+            while (resultado.next()) {
+
+                turistas.add(convertirTurista(resultado));
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -163,8 +241,6 @@ public class TuristaDAO {
             }
 
         } catch (SQLException e) {
-
-            System.out.println("Error al buscar el turista.");
             e.printStackTrace();
         }
 
@@ -230,13 +306,10 @@ public class TuristaDAO {
             int filasAfectadas = statement.executeUpdate();
 
             if (filasAfectadas > 0) {
-                System.out.println("Turista modificado correctamente.");
                 return true;
             }
 
         } catch (SQLException e) {
-
-            System.out.println("Error al modificar el turista.");
             e.printStackTrace();
         }
 
@@ -262,13 +335,38 @@ public class TuristaDAO {
             int filasAfectadas = statement.executeUpdate();
 
             if (filasAfectadas > 0) {
-                System.out.println("Turista eliminado correctamente.");
                 return true;
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-            System.out.println("Error al eliminar el turista.");
+        return false;
+    }
+
+    // REACTIVAR TURISTA ELIMINADO:
+
+    public boolean reactivar(int idTurista) {
+
+        String sql = """
+            UPDATE turistas
+            SET activo = TRUE
+            WHERE id_turista = ?
+            """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement = conexion.prepareStatement(sql)) {
+
+            statement.setInt(1, idTurista);
+
+            int filasAfectadas = statement.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                return true;
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -591,32 +689,75 @@ public class TuristaDAO {
     }
 
     public boolean existeDocumentoExceptoId(int idTipoDocumento, String numeroDocumento, int idTurista) {
-
         String sql = """
-            SELECT 1
-            FROM turistas
-            WHERE id_tipo_documento = ?
-              AND numero_documento = ?
-              AND id_turista <> ?
-              AND activo = TRUE
-            LIMIT 1
-            """;
+        SELECT COUNT(*)
+        FROM turistas
+        WHERE id_tipo_documento = ?
+        AND numero_documento = ?
+        AND id_turista <> ?
+    """;
 
-        try (Connection conexion = ConexionDB.conectar();
-             PreparedStatement statement =
-                     conexion.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            statement.setInt(1, idTipoDocumento);
-            statement.setString(2, numeroDocumento);
-            statement.setInt(3, idTurista);
+            ps.setInt(1, idTipoDocumento);
+            ps.setString(2, numeroDocumento);
+            ps.setInt(3, idTurista);
 
-            try (ResultSet resultado = statement.executeQuery()) {
-                return resultado.next();
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
+    }
+
+    //Buscar turistas activos e inactivos por tipo y número de documento:
+    public Turista buscarPorDocumento(int idTipoDocumento, String numeroDocumento) {
+
+        String sql = """
+        SELECT
+            id_turista,
+            nombre,
+            apellido,
+            id_tipo_documento,
+            numero_documento,
+            fecha_nacimiento,
+            id_provincia,
+            id_pais,
+            telefono,
+            email,
+            observaciones,
+            fecha_registro,
+            activo
+        FROM turistas
+        WHERE id_tipo_documento = ?
+          AND numero_documento = ?
+        LIMIT 1
+        """;
+
+        try (Connection conexion = ConexionDB.conectar();
+             PreparedStatement statement =
+                     conexion.prepareStatement(sql)) {
+            statement.setInt(1, idTipoDocumento);
+            statement.setString(2, numeroDocumento);
+
+            try (ResultSet resultado = statement.executeQuery()) {
+
+                if (resultado.next()) {
+                    return convertirTurista(resultado);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
