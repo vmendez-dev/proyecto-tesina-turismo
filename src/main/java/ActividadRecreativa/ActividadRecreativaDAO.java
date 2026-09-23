@@ -80,6 +80,7 @@ public class ActividadRecreativaDAO {
         TableColumn<ActividadRecreativa, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c -> c.getValue().idProperty());
         colId.setPrefWidth(70);
+        colId.setVisible(false);
 
         TableColumn<ActividadRecreativa, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
@@ -265,8 +266,7 @@ public class ActividadRecreativaDAO {
         grid.add(txtDuracion, 1, 2);
         grid.add(new Label("Precio:"), 0, 3);
         grid.add(txtPrecio, 1, 3);
-        grid.add(new Label("Estado:"), 0, 4);
-        grid.add(cbEstado, 1, 4);
+
 
         dialog.getDialogPane().setContent(grid);
 

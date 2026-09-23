@@ -3,6 +3,7 @@ import Evento.EventoDAO;
 import Gastronomia.GastronomiaDAO;
 import PuntoTuristico.PuntoTuristicoDAO;
 import Servicio.ServicioDAO;
+import Servicio.ServicioDAO;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -106,7 +107,7 @@ public class VentanaPrincipal {
         Button btnActividades = crearBotonMenu("🏃 Actividades");
         Button btnAtractivos = crearBotonMenu("🏛 Atractivos");
         Button btnGastronomia = crearBotonMenu("🍽 Gastronomía");
-        Button btnServicios = crearBotonMenu("🔧 Servicios");
+        Button btnServicios = crearBotonMenu("🚨 Servicios");
         Button btnEventos = crearBotonMenu("🎪 Eventos");
 
         btnActividades.setOnAction(e -> seleccionarPestana(0));
@@ -155,7 +156,7 @@ public class VentanaPrincipal {
         tabGastronomia.setContent(new GastronomiaDAO().getVista());
         tabGastronomia.setClosable(false);
 
-        Tab tabServicios = new Tab("🔧 Servicios");
+        Tab tabServicios = new Tab("🚨 Servicios");
         tabServicios.setContent(new ServicioDAO().getVista());
         tabServicios.setClosable(false);
 

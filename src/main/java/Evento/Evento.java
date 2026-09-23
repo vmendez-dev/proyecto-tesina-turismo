@@ -7,16 +7,18 @@ public class Evento {
     private final SimpleStringProperty nombre;
     private final SimpleStringProperty fecha;
     private final SimpleStringProperty lugar;
+    private final SimpleStringProperty horario;
     private final SimpleStringProperty descripcion;
     private final SimpleStringProperty estado;
     private final SimpleStringProperty fechaRegistro;
 
-    public Evento(String id, String nombre, String fecha, String lugar,
+    public Evento(String id, String nombre, String fecha,String horario, String lugar,
                   String descripcion, String estado) {
         this.id = new SimpleStringProperty(id);
         this.nombre = new SimpleStringProperty(nombre);
         this.fecha = new SimpleStringProperty(fecha);
         this.lugar = new SimpleStringProperty(lugar);
+        this.horario = new SimpleStringProperty(horario);
         this.descripcion = new SimpleStringProperty(descripcion);
         this.estado = new SimpleStringProperty(estado);
         this.fechaRegistro = new SimpleStringProperty(java.time.LocalDateTime.now().format(
@@ -27,6 +29,7 @@ public class Evento {
     public String getNombre() { return nombre.get(); }
     public String getFecha() { return fecha.get(); }
     public String getLugar() { return lugar.get(); }
+    public String getHorario() { return horario.get(); }
     public String getDescripcion() { return descripcion.get(); }
     public String getEstado() { return estado.get(); }
     public String getFechaRegistro() { return fechaRegistro.get(); }
@@ -35,6 +38,7 @@ public class Evento {
     public SimpleStringProperty nombreProperty() { return nombre; }
     public SimpleStringProperty fechaProperty() { return fecha; }
     public SimpleStringProperty lugarProperty() { return lugar; }
+    public SimpleStringProperty horarioProperty() { return horario; }
     public SimpleStringProperty descripcionProperty() { return descripcion; }
     public SimpleStringProperty estadoProperty() { return estado; }
     public SimpleStringProperty fechaRegistroProperty() { return fechaRegistro; }
@@ -43,5 +47,6 @@ public class Evento {
     public void setNombre(String nombre) { this.nombre.set(nombre); }
     public void setFecha(String fecha) { this.fecha.set(fecha); }
     public void setLugar(String lugar) { this.lugar.set(lugar); }
+    public void setHorario(String horario) { this.horario.set(horario); }
     public void setDescripcion(String descripcion) { this.descripcion.set(descripcion); }
 }

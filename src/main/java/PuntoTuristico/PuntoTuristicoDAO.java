@@ -80,6 +80,7 @@ public class PuntoTuristicoDAO {
         TableColumn<PuntoTuristico, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c -> c.getValue().idProperty());
         colId.setPrefWidth(70);
+        colId.setVisible(false);
 
         TableColumn<PuntoTuristico, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
@@ -200,9 +201,11 @@ public class PuntoTuristicoDAO {
         TextField txtUbicacion = new TextField();
         txtUbicacion.setPromptText("Ubicación");
         txtUbicacion.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField();
+        TextArea txtDesc = new TextArea();
         txtDesc.setPromptText("Descripción");
         txtDesc.setStyle("-fx-font-size: 12px;");
+        txtDesc.setPrefRowCount(3);
+        txtDesc.setWrapText(true);
         ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList("Natural", "Cultural", "Histórico"));
         cbTipo.setValue("Natural");
         cbTipo.setStyle("-fx-font-size: 12px;");
@@ -255,8 +258,10 @@ public class PuntoTuristicoDAO {
         txtNombre.setStyle("-fx-font-size: 12px;");
         TextField txtUbicacion = new TextField(punto.getUbicacion());
         txtUbicacion.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField(punto.getDescripcion());
+        TextArea txtDesc = new TextArea(punto.getDescripcion());
         txtDesc.setStyle("-fx-font-size: 12px;");
+        txtDesc.setPrefRowCount(3);
+        txtDesc.setWrapText(true);
         ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList("Natural", "Cultural", "Histórico"));
         cbTipo.setValue(punto.getTipo());
         cbTipo.setStyle("-fx-font-size: 12px;");
@@ -272,9 +277,6 @@ public class PuntoTuristicoDAO {
         grid.add(txtDesc, 1, 2);
         grid.add(new Label("Tipo:"), 0, 3);
         grid.add(cbTipo, 1, 3);
-        grid.add(new Label("Estado:"), 0, 4);
-        grid.add(cbEstado, 1, 4);
-
         dialog.getDialogPane().setContent(grid);
 
         dialog.setResultConverter(btn -> {
