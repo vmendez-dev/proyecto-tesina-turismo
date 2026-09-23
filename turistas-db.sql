@@ -1,3 +1,7 @@
+-- =========================================================
+-- BASE DE DATOS
+-- =========================================================
+
 CREATE DATABASE IF NOT EXISTS practica_turismo;
 
 USE practica_turismo;
@@ -42,7 +46,7 @@ CREATE TABLE provincias (
 
 CREATE TABLE tipos_documento (
     id_tipo_documento INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_tipo VARCHAR(50) NULL,
+    nombre_tipo VARCHAR(50) NOT NULL,
 
     CONSTRAINT uq_tipo_documento_nombre
         UNIQUE (nombre_tipo)
