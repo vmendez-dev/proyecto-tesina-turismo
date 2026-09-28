@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -12,219 +11,480 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" stylesheets="@../../../estilos.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.TuristasController">
+
    <content>
-      <AnchorPane style="-fx-background-color: #F4F6F8;" stylesheets="@../../../estilos.css">
+
+      <VBox spacing="20.0" style="-fx-background-color: #f1f5f9;">
+
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+         </padding>
+
          <children>
-            <AnchorPane layoutY="19.0" prefHeight="82.0" prefWidth="1160.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="32.0">
+
+            <!-- ===================================================== -->
+            <!-- TÍTULO -->
+            <!-- ===================================================== -->
+
+            <VBox spacing="4.0">
+
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="82.0" prefWidth="1118.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="0.0">
+
+                  <Label text="Gestión de Turistas" textFill="#0f172a">
+
+                     <font>
+                        <Font name="Segoe UI Bold" size="22.0" />
+                     </font>
+
+                  </Label>
+
+               </children>
+
+            </VBox>
+
+
+            <!-- ===================================================== -->
+            <!-- FILTROS / BÚSQUEDA -->
+            <!-- ===================================================== -->
+
+            <HBox alignment="BOTTOM_LEFT" prefWidth="1073.0" spacing="15.0" styleClass="card">
+
+               <children>
+
+                  <!-- BUSCAR -->
+
+                  <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+
                      <children>
-                        <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="280.0" spacing="5.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="42.0" text="Buscar" />
-                              <TextField fx:id="txtBuscar" prefHeight="33.0" prefWidth="203.0" promptText="🔍 Buscar turista...">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                              </TextField>
-                           </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="150.0" spacing="5.0">
-                           <children>
-                              <Label text="País" />
-                              <JFXComboBox fx:id="comboPais" prefHeight="33.0" prefWidth="150.0" promptText="Todos" styleClass="jfx-combo-box" />
-                           </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="150.0" spacing="5.0">
-                           <children>
-                              <Label text="Procedencia" />
-                              <JFXComboBox fx:id="comboProcedencia" prefHeight="33.0" prefWidth="150.0" promptText="Todas" />
-                           </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="150.0" spacing="5.0">
-                           <children>
-                              <Label text="Estado" />
-                              <JFXComboBox fx:id="comboEstado" prefHeight="33.0" prefWidth="150.0" promptText="Todos" />
-                           </children>
-                        </VBox>
-                        <Button fx:id="btnLimpiarFiltros" mnemonicParsing="false" prefHeight="16.0" prefWidth="27.0">
+
+                        <Label styleClass="lbl-filtro" text="Buscar" />
+
+                        <TextField fx:id="txtBuscar" prefHeight="35.0" promptText="🔍 Buscar turista..." />
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- PAÍS -->
+
+                  <VBox prefWidth="150.0" spacing="4.0">
+
+                     <children>
+
+                        <Label styleClass="lbl-filtro" text="País" />
+
+                        <JFXComboBox fx:id="comboPais" maxWidth="Infinity" prefHeight="35.0" promptText="Todos" styleClass="jfx-combo-box" />
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- PROCEDENCIA -->
+
+                  <VBox prefWidth="150.0" spacing="4.0">
+
+                     <children>
+
+                        <Label styleClass="lbl-filtro" text="Procedencia" />
+
+                        <JFXComboBox fx:id="comboProcedencia" maxWidth="Infinity" prefHeight="35.0" promptText="Todas" styleClass="jfx-combo-box" />
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- ESTADO -->
+
+                  <VBox prefWidth="130.0" spacing="4.0">
+
+                     <children>
+
+                        <Label styleClass="lbl-filtro" text="Estado" />
+
+                        <JFXComboBox fx:id="comboEstado" maxWidth="Infinity" prefHeight="35.0" promptText="Todos" styleClass="jfx-combo-box" />
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- LIMPIAR FILTROS -->
+
+                  <VBox alignment="BOTTOM_CENTER">
+
+                     <children>
+
+                        <Button fx:id="btnLimpiarFiltros" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0">
+
                            <graphic>
+
                               <ImageView fitHeight="19.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+
                                  <image>
+
                                     <Image url="@../../../icons/clean2.png" />
+
                                  </image>
+
                               </ImageView>
+
                            </graphic>
-                           <HBox.margin>
-                              <Insets top="18.0" />
-                           </HBox.margin>
+
                         </Button>
-                        <Region prefHeight="67.0" prefWidth="99.0" HBox.hgrow="ALWAYS" />
-                        <JFXButton fx:id="btnRegistrar" onAction="#abrirFormularioTurista" prefHeight="40.0" prefWidth="44.0" style="-fx-background-color: #1281DF;" text="+" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                           <padding>
-                              <Insets left="10.0" right="9.0" />
-                           </padding>
-                           <HBox.margin>
-                              <Insets top="12.0" />
-                           </HBox.margin>
-                        </JFXButton>
-                        <Button fx:id="btnGestionarPaises" mnemonicParsing="false" onAction="#abrirGestionPaises" prefHeight="38.0" prefWidth="44.0">
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- ESPACIO FLEXIBLE -->
+
+                  <Region prefHeight="55.0" prefWidth="56.0" />
+
+
+                  <!-- REGISTRAR -->
+
+                  <VBox alignment="BOTTOM_CENTER" minWidth="-Infinity">
+
+                     <children>
+                        <Button fx:id="btnRegistrar" onAction="#abrirFormularioTurista" prefHeight="38.0" prefWidth="52.0" styleClass="btn-primary" text=" + " />
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- GESTIONAR PAÍSES -->
+
+                  <VBox alignment="BOTTOM_CENTER">
+
+                     <children>
+
+                        <Button fx:id="btnGestionarPaises" mnemonicParsing="false" onAction="#abrirGestionPaises" prefHeight="38.0" prefWidth="52.0" styleClass="btn-primary">
+
                            <graphic>
-                              <ImageView fitHeight="33.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+
+                              <ImageView fitHeight="28.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+
                                  <image>
+
                                     <Image url="@../../../icons/paises.png" />
+
                                  </image>
+
                               </ImageView>
+
                            </graphic>
-                           <HBox.margin>
-                              <Insets top="10.0" />
-                           </HBox.margin>
+
                         </Button>
+
                      </children>
-                     <padding>
-                        <Insets bottom="8.0" left="10.0" right="10.0" />
-                     </padding>
-                  </HBox>
+
+                  </VBox>
+
                </children>
-            </AnchorPane>
-            <AnchorPane layoutX="31.0" layoutY="114.0" prefHeight="340.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="31.0">
-               <children>
-                  <TableView fx:id="tablaTuristas" layoutX="31.0" layoutY="22.0" prefHeight="279.0" prefWidth="1070.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="39.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="57.0" AnchorPane.topAnchor="22.0">
-                    <columns>
-                      <TableColumn fx:id="columnaNombre" prefWidth="122.0" text="Nombre" />
-                      <TableColumn fx:id="columnaApellido" prefWidth="114.0" text="Apellido" />
-                        <TableColumn fx:id="columnaDocumento" prefWidth="138.0" text="Documento" />
-                        <TableColumn fx:id="columnaProcedencia" prefWidth="147.0" text="Procedencia" />
-                        <TableColumn fx:id="columnaPais" prefWidth="119.0" text="País" />
-                        <TableColumn fx:id="columnaTelefono" prefWidth="142.0" text="Teléfono" />
-                        <TableColumn fx:id="columnaEmail" prefWidth="147.0" text="Email" />
-                        <TableColumn fx:id="columnaAcciones" prefWidth="136.0" text="Acciones" />
-                    </columns>
-                  </TableView>
-                  <Pagination fx:id="paginador" layoutY="296.0" maxPageIndicatorCount="5" prefHeight="44.0" prefWidth="185.0" stylesheets="@../../../estilos.css" AnchorPane.rightAnchor="0.0" />
-                  <Label fx:id="lblMostrando" layoutX="38.0" layoutY="308.0" prefHeight="17.0" prefWidth="238.0" text="Mostrando 1 a 5 de 25 turistas" textFill="#5e6e86">
-                     <font>
-                        <Font name="Verdana" size="11.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-            <HBox alignment="CENTER" layoutX="31.0" layoutY="491.0" prefHeight="118.0" spacing="24.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="31.0">
-               <children>
-                  <AnchorPane prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label layoutX="37.0" layoutY="17.0" text="Total de turistas" textFill="#637cb0">
-                           <font>
-                              <Font name="Verdana Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblTotalTuristas" layoutX="35.0" layoutY="39.0" text="0" textFill="#14579a">
-                           <font>
-                              <Font name="Verdana Bold" size="25.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="36.0" layoutY="78.0" text="Turistas registrados" textFill="#889dbc">
-                           <font>
-                              <Font name="Verdana Bold" size="13.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label layoutX="31.0" layoutY="17.0" text="Registrados este mes" textFill="#637cb0">
-                           <font>
-                              <Font name="Verdana Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblRegistradosMes" layoutX="29.0" layoutY="41.0" text="0" textFill="#319e78">
-                           <font>
-                              <Font name="Verdana Bold" size="25.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblMesActual" layoutX="30.0" layoutY="80.0" prefHeight="16.0" prefWidth="204.0" text="Durante agosto 2026" textFill="#889dbc">
-                           <font>
-                              <Font name="Verdana Bold" size="13.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label layoutX="27.0" layoutY="18.0" text="Procedencias distintas" textFill="#637cb0">
-                           <font>
-                              <Font name="Verdana Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblProcedenciasDistintas" layoutX="25.0" layoutY="42.0" text="0" textFill="#7755ab">
-                           <font>
-                              <Font name="Verdana Bold" size="25.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="26.0" layoutY="81.0" text="De diferentes provincias" textFill="#889dbc">
-                           <font>
-                              <Font name="Verdana Bold" size="13.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="118.0" prefWidth="246.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label layoutX="26.0" layoutY="18.0" text="Países distintos" textFill="#637cb0">
-                           <font>
-                              <Font name="Verdana Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblPaisesDistintos" layoutX="24.0" layoutY="42.0" text="0" textFill="#d39b42">
-                           <font>
-                              <Font name="Verdana Bold" size="25.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="lblListaPaises" layoutX="25.0" layoutY="81.0" prefHeight="16.0" prefWidth="210.0" text="Argentina, Brasil, Chile" textFill="#889dbc">
-                           <font>
-                              <Font name="Verdana Bold" size="13.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-               </children>
+
             </HBox>
-            <AnchorPane layoutY="643.0" prefHeight="343.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 15;" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="31.0">
+
+
+            <!-- ===================================================== -->
+            <!-- TABLA PRINCIPAL -->
+            <!-- ===================================================== -->
+
+            <VBox spacing="10.0" styleClass="card">
+
                <children>
-                  <TableView fx:id="tablaUltimosTuristas" layoutX="20.0" layoutY="59.0" prefHeight="239.0" prefWidth="1071.0" stylesheets="@../../../estilos.css" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="59.0">
+
+                  <TableView fx:id="tablaTuristas" maxHeight="280.0" minHeight="260.0" prefHeight="280.0">
+
+                     <columnResizePolicy>
+
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+
+                     </columnResizePolicy>
+
                      <columns>
-                        <TableColumn fx:id="colUltimoNombre" prefWidth="165.0" text="Nombre" />
-                        <TableColumn fx:id="colUltimoApellido" prefWidth="173.0" text="Apellido" />
-                        <TableColumn fx:id="colUltimoDocumento" minWidth="9.0" prefWidth="184.0" text="Documento" />
-                        <TableColumn fx:id="colUltimaProcedencia" minWidth="0.0" prefWidth="158.0" text="Procedencia" />
-                        <TableColumn fx:id="colUltimoPais" prefWidth="144.0" text="País" />
-                        <TableColumn fx:id="colUltimaFecha" prefWidth="152.0" text="Fecha de registro" />
-                        <TableColumn fx:id="colUltimasAcciones" prefWidth="91.0" text="Acciones" />
+
+                        <TableColumn fx:id="columnaNombre" prefWidth="120.0" text="Nombre" />
+
+                        <TableColumn fx:id="columnaApellido" prefWidth="120.0" text="Apellido" />
+
+                        <TableColumn fx:id="columnaDocumento" prefWidth="135.0" text="Documento" />
+
+                        <TableColumn fx:id="columnaProcedencia" prefWidth="140.0" text="Procedencia" />
+
+                        <TableColumn fx:id="columnaPais" prefWidth="115.0" text="País" />
+
+                        <TableColumn fx:id="columnaTelefono" prefWidth="125.0" text="Teléfono" />
+
+                        <TableColumn fx:id="columnaEmail" prefWidth="170.0" text="Email" />
+
+                        <TableColumn fx:id="columnaAcciones" prefWidth="135.0" text="Acciones" />
+
                      </columns>
+
                   </TableView>
-                  <Label layoutX="61.0" layoutY="20.0" text="Últimos turistas registrados" textFill="#566fa1">
-                     <font>
-                        <Font name="Verdana Bold" size="15.0" />
-                     </font>
-                  </Label>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="28.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../icons/Clock.png" />
-                     </image>
-                  </ImageView>
+
+
+                  <!-- PAGINACIÓN -->
+
+                  <HBox alignment="CENTER_LEFT" spacing="15.0">
+
+                     <children>
+
+                        <Label fx:id="lblMostrando" text="Mostrando 1 a 5 de 25 turistas" textFill="#64748b">
+
+                           <font>
+                              <Font name="Segoe UI" size="11.0" />
+                           </font>
+
+                        </Label>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Pagination fx:id="paginador" maxPageIndicatorCount="5" prefHeight="40.0" prefWidth="185.0" />
+
+                     </children>
+
+                  </HBox>
+
                </children>
-            </AnchorPane>
+
+            </VBox>
+
+
+            <!-- ===================================================== -->
+            <!-- TARJETAS DE MÉTRICAS -->
+            <!-- ===================================================== -->
+
+            <HBox spacing="15.0">
+
+               <children>
+
+
+                  <!-- TOTAL TURISTAS -->
+
+                  <VBox spacing="4.0" styleClass="card-metric" HBox.hgrow="ALWAYS">
+
+                     <children>
+
+                        <Label text="Total de turistas" textFill="#64748b">
+
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblTotalTuristas" text="0" textFill="#0f172a">
+
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label text="Turistas registrados" textFill="#94a3b8">
+
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+
+                        </Label>
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- REGISTRADOS ESTE MES -->
+
+                  <VBox spacing="4.0" styleClass="card-metric" HBox.hgrow="ALWAYS">
+
+                     <children>
+
+                        <Label text="Registrados este mes" textFill="#64748b">
+
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblRegistradosMes" text="0" textFill="#16a34a">
+
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblMesActual" text="Durante el mes actual" textFill="#94a3b8">
+
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+
+                        </Label>
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- PROCEDENCIAS -->
+
+                  <VBox spacing="4.0" styleClass="card-metric" HBox.hgrow="ALWAYS">
+
+                     <children>
+
+                        <Label text="Procedencias distintas" textFill="#64748b">
+
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblProcedenciasDistintas" text="0" textFill="#7c3aed">
+
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label text="De diferentes provincias" textFill="#94a3b8">
+
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+
+                        </Label>
+
+                     </children>
+
+                  </VBox>
+
+
+                  <!-- PAÍSES -->
+
+                  <VBox spacing="4.0" styleClass="card-metric" HBox.hgrow="ALWAYS">
+
+                     <children>
+
+                        <Label text="Países distintos" textFill="#64748b">
+
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblPaisesDistintos" text="0" textFill="#0284c7">
+
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+
+                        </Label>
+
+                        <Label fx:id="lblListaPaises" text="Argentina, Brasil, Chile" textFill="#94a3b8">
+
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+
+                        </Label>
+
+                     </children>
+
+                  </VBox>
+
+               </children>
+
+            </HBox>
+
+
+            <!-- ===================================================== -->
+            <!-- ÚLTIMOS TURISTAS REGISTRADOS -->
+            <!-- ===================================================== -->
+
+            <VBox spacing="10.0" styleClass="card">
+
+               <children>
+
+                  <Label text="🕒 Últimos turistas registrados" textFill="#0f172a">
+
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+
+                  </Label>
+
+
+                  <TableView fx:id="tablaUltimosTuristas" minHeight="240.0" prefHeight="240.0">
+
+                     <columnResizePolicy>
+
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+
+                     </columnResizePolicy>
+
+                     <columns>
+
+                        <TableColumn fx:id="colUltimoNombre" prefWidth="150.0" text="Nombre" />
+
+                        <TableColumn fx:id="colUltimoApellido" prefWidth="150.0" text="Apellido" />
+
+                        <TableColumn fx:id="colUltimoDocumento" prefWidth="160.0" text="Documento" />
+
+                        <TableColumn fx:id="colUltimaProcedencia" prefWidth="150.0" text="Procedencia" />
+
+                        <TableColumn fx:id="colUltimoPais" prefWidth="130.0" text="País" />
+
+                        <TableColumn fx:id="colUltimaFecha" prefWidth="150.0" text="Fecha de registro" />
+
+                        <TableColumn fx:id="colUltimasAcciones" prefWidth="100.0" text="Acciones" />
+
+                     </columns>
+
+                  </TableView>
+
+
+                  <!-- PAGINACIÓN ÚLTIMOS TURISTAS -->
+
+                  <HBox alignment="CENTER_RIGHT" spacing="15.0">
+
+                     <children>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Pagination fx:id="paginadorUltimosTuristas" maxPageIndicatorCount="5" prefHeight="40.0" prefWidth="185.0" />
+
+                     </children>
+
+                  </HBox>
+
+
+               </children>
+
+            </VBox>
+
+
          </children>
-      </AnchorPane>
+
+      </VBox>
+
    </content>
+
 </ScrollPane>

@@ -38,8 +38,16 @@ public class TuristaDAO {
 
             statement.setString(1, turista.getNombre());
             statement.setString(2, turista.getApellido());
-            statement.setInt(3, turista.getIdTipoDocumento());
-            statement.setString(4, turista.getNumeroDocumento());
+            if (turista.getIdTipoDocumento() != null) {
+                statement.setInt(3, turista.getIdTipoDocumento());
+            } else {
+                statement.setNull(3, java.sql.Types.INTEGER);
+            }
+            if (turista.getNumeroDocumento() != null) {
+                statement.setString(4, turista.getNumeroDocumento());
+            } else {
+                statement.setNull(4, java.sql.Types.VARCHAR);
+            }
 
             if (turista.getFechaNacimiento() != null) {
                 statement.setDate(
@@ -273,8 +281,16 @@ public class TuristaDAO {
 
             statement.setString(1, turista.getNombre());
             statement.setString(2, turista.getApellido());
-            statement.setInt(3, turista.getIdTipoDocumento());
-            statement.setString(4, turista.getNumeroDocumento());
+            if (turista.getIdTipoDocumento() != null) {
+                statement.setInt(3, turista.getIdTipoDocumento());
+            } else {
+                statement.setNull(3, java.sql.Types.INTEGER);
+            }
+            if (turista.getNumeroDocumento() != null) {
+                statement.setString(4, turista.getNumeroDocumento());
+            } else {
+                statement.setNull(4, java.sql.Types.VARCHAR);
+            }
 
             if (turista.getFechaNacimiento() != null) {
                 statement.setDate(
@@ -610,7 +626,10 @@ public class TuristaDAO {
         turista.setIdTurista(resultado.getInt("id_turista"));
         turista.setNombre(resultado.getString("nombre"));
         turista.setApellido(resultado.getString("apellido"));
-        turista.setIdTipoDocumento(resultado.getInt("id_tipo_documento"));
+        int idTipoDocumento = resultado.getInt("id_tipo_documento");
+        if (!resultado.wasNull()) {
+            turista.setIdTipoDocumento(idTipoDocumento);
+        }
         turista.setNumeroDocumento(resultado.getString("numero_documento"));
 
         // Fecha de nacimiento
@@ -658,7 +677,11 @@ public class TuristaDAO {
         return turista;
     }
 
-    public boolean existeDocumento(int idTipoDocumento, String numeroDocumento) {
+    public boolean existeDocumento(Integer idTipoDocumento, String numeroDocumento) {
+
+        if (idTipoDocumento == null || numeroDocumento == null) {
+            return false;
+        }
 
         String sql = """
             SELECT 1
@@ -688,7 +711,12 @@ public class TuristaDAO {
         }
     }
 
-    public boolean existeDocumentoExceptoId(int idTipoDocumento, String numeroDocumento, int idTurista) {
+    public boolean existeDocumentoExceptoId(Integer idTipoDocumento, String numeroDocumento, int idTurista) {
+
+        if (idTipoDocumento == null || numeroDocumento == null) {
+            return false;
+        }
+
         String sql = """
         SELECT COUNT(*)
         FROM turistas
@@ -718,7 +746,11 @@ public class TuristaDAO {
     }
 
     //Buscar turistas activos e inactivos por tipo y número de documento:
-    public Turista buscarPorDocumento(int idTipoDocumento, String numeroDocumento) {
+    public Turista buscarPorDocumento(Integer idTipoDocumento, String numeroDocumento) {
+
+        if (idTipoDocumento == null || numeroDocumento == null) {
+            return null;
+        }
 
         String sql = """
         SELECT

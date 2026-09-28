@@ -25,7 +25,12 @@ public class ConsultaTuristaController {
 
         lblNombre.setText(turista.getNombre());
         lblApellido.setText(turista.getApellido());
-        lblDocumento.setText(turista.getNumeroDocumento());
+        lblDocumento.setText(
+                turista.getNumeroDocumento() != null
+                        && !turista.getNumeroDocumento().isBlank()
+                        ? turista.getNumeroDocumento()
+                        : "-"
+        );
 
         if (turista.getFechaNacimiento() != null) {
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -14,7 +14,7 @@
 
 <!-- Enlazamos tu archivo de estilos principal -->
 
-<AnchorPane style="-fx-background-color: #F4F6F9;" stylesheets="@../../../estilos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.PaisesController">
+<AnchorPane prefHeight="591.0" prefWidth="517.0" style="-fx-background-color: #F4F6F9;" stylesheets="@../../../estilos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.sistema_municipalidad.controller.PaisesController">
 
     <VBox spacing="20" AnchorPane.bottomAnchor="25" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30" AnchorPane.topAnchor="25">
 

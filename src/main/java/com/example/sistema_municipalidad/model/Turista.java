@@ -9,7 +9,7 @@ public class Turista {
     private String nombre;
     private String apellido;
 
-    private int idTipoDocumento;
+    private Integer idTipoDocumento;
     private String numeroDocumento;
 
     private LocalDate fechaNacimiento;
@@ -31,7 +31,7 @@ public class Turista {
 
     public Turista(String nombre,
                    String apellido,
-                   int idTipoDocumento,
+                   Integer idTipoDocumento,
                    String numeroDocumento,
                    LocalDate fechaNacimiento,
                    Integer idProvincia,
@@ -55,7 +55,7 @@ public class Turista {
     public Turista(int idTurista,
                    String nombre,
                    String apellido,
-                   int idTipoDocumento,
+                   Integer idTipoDocumento,
                    String numeroDocumento,
                    LocalDate fechaNacimiento,
                    Integer idProvincia,
@@ -105,11 +105,11 @@ public class Turista {
         this.apellido = apellido;
     }
 
-    public int getIdTipoDocumento() {
+    public Integer getIdTipoDocumento() {
         return idTipoDocumento;
     }
 
-    public void setIdTipoDocumento(int idTipoDocumento) {
+    public void setIdTipoDocumento(Integer idTipoDocumento) {
         this.idTipoDocumento = idTipoDocumento;
     }
 

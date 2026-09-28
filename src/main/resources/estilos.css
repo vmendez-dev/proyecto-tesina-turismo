@@ -1,3 +1,7 @@
+/* =========================================================
+   FUENTE GENERAL
+   ========================================================= */
+
 @font-face {
     font-family: 'Inter';
     src: url('fonts/Inter_18pt-Regular.ttf');
@@ -9,238 +13,670 @@
     font-weight: bold;
 }
 
-/* Clase actualizada para corregir el pixelado */
+.root {
+    -fx-font-family: 'Inter';
+    -fx-background-color: #f1f5f9;
+}
+
 .fuente-inter {
     -fx-font-family: 'Inter';
     -fx-font-smoothing-type: gray;
 }
-/* Clase para el botón con marco azul y fondo blanco */
-.boton-marco-azul {
-    -fx-background-color: white;
-    -fx-border-color: #1a73e8;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-text-fill: #1a73e8;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-padding: 8px 25px 8px 25px;
-}
 
-/* Efecto opcional: cambia levemente el fondo al pasar el mouse por encima */
-.boton-marco-azul:hover {
-    -fx-background-color: #f4f8fd;
-}
 
-/* Se aplica al VBox principal que contiene TODO */
-.contenedor-emergente {
-    -fx-background-color: #F4F4F4;
+/* =========================================================
+   TARJETAS / CONTENEDORES
+   ========================================================= */
+
+.card {
+    -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
     -fx-border-radius: 12px;
-    -fx-border-color: #e6e9ed;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 1px;
+    -fx-padding: 18px;
 
-    /* Corta los excesos de los hijos para que el encabezado no tape las esquinas redondeadas */
-    -fx-background-clip: padding-box;
-
-    /* Sombra exterior suave */
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 15, 0, 0, 4);
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.05),
+            8,
+            0.0,
+            0,
+            2
+    );
 }
 
-/* Se aplica al HBox del encabezado azul */
-.encabezado-azul {
-    -fx-background-color: #eef5fc;
-    /* Redondea únicamente las esquinas superiores */
-    -fx-background-radius: 11px 11px 0px 0px;
+.card-metric {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
     -fx-padding: 15px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.04),
+            6,
+            0.0,
+            0,
+            1
+    );
 }
 
-.boton-accion {
-    -fx-background-color: white;
-    -fx-background-radius: 50%;
-    -fx-border-radius: 50%;
+
+/* =========================================================
+   ETIQUETAS DE FILTROS
+   ========================================================= */
+
+.lbl-filtro {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+    -fx-font-weight: bold;
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL - REGISTRAR
+   ========================================================= */
+
+.btn-primary {
+    -fx-background-color: #0284c7;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 8px;
+
+    -fx-padding: 8px 18px;
+
     -fx-cursor: hand;
 }
 
-.boton-ver,
-.boton-editar,
-.boton-reactivar {
-    -fx-border-color: #d9e5f5;
+.btn-primary:hover {
+    -fx-background-color: #0369a1;
 }
 
-.boton-eliminar {
-    -fx-border-color: #ffd0d0;
-}
 
-.boton-accion:hover {
-    -fx-background-color: #f5f9ff;
-}
+/* =========================================================
+   BOTÓN SECUNDARIO
+   ========================================================= */
 
-.boton-eliminar:hover {
-    -fx-background-color: #fff5f5;
-}
-
-.separator *.line {
-    -fx-background-color: #85BEEE; /* Color azul tenue de la imagen */
-    -fx-pref-height: 2px;          /* Grosor mínimo y sutil */
-    -fx-border-color: transparent; /* Elimina sombras por defecto */
-}
-
-.menu-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #1C4D85;
-    -fx-alignment: CENTER_LEFT;
+.btn-secondary {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #334155;
     -fx-font-weight: bold;
-    -fx-background-radius: 3px;
+
+    -fx-background-radius: 8px;
+
+    -fx-padding: 8px 18px;
+
+    -fx-cursor: hand;
 }
 
-.menu-button:hover {
-    -fx-background-color: #DCECF8;
-}
-
-.menu-button-active {
-    -fx-background-color: #CFE6F7;
+.btn-secondary:hover {
+    -fx-background-color: #cbd5e1;
 }
 
 
-/* Estilo general del contenedor del ComboBox */
-.jfx-combo-box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E6E6E6; /* Gris muy fino */
+/* =========================================================
+   BOTÓN LIMPIAR FILTROS
+   ========================================================= */
+
+#btnLimpiarFiltros {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
-    -fx-border-radius: 2px; /* Esquinas casi rectas */
-    -fx-background-radius: 2px;
 
-    /* Reducimos el padding drásticamente para que no se vea inflado */
-    -fx-padding: 4px 8px 4px 8px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
 
-    /* Fuente más pequeña y compacta */
-    -fx-font-family: "Arial", "Segoe UI", sans-serif;
+    -fx-cursor: hand;
+
+    -fx-padding: 5px;
+}
+
+#btnLimpiarFiltros:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+
+/* =========================================================
+   BOTÓN GESTIONAR PAÍSES
+   ========================================================= */
+
+#btnGestionarPaises {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+
+    -fx-cursor: hand;
+
+    -fx-padding: 4px;
+}
+
+#btnGestionarPaises:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+
+/* =========================================================
+   CAMPOS DE TEXTO
+   ========================================================= */
+
+.text-field {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+
+    -fx-padding: 7px 10px;
+
+    -fx-font-family: 'Inter';
     -fx-font-size: 12px;
 }
 
-/* Modificar el color del texto seleccionado */
-.jfx-combo-box .list-cell {
-    -fx-text-fill: #000000; /* Azul grisáceo atenuado */
-    -fx-font-weight: regular;
-    -fx-padding: 0px; /* Elimina márgenes internos del texto */
+.text-field:focused {
+    -fx-border-color: #0284c7;
 }
 
-/* Ocultar las líneas inferiores nativas de Material Design de JFX */
+
+/* =========================================================
+   COMBOBOX JFOENIX
+   ========================================================= */
+
+.jfx-combo-box {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+
+    -fx-padding: 4px 8px;
+
+    -fx-font-family: 'Inter';
+    -fx-font-size: 12px;
+}
+
+
+/* Texto seleccionado */
+
+.jfx-combo-box .list-cell {
+    -fx-text-fill: #334155;
+    -fx-font-weight: normal;
+    -fx-padding: 0px;
+}
+
+
+/* Eliminar líneas inferiores propias de JFoenix */
+
 .jfx-combo-box .input-line,
 .jfx-combo-box .focused-line {
     -fx-background-color: transparent !important;
+
     -fx-pref-height: 0px !important;
     -fx-max-height: 0px !important;
 }
 
-/* Ajustar el botón de la flecha para que no estire el componente */
+
+/* Flecha */
+
 .jfx-combo-box .arrow-button {
-    -fx-padding: 0px 4px 0px 4px;
+    -fx-padding: 0px 4px;
 }
 
-/* Reducir el tamaño de la flecha azul */
 .jfx-combo-box .arrow-button .arrow {
-    -fx-background-color: #0F2C59; /* Azul oscuro */
-    -fx-padding: 2.5px 3.5px; /* Controla el tamaño de la 'V' */
+    -fx-background-color: #475569;
+    -fx-padding: 2.5px 3.5px;
 }
+
+
+/* =========================================================
+   TABLAS
+   ========================================================= */
 
 .table-view {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-color: #E5E7EB;
-    -fx-border-radius: 10;
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #dbeafe;
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
 }
 
+
 /* Encabezado */
+
 .table-view .column-header-background {
-    -fx-background-color: #D9EEF8;
+    -fx-background-color: #e0f2fe;
+
+    -fx-background-radius: 8px 8px 0 0;
+
+    -fx-border-color:
+            transparent
+            transparent
+            #bae6fd
+            transparent;
 }
 
 .table-view .column-header {
-    -fx-background-color: #D9EEF8;
-    -fx-border-color: transparent transparent #C8E3EE transparent;
+    -fx-background-color: transparent;
+
+    -fx-pref-height: 38px;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: #164E70;
+    -fx-text-fill: #0369a1;
+
+    -fx-font-family: 'Inter';
     -fx-font-weight: bold;
+
     -fx-alignment: CENTER;
 }
 
-/* Filas */
-.table-view .table-row-cell {
-    -fx-background-color: white;
-    -fx-border-color: transparent transparent #EEF1F4 transparent;
+.table-view .filler {
+    -fx-background-color: #e0f2fe;
 }
+
+
+/* =========================================================
+   FILAS DE TABLA
+   ========================================================= */
+
+.table-row-cell {
+    -fx-cell-size: 40px;
+
+    -fx-border-color:
+            transparent
+            transparent
+            #f1f5f9
+            transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fafcfd;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f0f7fa;
+}
+
+
+/* Celdas */
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+
+    -fx-padding: 5px;
+
+    -fx-text-fill: #374151;
+
+    -fx-font-family: 'Inter';
+    -fx-font-size: 12px;
+
+    -fx-alignment: CENTER;
+}
+
+
+/* Selección */
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #dceff8;
+
+    -fx-text-fill: #163a4d;
+}
+
 /* Tabla de gestión de países */
 .tabla-paises .table-row-cell {
     -fx-cell-size: 32px;
 }
 
-/* Alternar color de filas */
-.table-view .table-row-cell:odd {
-    -fx-background-color: #FAFCFD;
-}
-
-/* Cuando pasás el mouse */
-.table-view .table-row-cell:hover {
-    -fx-background-color: #F0F7FA;
-}
-
-.table-view .table-cell {
+.tabla-paises .table-cell {
     -fx-border-color: transparent;
-    -fx-padding: 5px;
+    -fx-padding: 5px 10px 5px 18px;
     -fx-text-fill: #374151;
-    -fx-alignment: CENTER;
+    -fx-alignment: CENTER_LEFT;
 }
 
-/* Selección */
-.table-view .table-row-cell:selected {
-    -fx-background-color: #DCEFF8;
-    -fx-text-fill: #163A4D;
+.tabla-paises .column-header .label {
+    -fx-text-fill: #164E70;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px 10px 5px 18px;
+}
+
+/* =========================================================
+   BOTONES DE ACCIONES DE LA TABLA
+   ========================================================= */
+
+.boton-accion {
+    -fx-background-color: #ffffff;
+
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+
+    -fx-cursor: hand;
+
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+    -fx-pref-width: 35px;
+    -fx-pref-height: 35px;
+
+    -fx-padding: 3px;
+}
+
+
+/* Ver */
+
+.boton-ver {
+    -fx-border-color: #d9e5f5;
+}
+
+
+/* Modificar */
+
+.boton-editar {
+    -fx-border-color: #d9e5f5;
+}
+
+
+/* Reactivar */
+
+.boton-reactivar {
+    -fx-border-color: #d9e5f5;
+}
+
+
+/* Eliminar */
+
+.boton-eliminar {
+    -fx-border-color: #ffd0d0;
+}
+
+
+/* Hover general */
+
+.boton-accion:hover {
+    -fx-background-color: #f5f9ff;
+}
+
+
+/* Hover eliminar */
+
+.boton-eliminar:hover {
+    -fx-background-color: #fff5f5;
+}
+
+
+/* =========================================================
+   PAGINACIÓN
+   ========================================================= */
+
+.pagination {
+    -fx-background-color: transparent;
 }
 
 .pagination .pagination-control {
     -fx-background-color: transparent;
 }
-.pagination .number-button:selected {
-    -fx-background-color: #2196F3; /* Tu color azul */
-    -fx-text-fill: white;
+
+.pagination .number-button {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #e2e8f0;
+
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+
+    -fx-cursor: hand;
 }
 
-/* Botón principal de acción (Guardar, Confirmar, etc.) */
+.pagination .number-button:hover {
+    -fx-background-color: #f0f9ff;
+}
+
+.pagination .number-button:selected {
+    -fx-background-color: #0284c7;
+
+    -fx-text-fill: #ffffff;
+}
+
+
+/* =========================================================
+   CONTROLES DE PAGINACIÓN
+   ========================================================= */
+
+.pagination .left-arrow-button,
+.pagination .right-arrow-button {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #e2e8f0;
+
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+}
+
+.pagination .left-arrow-button:hover,
+.pagination .right-arrow-button:hover {
+    -fx-background-color: #f0f9ff;
+}
+
+
+/* =========================================================
+   SEPARADORES
+   ========================================================= */
+
+.separator *.line {
+    -fx-background-color: #85beee;
+
+    -fx-pref-height: 1px;
+
+    -fx-border-color: transparent;
+}
+
+
+/* =========================================================
+   MENÚS
+   ========================================================= */
+
+.menu-button {
+    -fx-background-color: transparent;
+
+    -fx-text-fill: #1c4d85;
+
+    -fx-alignment: CENTER_LEFT;
+
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 3px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #dcecf8;
+}
+
+.menu-button-active {
+    -fx-background-color: #cfe6f7;
+}
+
+
+/* =========================================================
+   BOTÓN MARCO AZUL
+   ========================================================= */
+
+.boton-marco-azul {
+    -fx-background-color: #ffffff;
+
+    -fx-border-color: #1a73e8;
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+
+    -fx-text-fill: #1a73e8;
+
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+
+    -fx-padding: 8px 20px;
+}
+
+.boton-marco-azul:hover {
+    -fx-background-color: #f4f8fd;
+}
+
+
+/* =========================================================
+   BOTONES PRIMARIOS ANTIGUOS
+   ========================================================= */
+
 .boton-primario {
     -fx-background-color: #1a73e8;
-    -fx-text-fill: white;
+
+    -fx-text-fill: #ffffff;
+
     -fx-font-weight: bold;
-    -fx-padding: 8px 25px 8px 25px;
-    -fx-background-radius: 4px;
+
+    -fx-padding: 8px 25px;
+
+    -fx-background-radius: 6px;
+
     -fx-cursor: hand;
 }
 
 .boton-primario:hover {
-    -fx-background-color: #155dbb; /* Un azul un poco más oscuro al pasar el mouse */
+    -fx-background-color: #155dbb;
 }
 
-/* Estilo unificado para las cajas de texto de los formularios */
+
+/* =========================================================
+   CAMPOS DE FORMULARIO
+   ========================================================= */
+
 .campo-texto {
     -fx-padding: 8px;
+
     -fx-background-radius: 4px;
-    -fx-border-color: #E5E7EB;
+
+    -fx-border-color: #e5e7eb;
     -fx-border-radius: 4px;
-    -fx-background-color: white;
+
+    -fx-background-color: #ffffff;
 }
 
 .campo-texto:focused {
-    -fx-border-color: #1a73e8; /* Borde azul al hacer clic para escribir */
+    -fx-border-color: #1a73e8;
 }
 
-/* Título para los encabezados de las ventanas modales */
+
+/* =========================================================
+   TÍTULOS DE MODALES
+   ========================================================= */
+
 .titulo-modal {
-    -fx-text-fill: #164E70;
+    -fx-text-fill: #164e70;
+
     -fx-font-size: 16px;
+
     -fx-font-weight: bold;
 }
 
 
+/* =========================================================
+   BADGES DE ESTADO
+   ========================================================= */
+
+.badge-activo {
+    -fx-background-color: #dcfce7;
+
+    -fx-text-fill: #15803d;
+
+    -fx-font-weight: bold;
+
+    -fx-font-size: 11px;
+
+    -fx-padding: 4px 12px;
+
+    -fx-background-radius: 12px;
+
+    -fx-border-color: #86efac;
+
+    -fx-border-radius: 12px;
+
+    -fx-border-width: 1px;
+}
+
+.badge-inactivo {
+    -fx-background-color: #fee2e2;
+
+    -fx-text-fill: #b91c1c;
+
+    -fx-font-weight: bold;
+
+    -fx-font-size: 11px;
+
+    -fx-padding: 4px 12px;
+
+    -fx-background-radius: 12px;
+
+    -fx-border-color: #fca5a5;
+
+    -fx-border-radius: 12px;
+
+    -fx-border-width: 1px;
+}
+
+
+/* =========================================================
+   CONTENEDOR EMERGENTE
+   ========================================================= */
+
+.contenedor-emergente {
+    -fx-background-color: #f4f4f4;
+
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+
+    -fx-border-color: #e6e9ed;
+    -fx-border-width: 1px;
+
+    -fx-background-clip: padding-box;
+
+    -fx-effect: dropshadow(
+            three-pass-box,
+            rgba(0, 0, 0, 0.08),
+            15,
+            0,
+            0,
+            4
+    );
+}
+
+
+/* =========================================================
+   ENCABEZADO AZUL
+   ========================================================= */
+
+.encabezado-azul {
+    -fx-background-color: #eef5fc;
+
+    -fx-background-radius: 11px 11px 0px 0px;
+
+    -fx-padding: 15px;
+}

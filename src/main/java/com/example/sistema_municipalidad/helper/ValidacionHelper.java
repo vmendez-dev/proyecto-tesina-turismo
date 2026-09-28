@@ -120,6 +120,14 @@ public class ValidacionHelper {
         }
     }
 
+    public static boolean esTipoDni(String tipoDocumento) {
+        return normalizarTipoDocumento(tipoDocumento).contains("DNI");
+    }
+
+    public static boolean contieneSoloNumeros(String texto) {
+        return texto != null && texto.matches("^\\d+$");
+    }
+
 
     public static String obtenerMensajeDocumentoInvalido(String tipoDocumento) {
         String tipoNormalizado = normalizarTipoDocumento(tipoDocumento);

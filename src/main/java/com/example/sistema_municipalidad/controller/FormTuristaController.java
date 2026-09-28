@@ -1,5 +1,6 @@
 package com.example.sistema_municipalidad.controller;
 
+import com.example.sistema_municipalidad.helper.TooltipHelper;
 import com.example.sistema_municipalidad.model.Pais;
 import com.example.sistema_municipalidad.dao.PaisDAO;
 import com.example.sistema_municipalidad.model.Turista;
@@ -74,6 +75,7 @@ public class FormTuristaController {
         ValidacionHelper.permitirSoloLetras(txtNombre);
         ValidacionHelper.permitirSoloLetras(txtApellido);
         ValidacionHelper.permitirSoloTelefono(txtTelefono);
+        TooltipHelper.registrarTooltipRapido(btnAgregarPais, "Registrar un nuevo país");
     }
 
     public void setTurista(Turista turista) {
@@ -137,10 +139,14 @@ public class FormTuristaController {
             return;
         }
 
-        // Se comprueba documento duplicado:
-        int idTipoDocumento = cmbTipoDocumento.getValue().getIdTipoDocumento();
-
+        TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
+        Integer idTipoDocumento = tipoDocumento != null
+                ? tipoDocumento.getIdTipoDocumento()
+                : null;
         String numeroDocumento = txtNumeroDocumento.getText().trim();
+        if (numeroDocumento.isEmpty()) {
+            numeroDocumento = null;
+        }
 
         String telefono = txtTelefono.getText().trim();
         if (telefono.startsWith("+")) {
@@ -150,7 +156,9 @@ public class FormTuristaController {
         if (turistaEdicion == null) {
 
             //Alta:
-            Turista turistaExistente = turistaDAO.buscarPorDocumento(idTipoDocumento, numeroDocumento);
+            Turista turistaExistente = idTipoDocumento != null && numeroDocumento != null
+                    ? turistaDAO.buscarPorDocumento(idTipoDocumento, numeroDocumento)
+                    : null;
 
             if (turistaExistente != null) {
                 //El documento pertenece a un turista ACTIVO
@@ -175,7 +183,12 @@ public class FormTuristaController {
         } else {
 
             //Modificación:
-            if (turistaDAO.existeDocumentoExceptoId(idTipoDocumento, numeroDocumento, turistaEdicion.getIdTurista())) {
+            if (idTipoDocumento != null
+                    && numeroDocumento != null
+                    && turistaDAO.existeDocumentoExceptoId(
+                    idTipoDocumento,
+                    numeroDocumento,
+                    turistaEdicion.getIdTurista())) {
                 AlertHelper.mostrarError("Otro turista ya tiene ese tipo y número de documento.");
                 txtNumeroDocumento.requestFocus();
                 return;
@@ -185,7 +198,6 @@ public class FormTuristaController {
 
         // OBTENER VALORES DE LOS COMBOBOX:
 
-        TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
         Pais pais = cmbPais.getValue();
 
         Provincia provincia = cmbProcedencia.getValue();
@@ -197,8 +209,8 @@ public class FormTuristaController {
         Turista turista = new Turista(
                 txtNombre.getText().trim(),
                 txtApellido.getText().trim(),
-                tipoDocumento.getIdTipoDocumento(),
-                txtNumeroDocumento.getText().trim(),
+                idTipoDocumento,
+                numeroDocumento,
                 dateFechaNacimiento.getValue(),
                 idProvincia,
                 pais.getIdPais(),
@@ -281,56 +293,63 @@ public class FormTuristaController {
             }
         }
 
-        // TIPO DE DOCUMENTO
-        if (cmbTipoDocumento.getValue() == null) {
-
-            errores.add("Debe seleccionar un 'Tipo de documento'.");
-
-            if (primerError == null) {
-                primerError = cmbTipoDocumento;
-            }
-        }
-
         // DOCUMENTO
+        TipoDocumento tipoDocumento = cmbTipoDocumento.getValue();
         String numeroDocumento = txtNumeroDocumento.getText().trim();
 
-        if (numeroDocumento.isEmpty()) {
-
-            errores.add("El campo 'Documento' es obligatorio.");
-
+        if (tipoDocumento != null && numeroDocumento.isEmpty()) {
+            errores.add("Si selecciona un tipo de documento, debe ingresar el número de documento.");
             if (primerError == null) {
                 primerError = txtNumeroDocumento;
             }
 
-        } else {
+        } else if (tipoDocumento == null && !numeroDocumento.isEmpty()) {
+            errores.add("Si ingresa un número de documento, debe seleccionar el tipo de documento.");
+            if (primerError == null) {
+                primerError = cmbTipoDocumento;
+            }
+        } else if (tipoDocumento != null) {
 
             String nombreTipoDocumento =
-                    cmbTipoDocumento.getValue() != null
-                            ? cmbTipoDocumento.getValue().getNombreTipo()
-                            : "";
+                    tipoDocumento.getNombreTipo();
 
-            // Normalizar documento
-            String documentoNormalizado =
-                    ValidacionHelper.normalizarDocumento(
-                            nombreTipoDocumento,
-                            numeroDocumento
-                    );
+            boolean dniFormatoInvalido =
+                    ValidacionHelper.esTipoDni(nombreTipoDocumento)
+                            && !ValidacionHelper.contieneSoloNumeros(numeroDocumento);
 
-            txtNumeroDocumento.setText(documentoNormalizado);
+            if (dniFormatoInvalido) {
 
-            // Validar documento
-            boolean documentoValido =
-                    ValidacionHelper.esDocumentoValido(
-                            nombreTipoDocumento,
-                            documentoNormalizado
-                    );
-
-            if (!documentoValido) {
-
-                errores.add(ValidacionHelper.obtenerMensajeDocumentoInvalido(nombreTipoDocumento));
+                errores.add("El DNI solo puede contener números.");
 
                 if (primerError == null) {
                     primerError = txtNumeroDocumento;
+                }
+            }
+
+            if (!dniFormatoInvalido) {
+                // Normalizar documento
+                String documentoNormalizado =
+                        ValidacionHelper.normalizarDocumento(
+                                nombreTipoDocumento,
+                                numeroDocumento
+                        );
+
+                txtNumeroDocumento.setText(documentoNormalizado);
+
+                // Validar documento
+                boolean documentoValido =
+                        ValidacionHelper.esDocumentoValido(
+                                nombreTipoDocumento,
+                                documentoNormalizado
+                        );
+
+                if (!documentoValido) {
+
+                    errores.add(ValidacionHelper.obtenerMensajeDocumentoInvalido(nombreTipoDocumento));
+
+                    if (primerError == null) {
+                        primerError = txtNumeroDocumento;
+                    }
                 }
             }
         }
@@ -471,17 +490,23 @@ public class FormTuristaController {
     private void cargarDatosTurista(Turista turista) {
         txtNombre.setText(turista.getNombre());
         txtApellido.setText(turista.getApellido());
-        txtNumeroDocumento.setText(turista.getNumeroDocumento());
+        txtNumeroDocumento.setText(
+                turista.getNumeroDocumento() != null
+                        ? turista.getNumeroDocumento()
+                        : ""
+        );
         dateFechaNacimiento.setValue(turista.getFechaNacimiento());
         txtTelefono.setText(turista.getTelefono());
         txtEmail.setText(turista.getEmail());
         txtObservaciones.setText(turista.getObservaciones());
 
-        // Seleccionar tipo de documento
-        for (TipoDocumento tipo : cmbTipoDocumento.getItems()) {
-            if (tipo.getIdTipoDocumento() == turista.getIdTipoDocumento()) {
-                cmbTipoDocumento.setValue(tipo);
-                break;
+        // Seleccionar tipo de documento si el turista tiene documento
+        if (turista.getIdTipoDocumento() != null) {
+            for (TipoDocumento tipo : cmbTipoDocumento.getItems()) {
+                if (tipo.getIdTipoDocumento() == turista.getIdTipoDocumento()) {
+                    cmbTipoDocumento.setValue(tipo);
+                    break;
+                }
             }
         }
 
@@ -541,6 +566,8 @@ public class FormTuristaController {
 
             ventana.setTitle("Registrar país");
             ventana.setScene(new Scene(root));
+
+
             ventana.initModality(Modality.APPLICATION_MODAL);
             ventana.showAndWait();
 

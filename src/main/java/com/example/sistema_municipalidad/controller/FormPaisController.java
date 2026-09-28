@@ -125,25 +125,22 @@ public class FormPaisController {
 
 
         // --------------------------------------------------------
-        // VALIDAR DUPLICADO
-        // --------------------------------------------------------
-
-        if (paisDAO.existeNombre(nombrePais)) {
-
-            AlertHelper.mostrarError(
-                    "El país '" + nombrePais + "' ya está registrado."
-            );
-
-            txtNombrePais.requestFocus();
-
-            return;
-        }
-
-        // --------------------------------------------------------
-        // ALTA
-        // --------------------------------------------------------
+// ALTA
+// --------------------------------------------------------
 
         if (paisEdicion == null) {
+
+            // Verificar si ya existe otro país con ese nombre
+            if (paisDAO.existeNombre(nombrePais)) {
+
+                AlertHelper.mostrarError(
+                        "El país '" + nombrePais + "' ya está registrado."
+                );
+
+                txtNombrePais.requestFocus();
+
+                return;
+            }
 
             Pais nuevoPais = new Pais();
 
@@ -152,6 +149,7 @@ public class FormPaisController {
             boolean guardado = paisDAO.guardar(nuevoPais);
 
             if (guardado) {
+
                 paisGuardado = nuevoPais;
 
                 AlertHelper.mostrarInformacion(

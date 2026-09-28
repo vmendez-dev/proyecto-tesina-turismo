@@ -45,7 +45,8 @@ public class TuristasController {
     @FXML private JFXComboBox<Provincia> comboProcedencia;
     @FXML private JFXComboBox<Pais> comboPais;
     @FXML private JFXComboBox<String> comboEstado;
-    @FXML private JFXButton btnRegistrar;
+    @FXML private Button btnRegistrar;
+    @FXML private Button btnGestionarPaises;
     @FXML private Button btnLimpiarFiltros;
     @FXML private Label lblTotalTuristas;
     @FXML private Label lblRegistradosMes;
@@ -82,11 +83,16 @@ public class TuristasController {
     private final Map<Integer, String> paises = new HashMap<>();
     private final Map<Integer, String> provincias = new HashMap<>();
 
-    // Paginación
+    // Paginación tabla principal
     @FXML private Pagination paginador;
     @FXML private Label lblMostrando;
     private final int filasPorPagina = 5;
-    private List<Turista> listaActualTuristas = new ArrayList<>(); // Guarda la lista filtrada completa
+    private List<Turista> listaActualTuristas = new ArrayList<>();
+
+    // Paginación últimos turistas registrados
+    @FXML private Pagination paginadorUltimosTuristas;
+    private final int filasUltimosPorPagina = 5;
+    private List<Turista> listaActualUltimosTuristas = new ArrayList<>();
 
     @FXML
     private void initialize() {
@@ -111,8 +117,11 @@ public class TuristasController {
         configurarFiltros();
         configurarLimpiarFiltros();
         configurarAccionesUltimosTuristas();
+        configurarPaginadorUltimosTuristas();
 
         ValidacionHelper.limitarLongitud(txtBuscar, 50);
+        TooltipHelper.registrarTooltipRapido(btnRegistrar, "Registrar nuevo turista");
+        TooltipHelper.registrarTooltipRapido(btnGestionarPaises, "Gestionar países");
 
         // NUEVO: Escuchar cambios en la página
         if (paginador != null) {
@@ -188,7 +197,11 @@ public class TuristasController {
         //Segunda tabla (últimos turistas):
         colUltimoNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colUltimoApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
-        colUltimoDocumento.setCellValueFactory(new PropertyValueFactory<>("numeroDocumento"));
+        colUltimoDocumento.setCellValueFactory(
+                turista -> new SimpleStringProperty(
+                        mostrarGuionSiVacio(turista.getValue().getNumeroDocumento())
+                )
+        );
 
         // PROCEDENCIA:
         columnaProcedencia.setCellValueFactory(
@@ -269,8 +282,25 @@ public class TuristasController {
     }
 
     private void cargarUltimosTuristas() {
-        List<Turista> turistas = turistaDAO.listarUltimosRegistrados(5);
-        tablaUltimosTuristas.getItems().setAll(turistas);
+
+        // Traemos una cantidad amplia para poder paginarla
+        List<Turista> turistas = turistaDAO.listarUltimosRegistrados(100);
+
+        listaActualUltimosTuristas = turistas;
+
+        int totalTuristas = turistas.size();
+
+        int totalPaginas = (int) Math.ceil(
+                (double) totalTuristas / filasUltimosPorPagina
+        );
+
+        paginadorUltimosTuristas.setPageCount(
+                totalPaginas == 0 ? 1 : totalPaginas
+        );
+
+        paginadorUltimosTuristas.setCurrentPageIndex(0);
+
+        mostrarPaginaUltimosTuristas(0);
     }
 
     private void actualizarDashboardTuristas() {
@@ -735,10 +765,11 @@ public class TuristasController {
                                     .contains(criterioNormalizado)
 
                             &&
-
-                            !turista.getNumeroDocumento()
-                                    .toLowerCase()
-                                    .contains(criterioNormalizado)
+                            (turista.getNumeroDocumento() == null
+                                    ||
+                                    !turista.getNumeroDocumento()
+                                            .toLowerCase()
+                                            .contains(criterioNormalizado))
 
                             &&
 
@@ -791,6 +822,9 @@ public class TuristasController {
             //ventana.initStyle(StageStyle.UNDECORATED); //coloca la ventana sin bordes
             ventana.setTitle("Registrar turista");
             ventana.setScene(scene);
+
+            ventana.setMinWidth(340); // Un poquito más del ancho del FXML para los bordes
+            ventana.setMinHeight(700); // Un poquito más del alto del FXML
 
             // Hace que sea una ventana modal
             ventana.initModality(Modality.APPLICATION_MODAL);
@@ -898,6 +932,42 @@ public class TuristasController {
             // Actualizar tabla:
             cargarTuristas();
         });
+    }
+
+    private void configurarPaginadorUltimosTuristas() {
+
+        paginadorUltimosTuristas
+                .currentPageIndexProperty()
+                .addListener((obs, paginaAnterior, paginaNueva) -> {
+
+                    mostrarPaginaUltimosTuristas(
+                            paginaNueva.intValue()
+                    );
+                });
+    }
+
+
+    private void mostrarPaginaUltimosTuristas(int indicePagina) {
+
+        if (listaActualUltimosTuristas == null ||
+                listaActualUltimosTuristas.isEmpty()) {
+
+            tablaUltimosTuristas.getItems().clear();
+
+            return;
+        }
+
+        int desde = indicePagina * filasUltimosPorPagina;
+
+        int hasta = Math.min(
+                desde + filasUltimosPorPagina,
+                listaActualUltimosTuristas.size()
+        );
+
+        List<Turista> subLista =
+                listaActualUltimosTuristas.subList(desde, hasta);
+
+        tablaUltimosTuristas.getItems().setAll(subLista);
     }
 
     private void cargarMesActual() {

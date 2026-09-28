@@ -23,13 +23,13 @@ public class Dashboard extends Application {
         Region root = fxmlLoader.load();
 
         // 2. Pasamos el root a la escena
-        Scene scene = new Scene(root, 1420, 1000);  //1140, 728
+        Scene scene = new Scene(root, 1420, 1000);  //1420, 1000
 
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Sistema de Turismo");
 
         stage.setMinWidth(1024);
-        stage.setMinHeight(700);
+        stage.setMinHeight(768);
 
         stage.setScene(scene);
 
