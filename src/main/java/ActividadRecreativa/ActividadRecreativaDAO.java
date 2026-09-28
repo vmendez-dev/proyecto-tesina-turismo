@@ -72,7 +72,11 @@ public class ActividadRecreativaDAO {
         btnNuevo.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 4 12; -fx-font-size: 12px;");
         btnNuevo.setOnAction(e -> mostrarDialogoAlta());
 
-        filterBar.getChildren().addAll(txtSearch, new Label("Estado"), cbEstado, spacer, btnNuevo);
+        Button btnPapelera = new Button("🗑 Papelera");
+        btnPapelera.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 4 12; -fx-font-size: 12px;");
+        btnPapelera.setOnAction(e -> mostrarDialogoPapelera());
+
+        filterBar.getChildren().addAll(txtSearch, new Label("Estado"), cbEstado, spacer, btnPapelera, btnNuevo);
 
         table = new TableView<>();
         table.setPrefHeight(280);
@@ -94,9 +98,6 @@ public class ActividadRecreativaDAO {
         colDuracion.setCellValueFactory(c -> c.getValue().duracionProperty());
         colDuracion.setPrefWidth(80);
 
-        TableColumn<ActividadRecreativa, String> colPrecio = new TableColumn<>("Precio");
-        colPrecio.setCellValueFactory(c -> c.getValue().precioProperty());
-        colPrecio.setPrefWidth(80);
 
         TableColumn<ActividadRecreativa, String> colEstado = new TableColumn<>("Estado");
         colEstado.setCellValueFactory(c -> c.getValue().estadoProperty());
@@ -115,7 +116,9 @@ public class ActividadRecreativaDAO {
                 }
             }
         });
-
+        TableColumn<ActividadRecreativa, String> colHorario = new TableColumn<>("Horario");
+        colHorario.setCellValueFactory(c -> c.getValue().horarioProperty());
+        colHorario.setPrefWidth(140);
         TableColumn<ActividadRecreativa, Void> colAcciones = new TableColumn<>("Acciones");
         colAcciones.setPrefWidth(120);
         colAcciones.setCellFactory(param -> new TableCell<ActividadRecreativa, Void>() {
@@ -138,7 +141,7 @@ public class ActividadRecreativaDAO {
                     ActividadRecreativa a = getTableView().getItems().get(getIndex());
                     String nuevoEstado = a.getEstado().equals("Activa") ? "Inactiva" : "Activa";
                     db.cambiarEstadoActividad(a.getId(), nuevoEstado);
-                    table.refresh();
+                    filtrar();
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -154,7 +157,7 @@ public class ActividadRecreativaDAO {
             }
         });
 
-        table.getColumns().addAll(colId, colNombre, colDesc, colDuracion, colPrecio, colEstado, colAcciones);
+        table.getColumns().addAll(colId, colNombre, colDesc, colDuracion, colEstado, colHorario, colAcciones);
         table.setItems(db.getActividades());
 
         container.getChildren().addAll(filterBar, table);
@@ -176,6 +179,13 @@ public class ActividadRecreativaDAO {
         table.setItems(filtrados);
     }
 
+    private HBox crearLabelObligatorio(String texto) {
+        Label lbl = new Label(texto + ":");
+        Label asterisco = new Label(" *");
+        asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+        return new HBox(lbl, asterisco);
+    }
+
     private void mostrarDialogoAlta() {
         Dialog<ActividadRecreativa> dialog = new Dialog<>();
         dialog.setTitle("Nueva Actividad");
@@ -192,37 +202,93 @@ public class ActividadRecreativaDAO {
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre");
         txtNombre.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField();
+        TextArea txtDesc = new TextArea();
         txtDesc.setPromptText("Descripción");
         txtDesc.setStyle("-fx-font-size: 12px;");
+        txtDesc.setPrefRowCount(3);
+        txtDesc.setWrapText(true);
+        txtDesc.setPrefWidth(250);
+
+        Label lblContador = new Label("0/255 caracteres");
+        lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
+        txtDesc.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() > 255) {
+                txtDesc.setText(oldVal);
+                return;
+            }
+            lblContador.setText(newVal.length() + "/255 caracteres");
+            if (newVal.length() >= 230) {
+                lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #dc2626; -fx-font-weight: bold;");
+            } else {
+                lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
+            }
+        });
         TextField txtDuracion = new TextField();
         txtDuracion.setPromptText("Duración (ej: 3 horas)");
         txtDuracion.setStyle("-fx-font-size: 12px;");
-        TextField txtPrecio = new TextField();
-        txtPrecio.setPromptText("Precio");
-        txtPrecio.setStyle("-fx-font-size: 12px;");
-        ComboBox<String> cbEstado = new ComboBox<>(FXCollections.observableArrayList("Activa", "Inactiva"));
-        cbEstado.setValue("Activa");
-        cbEstado.setStyle("-fx-font-size: 12px;");
+        TextField txtHorario = new TextField();
+        txtHorario.setPromptText("Ej: Lun a Vie 9 a 18hs");
+        txtHorario.setStyle("-fx-font-size: 12px;");
 
-        grid.add(new Label("Nombre:"), 0, 0);
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+        lblError.setWrapText(true);
+        lblError.setMaxWidth(Double.MAX_VALUE);
+        lblError.setPrefWidth(320);
+        lblError.setVisible(false);
+
+        java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            return change;
+        };
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtDuracion.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtHorario.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Descripción:"), 0, 1);
+        grid.add(crearLabelObligatorio("Descripción"), 0, 1);
         grid.add(txtDesc, 1, 1);
-        grid.add(new Label("Duración:"), 0, 2);
-        grid.add(txtDuracion, 1, 2);
-        grid.add(new Label("Precio:"), 0, 3);
-        grid.add(txtPrecio, 1, 3);
-        grid.add(new Label("Estado:"), 0, 4);
-        grid.add(cbEstado, 1, 4);
-
+        grid.add(lblContador, 1, 2);
+        grid.add(crearLabelObligatorio("Duración"), 0, 3);
+        grid.add(txtDuracion, 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(txtHorario, 1, 4);
+        GridPane.setColumnSpan(lblError, 2);
+        grid.add(lblError, 0, 5);
         dialog.getDialogPane().setContent(grid);
+
+        Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
+        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
+            java.util.List<String> faltantes = new java.util.ArrayList<>();
+
+            if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
+                faltantes.add("Nombre");
+            }
+            if (txtDesc.getText() == null || txtDesc.getText().trim().isEmpty()) {
+                faltantes.add("Descripción");
+            }
+            if (txtDuracion.getText() == null || txtDuracion.getText().trim().isEmpty()) {
+                faltantes.add("Duración");
+            }
+
+            if (!faltantes.isEmpty()) {
+                lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
+                lblError.setVisible(true);
+                ev.consume();
+            } else {
+                lblError.setVisible(false);
+            }
+        });
 
         dialog.setResultConverter(btn -> {
             if (btn == guardarBtn) {
-                String id = db.getNextActividadId();
-                return new ActividadRecreativa(id, txtNombre.getText(), txtDesc.getText(),
-                        txtDuracion.getText(), txtPrecio.getText(), cbEstado.getValue());
+                return new ActividadRecreativa("0", txtNombre.getText().trim(), txtDesc.getText().trim(),
+                        txtDuracion.getText().trim(), "", "Activa", txtHorario.getText());
             }
             return null;
         });
@@ -245,35 +311,121 @@ public class ActividadRecreativaDAO {
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(15));
-
+        boolean esBloqueado = "Inactiva".equals(actividad.getEstado());
+        String estiloDeshabilitado = "-fx-font-size: 12px; -fx-background-color: #e9ecef; -fx-text-fill: #6c757d;";
         TextField txtNombre = new TextField(actividad.getNombre());
         txtNombre.setStyle("-fx-font-size: 12px;");
-        TextField txtDesc = new TextField(actividad.getDescripcion());
+        String descTexto = actividad.getDescripcion() != null ? actividad.getDescripcion() : "";
+        TextArea txtDesc = new TextArea(descTexto.trim());
         txtDesc.setStyle("-fx-font-size: 12px;");
+        txtDesc.setPrefRowCount(3);
+        txtDesc.setWrapText(true);
+        txtDesc.setPrefWidth(250);
+
+        Label lblContador = new Label(descTexto.length() + "/255 caracteres");
+        lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
+        txtDesc.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() > 255) {
+                txtDesc.setText(oldVal);
+                return;
+            }
+            lblContador.setText(newVal.length() + "/255 caracteres");
+            if (newVal.length() >= 230) {
+                lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #dc2626; -fx-font-weight: bold;");
+            } else {
+                lblContador.setStyle("-fx-font-size: 10px; -fx-text-fill: #64748b;");
+            }
+        });
         TextField txtDuracion = new TextField(actividad.getDuracion());
         txtDuracion.setStyle("-fx-font-size: 12px;");
-        TextField txtPrecio = new TextField(actividad.getPrecio());
-        txtPrecio.setStyle("-fx-font-size: 12px;");
         ComboBox<String> cbEstado = new ComboBox<>(FXCollections.observableArrayList("Activa", "Inactiva"));
         cbEstado.setValue(actividad.getEstado());
         cbEstado.setStyle("-fx-font-size: 12px;");
+        TextField txtHorario = new TextField(actividad.getHorario());
+        txtHorario.setStyle("-fx-font-size: 12px;");
 
-        grid.add(new Label("Nombre:"), 0, 0);
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+        lblError.setWrapText(true);
+        lblError.setMaxWidth(Double.MAX_VALUE);
+        lblError.setPrefWidth(320);
+        lblError.setVisible(false);
+
+        java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            return change;
+        };
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtDuracion.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+        txtHorario.setTextFormatter(new TextFormatter<String>(bloqueoEspacio));
+
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Descripción:"), 0, 1);
+        grid.add(crearLabelObligatorio("Descripción"), 0, 1);
         grid.add(txtDesc, 1, 1);
-        grid.add(new Label("Duración:"), 0, 2);
-        grid.add(txtDuracion, 1, 2);
-        grid.add(new Label("Precio:"), 0, 3);
-        grid.add(txtPrecio, 1, 3);
-
+        grid.add(lblContador, 1, 2);
+        grid.add(crearLabelObligatorio("Duración"), 0, 3);
+        grid.add(txtDuracion, 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(txtHorario, 1, 4);
+        GridPane.setColumnSpan(lblError, 2);
+        grid.add(lblError, 0, 5);
 
         dialog.getDialogPane().setContent(grid);
 
+        if (esBloqueado) {
+            txtNombre.setStyle(estiloDeshabilitado);
+            txtNombre.setDisable(true);
+            txtDesc.setStyle(estiloDeshabilitado);
+            txtDesc.setDisable(true);
+            txtDuracion.setStyle(estiloDeshabilitado);
+            txtDuracion.setDisable(true);
+            txtHorario.setStyle(estiloDeshabilitado);
+            txtHorario.setDisable(true);
+
+            Label lblAviso = new Label("⚠ Actividad inactiva: no se puede editar. Reactívela primero.");
+            lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 12px; -fx-font-weight: bold;");
+            lblAviso.setWrapText(true);
+            lblAviso.setMaxWidth(Double.MAX_VALUE);
+            GridPane.setColumnSpan(lblAviso, 2);
+            grid.add(lblAviso, 0, 6);
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
+        btnGuardar.setDisable(esBloqueado);
+
+        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
+            java.util.List<String> faltantes = new java.util.ArrayList<>();
+
+            if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
+                faltantes.add("Nombre");
+            }
+            if (txtDesc.getText() == null || txtDesc.getText().trim().isEmpty()) {
+                faltantes.add("Descripción");
+            }
+            if (txtDuracion.getText() == null || txtDuracion.getText().trim().isEmpty()) {
+                faltantes.add("Duración");
+            }
+
+            if (!faltantes.isEmpty()) {
+                lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
+                lblError.setVisible(true);
+                ev.consume();
+            } else {
+                lblError.setVisible(false);
+            }
+        });
+
         dialog.setResultConverter(btn -> {
             if (btn == guardarBtn) {
-                return new ActividadRecreativa(actividad.getId(), txtNombre.getText(), txtDesc.getText(),
-                        txtDuracion.getText(), txtPrecio.getText(), cbEstado.getValue());
+                return new ActividadRecreativa(actividad.getId(), txtNombre.getText().trim(), txtDesc.getText().trim(),
+                        txtDuracion.getText().trim(), "", cbEstado.getValue(), txtHorario.getText());
             }
             return null;
         });
@@ -296,5 +448,48 @@ public class ActividadRecreativaDAO {
                 filtrar();
             }
         }
+    }
+    private void mostrarDialogoPapelera() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Papelera de Actividades");
+        dialog.setHeaderText("Actividades eliminadas");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        TableView<ActividadRecreativa> tablaPapelera = new TableView<>();
+        tablaPapelera.setPrefSize(500, 250);
+
+        TableColumn<ActividadRecreativa, String> colNombre = new TableColumn<>("Nombre");
+        colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
+        colNombre.setPrefWidth(180);
+
+        TableColumn<ActividadRecreativa, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(c -> c.getValue().estadoProperty());
+        colEstado.setPrefWidth(120);
+
+        TableColumn<ActividadRecreativa, Void> colAccion = new TableColumn<>("Acción");
+        colAccion.setPrefWidth(100);
+        colAccion.setCellFactory(col -> new TableCell<ActividadRecreativa, Void>() {
+            private final Button btnRestaurar = new Button("Restaurar");
+            {
+                btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
+                btnRestaurar.setOnAction(e -> {
+                    ActividadRecreativa a = getTableView().getItems().get(getIndex());
+                    db.restaurarActividad(a.getId());
+                    tablaPapelera.setItems(db.getActividadesEliminadas());
+                    filtrar();
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnRestaurar);
+            }
+        });
+
+        tablaPapelera.getColumns().addAll(colNombre, colEstado, colAccion);
+        tablaPapelera.setItems(db.getActividadesEliminadas());
+
+        dialog.getDialogPane().setContent(tablaPapelera);
+        dialog.showAndWait();
     }
 }

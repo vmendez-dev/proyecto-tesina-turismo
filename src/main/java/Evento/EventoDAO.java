@@ -193,7 +193,21 @@ public class EventoDAO {
         }
         table.setItems(filtrados);
     }
-
+    private HBox crearLabelObligatorio(String texto) {
+        Label lbl = new Label(texto + ":");
+        Label asterisco = new Label(" *");
+        asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+        return new HBox(lbl, asterisco);
+    }
+    private java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio() {
+        return change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            return change;
+        };
+    }
     private void  mostrarDialogoAlta() {
         Dialog<Evento> dialog = new Dialog<>();
         dialog.setTitle("Nuevo Evento");
@@ -228,12 +242,12 @@ public class EventoDAO {
         TextField txtHorario = new TextField();
         txtHorario.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("[0-9:/]*")) {
+            if (newText.matches("[0-9:\\-]*")) {
                 return change;
             }
             return null;
         }));
-        txtHorario.setPromptText("Horario (ej: 18:00/22:00)");
+        txtHorario.setPromptText("Horario (ej: 18:00-22:00)");
         Label lblErrorHorario = new Label();
         lblErrorHorario.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
         lblErrorHorario.setWrapText(true);
@@ -275,8 +289,11 @@ public class EventoDAO {
             }
         });
 
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtLugar.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
 
-        grid.add(new Label("Nombre*:"), 0, 0);
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Horario:"), 0, 6);
         grid.add(txtHorario, 1, 6);
@@ -284,15 +301,15 @@ public class EventoDAO {
         grid.add(lblErrorHorario, 0, 12);
         GridPane.setColumnSpan(lblErrorNombre, 2);
         grid.add(lblErrorNombre, 0, 6);
-        grid.add(new Label("Fecha*:"), 0, 1);
+        grid.add(crearLabelObligatorio("Fecha"), 0, 1);
         grid.add(txtFecha, 1, 1);
         GridPane.setColumnSpan(lblErrorFecha, 2);
         grid.add(lblErrorFecha, 0, 7);
-        grid.add(new Label("Lugar*:"), 0, 2);
+        grid.add(crearLabelObligatorio("Lugar"), 0, 2);
         grid.add(txtLugar, 1, 2);
         GridPane.setColumnSpan(lblErrorLugar, 2);
         grid.add(lblErrorLugar, 0, 8);
-        grid.add(new Label("Descripción*:"), 0, 3);
+        grid.add(crearLabelObligatorio("Descripción"), 0, 3);
         grid.add(txtDesc, 1, 3);
         grid.add(lblContador, 1 , 4);
         GridPane.setColumnSpan(lblErrorDesc, 2);
@@ -355,8 +372,8 @@ public class EventoDAO {
                 txtDesc.setStyle("-fx-font-size: 12px;");
             }
             if (txtHorario.getText() != null && !txtHorario.getText().trim().isEmpty()) {
-                if (!txtHorario.getText().matches("([01][0-9]|2[0-3]):[0-5][0-9]/([01][0-9]|2[0-3]):[0-5][0-9]")) {
-                    lblErrorHorario.setText("Formato inválido. Usá HH:MM/HH:MM (ej: 18:00/22:00)");
+                if (!txtHorario.getText().matches("([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]")) {
+                    lblErrorHorario.setText("Formato inválido. Usá HH:MM-HH:MM (ej: 18:00-22:00)");
                     txtHorario.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                     valido = false;
                 } else {
@@ -431,14 +448,7 @@ public class EventoDAO {
         TextField txtHorario = new TextField(evento.getHorario());
         txtHorario.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("[0-9:/]*")) {
-                return change;
-            }
-            return null;
-        }));
-        txtHorario.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("[0-9:/]*")) {
+            if (newText.matches("[0-9:\\-]*")) {
                 return change;
             }
             return null;
@@ -488,8 +498,11 @@ public class EventoDAO {
             }
         });
 
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtLugar.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
 
-        grid.add(new Label("Nombre*:"), 0, 0);
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Horario:"), 0, 11);
         grid.add(txtHorario, 1, 11);
@@ -497,15 +510,15 @@ public class EventoDAO {
         grid.add(lblErrorHorario, 0, 12);
         GridPane.setColumnSpan(lblErrorNombre, 2);
         grid.add(lblErrorNombre, 0, 7);
-        grid.add(new Label("Fecha*:"), 0, 1);
+        grid.add(crearLabelObligatorio("Fecha"), 0, 1);
         grid.add(txtFecha, 1, 1);
         GridPane.setColumnSpan(lblErrorFecha, 2);
         grid.add(lblErrorFecha, 0, 8);
-        grid.add(new Label("Lugar*:"), 0, 2);
+        grid.add(crearLabelObligatorio("Lugar"), 0, 2);
         grid.add(txtLugar, 1, 2);
         GridPane.setColumnSpan(lblErrorLugar, 2);
         grid.add(lblErrorLugar, 0, 9);
-        grid.add(new Label("Descripción*:"), 0, 3);
+        grid.add(crearLabelObligatorio("Descripción"), 0, 3);
         grid.add(txtDesc, 1, 3);
         grid.add(lblContador, 1, 4);
         GridPane.setColumnSpan(lblErrorDesc, 2);
@@ -575,8 +588,8 @@ public class EventoDAO {
                 txtDesc.setStyle(esBloqueado ? estiloDeshabilitado : estiloNormal);
             }
             if (txtHorario.getText() != null && !txtHorario.getText().trim().isEmpty()) {
-                if (!txtHorario.getText().matches("([01][0-9]|2[0-3]):[0-5][0-9]/([01][0-9]|2[0-3]):[0-5][0-9]")) {
-                    lblErrorHorario.setText("Formato inválido. Usá HH:MM/HH:MM (ej: 18:00/22:00)");
+                if (!txtHorario.getText().matches("([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]")) {
+                    lblErrorHorario.setText("Formato inválido. Usá HH:MM-HH:MM (ej: 18:00-22:00)");
                     txtHorario.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                     valido = false;
                 } else {

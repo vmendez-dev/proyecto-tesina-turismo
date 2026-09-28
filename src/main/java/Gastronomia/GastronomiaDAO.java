@@ -119,9 +119,16 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
                 }
             }
         });
+
         TableColumn<Gastronomia, String> colFecha = new TableColumn<>("Fecha Registro");
-        colFecha.setCellValueFactory(c -> c.getValue().fechaRegistroProperty());
-        colFecha.setPrefWidth(130);
+        colFecha.setCellValueFactory(c -> {
+            String fechaCompleta = c.getValue().getFechaRegistro();
+            String soloFecha = (fechaCompleta != null && fechaCompleta.contains(" "))
+                    ? fechaCompleta.split(" ")[0]
+                    : fechaCompleta;
+            return new javafx.beans.property.SimpleStringProperty(soloFecha);
+        });
+        colFecha.setPrefWidth(110);
 
         TableColumn<Gastronomia, Void> colAcciones = new TableColumn<>("Acciones");
         colAcciones.setPrefWidth(120);
@@ -184,6 +191,22 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         }
         table.setItems(filtrados);
     }
+    private HBox crearLabelObligatorio(String texto) {
+        Label lbl = new Label(texto + ":");
+        Label asterisco = new Label(" *");
+        asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+        return new HBox(lbl, asterisco);
+    }
+
+    private java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio() {
+        return change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            return change;
+        };
+    }
            //------ALTA------//
 
     private void mostrarDialogoAlta() {
@@ -198,6 +221,7 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(15));
+        grid.setMinWidth(460);
 
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre");
@@ -236,76 +260,46 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         cbEstado.setValue("Activo");
         cbEstado.setStyle("-fx-font-size: 12px;");
 
-        grid.add(new Label("Nombre*:"), 0, 0);
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+        lblError.setWrapText(true);
+        lblError.setPrefWidth(420);
+        lblError.setMinHeight(Region.USE_PREF_SIZE);
+        lblError.setVisible(false);
+        lblError.setManaged(false);
+
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtEspecialidad.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        Label lblErrorNombre = new Label();
-        lblErrorNombre.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorNombre.setWrapText(true);
-        lblErrorNombre.setMaxWidth(Double.MAX_VALUE);
-        lblErrorNombre.setPrefWidth(320);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 1);
-        grid.add(new Label("Tipo:"), 0, 2);
-        grid.add(tipoBox, 1, 2);
-        grid.add(new Label("Especialidad*:"), 0, 3);
-        grid.add(txtEspecialidad, 1, 3);
-
-        Label lblErrorEspecialidad = new Label();
-        lblErrorEspecialidad.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorEspecialidad.setWrapText(true);
-        lblErrorEspecialidad.setMaxWidth(Double.MAX_VALUE);
-        lblErrorNombre.setPrefWidth(320);
-        GridPane.setColumnSpan(lblErrorEspecialidad, 2);
-        grid.add(lblErrorEspecialidad, 0, 4);
-
+        grid.add(new Label("Tipo:"), 0, 1);
+        grid.add(tipoBox, 1, 1);
+        grid.add(crearLabelObligatorio("Especialidad"), 0, 2);
+        grid.add(txtEspecialidad, 1, 2);
+        GridPane.setColumnSpan(lblError, 2);
+        grid.add(lblError, 0, 3);
 
 
         dialog.getDialogPane().setContent(grid);
         Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
-        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-            boolean valido = true;
-
-            if (txtNombre.getText() == null || txtNombre.getText().isEmpty()) {
-                lblErrorNombre.setText("El nombre es obligatorio");
-                txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtNombre.getText().charAt(0))) {
-                lblErrorNombre.setText("Debe comenzar con una letra, sin espacios al inicio");
-                txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
+        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
+            java.util.List<String> faltantes = new java.util.ArrayList<>();
+            if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
+                faltantes.add("Nombre");
+            }
+            if (txtEspecialidad.getText() == null || txtEspecialidad.getText().trim().isEmpty()) {
+                faltantes.add("Especialidad");
+            }
+            if (!faltantes.isEmpty()) {
+                lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
+                lblError.setVisible(true);
+                lblError.setManaged(true);
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
+                ev.consume();
             } else {
-                lblErrorNombre.setText("");
-                txtNombre.setStyle("-fx-font-size: 12px;");
-            }
-
-
-            if (txtEspecialidad.getText() == null || txtEspecialidad.getText().isEmpty()) {
-                lblErrorEspecialidad.setText("La especialidad es obligatoria");
-                txtEspecialidad.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtEspecialidad.getText().charAt(0))) {
-                lblErrorEspecialidad.setText("Debe comenzar con una letra, sin espacios al inicio");
-                txtEspecialidad.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else {
-                lblErrorEspecialidad.setText("");
-                txtEspecialidad.setStyle("-fx-font-size: 12px;");
-            }
-
-            if (!valido) {
-                event.consume();
-            }
-        });
-        txtNombre.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.trim().isEmpty()) {
-                lblErrorNombre.setText("");
-                txtNombre.setStyle("-fx-font-size: 12px;");
-            }
-        });
-        txtEspecialidad.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.trim().isEmpty()) {
-                lblErrorEspecialidad.setText("");
-                txtEspecialidad.setStyle("-fx-font-size: 12px;");
+                lblError.setVisible(false);
+                lblError.setManaged(false);
             }
         });
 
@@ -314,8 +308,8 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             if (btn == guardarBtn) {
                 String id = db.getNextGastronomiaId();
                 TipoEstablecimiento tipoSeleccionado = cbTipo.getValue();
-                return new Gastronomia(id, txtNombre.getText(), tipoSeleccionado.getNombre(), tipoSeleccionado.getId(),
-                        txtEspecialidad.getText(), cbEstado.getValue(), "");
+                return new Gastronomia(id, txtNombre.getText().trim(), tipoSeleccionado.getNombre(), tipoSeleccionado.getId(),
+                        txtEspecialidad.getText().trim(), cbEstado.getValue(), "");
             }
             return null;
         });
@@ -339,19 +333,16 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         grid.setVgap(8);
         grid.setPadding(new Insets(15));
 
+
         boolean esInactivo = "Inactivo".equals(gastronomia.getEstado());
         String estiloDeshabilitado = "-fx-font-size: 12px; -fx-background-color: #e9ecef; -fx-text-fill: #6c757d;";
         String estiloNormal = "-fx-font-size: 12px;";
 
-        TextField txtNombre = new TextField(gastronomia.getNombre());
+        TextField txtNombre = new TextField(gastronomia.getNombre().trim());
         txtNombre.setStyle(esInactivo ? estiloDeshabilitado : estiloNormal);
         txtNombre.setDisable(esInactivo);
 
-        Label lblErrorNombre = new Label();
-        lblErrorNombre.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorNombre.setWrapText(true);
-        lblErrorNombre.setMaxWidth(Double.MAX_VALUE);
-        lblErrorNombre.setPrefWidth(320);
+
 
         ComboBox<TipoEstablecimiento> cbTipo = new ComboBox<>(db.getTiposEstablecimiento());
         for (TipoEstablecimiento t : cbTipo.getItems()) {
@@ -382,92 +373,70 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         cbTipo.setStyle(esInactivo ? estiloDeshabilitado : estiloNormal);
         cbTipo.setDisable(esInactivo);
 
-        TextField txtEspecialidad = new TextField(gastronomia.getEspecialidad());
+        TextField txtEspecialidad = new TextField(gastronomia.getEspecialidad().trim());
         txtEspecialidad.setStyle(esInactivo ? estiloDeshabilitado : estiloNormal);
         txtEspecialidad.setDisable(esInactivo);
 
-        Label lblErrorEspecialidad = new Label();
-        lblErrorEspecialidad.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorEspecialidad.setWrapText(true);
-        lblErrorEspecialidad.setMaxWidth(Double.MAX_VALUE);
-        lblErrorNombre.setPrefWidth(320);
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+        lblError.setWrapText(true);
+        lblError.setPrefWidth(340);
+        lblError.setMinHeight(Region.USE_PREF_SIZE);
+        lblError.setVisible(false);
+        lblError.setManaged(false);
 
+        txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        txtEspecialidad.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
 
-
-
-        grid.add(new Label("Nombre*:"), 0, 0);
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 1);
-        grid.add(new Label("Tipo:"), 0, 2);
-        grid.add(tipoBox, 1, 2);
-        grid.add(new Label("Especialidad*" + ":"), 0, 3);
-        grid.add(txtEspecialidad, 1, 3);
-        GridPane.setColumnSpan(lblErrorEspecialidad, 2);
-        grid.add(lblErrorEspecialidad, 0, 4);
+        grid.add(new Label("Tipo:"), 0, 1);
+        grid.add(tipoBox, 1, 1);
+        grid.add(crearLabelObligatorio("Especialidad"), 0, 2);
+        grid.add(txtEspecialidad, 1, 2);
+        GridPane.setColumnSpan(lblError, 2);
+        grid.add(lblError, 0, 3);
 
 
         if (esInactivo) {
             Label lblAviso = new Label("⚠ Establecimiento inactivo: no se puede editar. Reactívelo primero.");
             lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-font-weight: bold;");
+            lblAviso.setWrapText(true);
+            lblAviso.setPrefWidth(340);
+            lblAviso.setMinHeight(Region.USE_PREF_SIZE);
             GridPane.setColumnSpan(lblAviso, 2);
-            grid.add(lblAviso, 0, 6);
+            grid.add(lblAviso, 0, 4);
+
         }
 
         dialog.getDialogPane().setContent(grid);
         Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
         btnGuardar.setDisable(esInactivo);
 
-        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-            boolean valido = true;
-
-            if (txtNombre.getText() == null || txtNombre.getText().isEmpty()) {
-                lblErrorNombre.setText("El nombre es obligatorio");
-                txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtNombre.getText().charAt(0))) {
-                lblErrorNombre.setText("Debe comenzar con una letra, sin espacios al inicio");
-                txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
+        btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
+            java.util.List<String> faltantes = new java.util.ArrayList<>();
+            if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
+                faltantes.add("Nombre");
+            }
+            if (txtEspecialidad.getText() == null || txtEspecialidad.getText().trim().isEmpty()) {
+                faltantes.add("Especialidad");
+            }
+            if (!faltantes.isEmpty()) {
+                lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
+                lblError.setVisible(true);
+                lblError.setManaged(true);
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
+                ev.consume();
             } else {
-                lblErrorNombre.setText("");
-                txtNombre.setStyle(esInactivo ? estiloDeshabilitado : estiloNormal);
-            }
-
-            if (txtEspecialidad.getText() == null || txtEspecialidad.getText().isEmpty()) {
-                lblErrorEspecialidad.setText("La especialidad es obligatoria");
-                txtEspecialidad.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtEspecialidad.getText().charAt(0))) {
-                lblErrorEspecialidad.setText("Debe comenzar con una letra, sin espacios al inicio");
-                txtEspecialidad.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else {
-                lblErrorEspecialidad.setText("");
-                txtEspecialidad.setStyle(esInactivo ? estiloDeshabilitado : estiloNormal);
-            }
-
-            if (!valido) {
-                event.consume();
-            }
-        });
-        txtNombre.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.trim().isEmpty()) {
-                lblErrorNombre.setText("");
-                txtNombre.setStyle("-fx-font-size: 12px;");
-            }
-        });
-        txtEspecialidad.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.trim().isEmpty()) {
-                lblErrorEspecialidad.setText("");
-                txtEspecialidad.setStyle("-fx-font-size: 12px;");
+                lblError.setVisible(false);
+                lblError.setManaged(false);
             }
         });
 
         dialog.setResultConverter(btn -> {
             if (btn == guardarBtn) {
-                return new Gastronomia(gastronomia.getId(), txtNombre.getText(), cbTipo.getValue().getNombre(), cbTipo.getValue().getId(),
-                        txtEspecialidad.getText(), gastronomia.getEstado(),gastronomia.getFechaRegistro());
+                return new Gastronomia(gastronomia.getId(), txtNombre.getText().trim(), cbTipo.getValue().getNombre(), cbTipo.getValue().getId(),
+                        txtEspecialidad.getText().trim(), gastronomia.getEstado(), gastronomia.getFechaRegistro());
             }
             return null;
         });

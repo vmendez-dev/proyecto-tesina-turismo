@@ -9,16 +9,18 @@ public class ActividadRecreativa {
     private final SimpleStringProperty duracion;
     private final SimpleStringProperty precio;
     private final SimpleStringProperty estado;
+    private final SimpleStringProperty horario;
     private final SimpleStringProperty fechaRegistro;
 
     public ActividadRecreativa(String id, String nombre, String descripcion, String duracion,
-                               String precio, String estado) {
+                               String precio, String estado, String horario) {
         this.id = new SimpleStringProperty(id);
         this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
         this.duracion = new SimpleStringProperty(duracion);
         this.precio = new SimpleStringProperty(precio);
         this.estado = new SimpleStringProperty(estado);
+        this.horario = new SimpleStringProperty(horario);
         this.fechaRegistro = new SimpleStringProperty(java.time.LocalDateTime.now().format(
                 java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
     }
@@ -29,6 +31,7 @@ public class ActividadRecreativa {
     public String getDuracion() { return duracion.get(); }
     public String getPrecio() { return precio.get(); }
     public String getEstado() { return estado.get(); }
+    public String getHorario() { return horario.get(); }
     public String getFechaRegistro() { return fechaRegistro.get(); }
 
     public SimpleStringProperty idProperty() { return id; }
@@ -37,6 +40,7 @@ public class ActividadRecreativa {
     public SimpleStringProperty duracionProperty() { return duracion; }
     public SimpleStringProperty precioProperty() { return precio; }
     public SimpleStringProperty estadoProperty() { return estado; }
+    public SimpleStringProperty horarioProperty() { return horario; }
     public SimpleStringProperty fechaRegistroProperty() { return fechaRegistro; }
 
     public void setEstado(String estado) { this.estado.set(estado); }
@@ -44,4 +48,5 @@ public class ActividadRecreativa {
     public void setDescripcion(String descripcion) { this.descripcion.set(descripcion); }
     public void setDuracion(String duracion) { this.duracion.set(duracion); }
     public void setPrecio(String precio) { this.precio.set(precio); }
+    public void setHorario(String horario) { this.horario.set(horario); }
 }

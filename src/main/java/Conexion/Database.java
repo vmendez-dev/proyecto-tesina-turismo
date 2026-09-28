@@ -15,13 +15,11 @@ import TipoEstablecimiento.TipoEstablecimiento;
 public class Database {
     private static Database instance;
 
-    private final Map<String, ActividadRecreativa> actividadesMap;
     private final Map<String, PuntoTuristico> atractivosMap;
     private final Map<String, Gastronomia> gastronomiasMap;
     private final Map<String, Servicio> serviciosMap;
     private final Map<String, Evento> eventosMap;
 
-    private int nextActividadId = 1;
     private int nextAtractivoId = 1;
     private int nextGastronomiaId = 1;
     private int nextServicioId = 1;
@@ -30,7 +28,6 @@ public class Database {
     private final List<String> logs;
 
     private Database() {
-        actividadesMap = new ConcurrentHashMap<>();
         atractivosMap = new ConcurrentHashMap<>();
         gastronomiasMap = new ConcurrentHashMap<>();
         serviciosMap = new ConcurrentHashMap<>();
@@ -52,29 +49,8 @@ public class Database {
     }
 
     private void cargarDatosIniciales() {
-        // ACTIVIDADES
-        String[][] actividades = {
-                {"ACT001", "Senderismo Cerro Negro", "Caminata guiada por el cerro", "3 horas", "$2000", "Activa"},
-                {"ACT002", "Paseo en Kayak", "Recorrido por el dique", "2 horas", "$3500", "Activa"},
-                {"ACT003", "Avistaje de Aves", "Observación de aves autóctonas", "4 horas", "$1500", "Inactiva"}
-        };
 
-        for (String[] data : actividades) {
-            ActividadRecreativa a = new ActividadRecreativa(data[0], data[1], data[2], data[3], data[4], data[5]);
-            actividadesMap.put(data[0], a);
-        }
 
-        // ATRACTIVOS
-        String[][] atractivos = {
-                {"ATR001", "Cerro Negro", "Ruta 5 km 10", "Punto más alto de la región", "Natural", "Disponible"},
-                {"ATR002", "Dique San Antonio", "Costanera Sur", "Embalse con actividades acuáticas", "Natural", "Disponible"},
-                {"ATR003", "Museo Histórico", "Calle Principal 123", "Historia de la región", "Cultural", "En mantenimiento"}
-        };
-
-        for (String[] data : atractivos) {
-            PuntoTuristico p = new PuntoTuristico(data[0], data[1], data[2], data[3], data[4], data[5]);
-            atractivosMap.put(data[0], p);
-        }
 
         // GASTRONOMIA
         String[][] gastronomias = {
@@ -103,12 +79,7 @@ public class Database {
 
         agregarLog("Datos iniciales cargados");
         // ARREGLO AUTOMÁTICO DE IDS
-        for (String id : actividadesMap.keySet()) {
-            int numeroId = Integer.parseInt(id.substring(3)); // Quita "ACT"
-            if (numeroId >= nextActividadId) {
-                nextActividadId = numeroId + 1;
-            }
-        }
+
         for (String id : atractivosMap.keySet()) {
             int numeroId = Integer.parseInt(id.substring(3)); // Quita "ATR"
             if (numeroId >= nextAtractivoId) {
@@ -132,74 +103,266 @@ public class Database {
 
     // ACTIVIDADES
     public ObservableList<ActividadRecreativa> getActividades() {
-        return FXCollections.observableArrayList(actividadesMap.values());
-    }
+        ObservableList<ActividadRecreativa> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM actividades WHERE eliminado=0";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ActividadRecreativa a = new ActividadRecreativa(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getString("duracion"),
+                        rs.getString("precio"),
+                        rs.getString("estado"),
+                        rs.getString("horario")
+                );
+                lista.add(a);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer actividades: " + ex.getMessage());
+        }
+        return lista;
 
-    public String getNextActividadId() {
-        return "ACT" + String.format("%03d", nextActividadId++);
+    }
+    public ObservableList<ActividadRecreativa> getActividadesEliminadas() {
+        ObservableList<ActividadRecreativa> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM actividades WHERE eliminado=1";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ActividadRecreativa a = new ActividadRecreativa(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getString("duracion"),
+                        rs.getString("precio"),
+                        rs.getString("estado"),
+                        rs.getString("horario")
+                );
+                lista.add(a);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer actividades eliminadas: " + ex.getMessage());
+        }
+        return lista;
     }
 
     public void insertarActividad(ActividadRecreativa actividad) {
-        actividadesMap.put(actividad.getId(), actividad);
-        agregarLog("Actividad creada: " + actividad.getNombre());
+        String sql = "INSERT INTO actividades (nombre, descripcion, duracion, precio, estado, horario) VALUES (?, ?, ?, ?, ?, ?)";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, actividad.getNombre());
+            ps.setString(2, actividad.getDescripcion());
+            ps.setString(3, actividad.getDuracion());
+            ps.setString(4, actividad.getPrecio());
+            ps.setString(5, actividad.getEstado());
+            ps.setString(6, actividad.getHorario());
+            ps.executeUpdate();
+            agregarLog("Actividad creada: " + actividad.getNombre());
+        } catch (java.sql.SQLException ex) {
+            agregarLog("ERROR al crear actividad: " + ex.getMessage());
+            System.out.println("Error SQL: " + ex.getMessage());
+        }
     }
 
     public void actualizarActividad(ActividadRecreativa actividad) {
-        actividadesMap.put(actividad.getId(), actividad);
-        agregarLog("Actividad actualizada: " + actividad.getNombre());
+        String sql = "UPDATE actividades SET nombre=?, descripcion=?, duracion=?, precio=?, estado=?, horario=? WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, actividad.getNombre());
+            ps.setString(2, actividad.getDescripcion());
+            ps.setString(3, actividad.getDuracion());
+            ps.setString(4, actividad.getPrecio());
+            ps.setString(5, actividad.getEstado());
+            ps.setString(6, actividad.getHorario());
+            ps.setInt(7, Integer.parseInt(actividad.getId()));
+            ps.executeUpdate();
+            agregarLog("Actividad actualizada: " + actividad.getNombre());
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al actualizar actividad: " + ex.getMessage());
+        }
     }
-
     public void cambiarEstadoActividad(String id, String nuevoEstado) {
-        ActividadRecreativa a = actividadesMap.get(id);
-        if (a != null) {
-            a.setEstado(nuevoEstado);
-            agregarLog("Actividad " + a.getNombre() + " → " + nuevoEstado);
+        String sql = "UPDATE actividades SET estado=? WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nuevoEstado);
+            ps.setInt(2, Integer.parseInt(id));
+            ps.executeUpdate();
+            agregarLog("Actividad id " + id + " → " + nuevoEstado);
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al cambiar estado de la actividad: " + ex.getMessage());
         }
     }
 
     public boolean eliminarActividad(String id) {
-        ActividadRecreativa removed = actividadesMap.remove(id);
-        if (removed != null) {
-            agregarLog("Actividad eliminada: " + removed.getNombre());
-            return true;
+        String sql = "UPDATE actividades SET eliminado=1 WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(id));
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                agregarLog("Actividad enviada a papelera con id: " + id);
+                return true;
+            }
+            return false;
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al eliminar actividad: " + ex.getMessage());
+            return false;
         }
-        return false;
+    }
+
+    public boolean restaurarActividad(String id) {
+        String sql = "UPDATE actividades SET eliminado=0 WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(id));
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                agregarLog("Actividad restaurada con id: " + id);
+                return true;
+            }
+            return false;
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al restaurar actividad: " + ex.getMessage());
+            return false;
+        }
     }
 
     // ATRACTIVOS
+
     public ObservableList<PuntoTuristico> getAtractivos() {
-        return FXCollections.observableArrayList(atractivosMap.values());
+        ObservableList<PuntoTuristico> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM puntos_turisticos WHERE eliminado=0";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                PuntoTuristico p = new PuntoTuristico(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("ubicacion"),
+                        rs.getString("descripcion"),
+                        rs.getString("tipo"),
+                        rs.getString("estado"),
+                        rs.getString("horario")
+                );
+                lista.add(p);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer atractivos: " + ex.getMessage());
+        }
+        return lista;
     }
 
-    public String getNextAtractivoId() {
-        return "ATR" + String.format("%03d", nextAtractivoId++);
+    public ObservableList<PuntoTuristico> getAtractivosEliminados() {
+        ObservableList<PuntoTuristico> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM puntos_turisticos WHERE eliminado=1";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                PuntoTuristico p = new PuntoTuristico(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("ubicacion"),
+                        rs.getString("descripcion"),
+                        rs.getString("tipo"),
+                        rs.getString("estado"),
+                        rs.getString("horario")
+                );
+                lista.add(p);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer atractivos eliminados: " + ex.getMessage());
+        }
+        return lista;
     }
 
     public void insertarAtractivo(PuntoTuristico atractivo) {
-        atractivosMap.put(atractivo.getId(), atractivo);
-        agregarLog("Atractivo creado: " + atractivo.getNombre());
+        String sql = "INSERT INTO puntos_turisticos (nombre, tipo, ubicacion, descripcion, estado, horario) VALUES (?, ?, ?, ?, ?, ?)";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, atractivo.getNombre());
+            ps.setString(2, atractivo.getTipo());
+            ps.setString(3, atractivo.getUbicacion());
+            ps.setString(4, atractivo.getDescripcion());
+            ps.setString(5, atractivo.getEstado());
+            ps.setString(6, atractivo.getHorario());
+            ps.executeUpdate();
+            agregarLog("Atractivo creado: " + atractivo.getNombre());
+        } catch (java.sql.SQLException ex) {
+            agregarLog("ERROR al crear atractivo: " + ex.getMessage());
+            System.out.println("Error SQL: " + ex.getMessage());
+        }
     }
 
     public void actualizarAtractivo(PuntoTuristico atractivo) {
-        atractivosMap.put(atractivo.getId(), atractivo);
-        agregarLog("Atractivo actualizado: " + atractivo.getNombre());
+        String sql = "UPDATE puntos_turisticos SET nombre=?, tipo=?, ubicacion=?, descripcion=?, estado=?, horario=? WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, atractivo.getNombre());
+            ps.setString(2, atractivo.getTipo());
+            ps.setString(3, atractivo.getUbicacion());
+            ps.setString(4, atractivo.getDescripcion());
+            ps.setString(5, atractivo.getEstado());
+            ps.setString(6, atractivo.getHorario());
+            ps.setInt(7, Integer.parseInt(atractivo.getId()));
+            ps.executeUpdate();
+            agregarLog("Atractivo actualizado: " + atractivo.getNombre());
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al actualizar atractivo: " + ex.getMessage());
+        }
     }
 
     public void cambiarEstadoAtractivo(String id, String nuevoEstado) {
-        PuntoTuristico p = atractivosMap.get(id);
-        if (p != null) {
-            p.setEstado(nuevoEstado);
-            agregarLog("Atractivo " + p.getNombre() + " → " + nuevoEstado);
+        String sql = "UPDATE puntos_turisticos SET estado=? WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nuevoEstado);
+            ps.setInt(2, Integer.parseInt(id));
+            ps.executeUpdate();
+            agregarLog("Atractivo id " + id + " → " + nuevoEstado);
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al cambiar estado del atractivo: " + ex.getMessage());
         }
     }
 
     public boolean eliminarAtractivo(String id) {
-        PuntoTuristico removed = atractivosMap.remove(id);
-        if (removed != null) {
-            agregarLog("Atractivo eliminado: " + removed.getNombre());
-            return true;
+        String sql = "UPDATE puntos_turisticos SET eliminado=1 WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(id));
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                agregarLog("Atractivo enviado a papelera con id: " + id);
+                return true;
+            }
+            return false;
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al eliminar atractivo: " + ex.getMessage());
+            return false;
         }
-        return false;
+    }
+
+    public boolean restaurarAtractivo(String id) {
+        String sql = "UPDATE puntos_turisticos SET eliminado=0 WHERE id=?";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(id));
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                agregarLog("Atractivo restaurado con id: " + id);
+                return true;
+            }
+            return false;
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al restaurar atractivo: " + ex.getMessage());
+            return false;
+        }
     }
     // TIPO ESTABLECIMIENTO
     public ObservableList<TipoEstablecimiento> getTiposEstablecimiento() {
@@ -380,30 +543,23 @@ public class Database {
 
 
 
+
     // SERVICIOS
-    // SERVICIOS
-    public ObservableList<Servicio> getServicios() {
-        ObservableList<Servicio> lista = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM servicios";
+    public boolean eliminarServicio(String id) {
+        String sql = "UPDATE servicios SET eliminado=1 WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
-             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
-             java.sql.ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Servicio s = new Servicio(
-                        String.valueOf(rs.getInt("id")),
-                        rs.getString("nombre"),
-                        rs.getString("tipo"),
-                        rs.getString("direccion"),
-                        rs.getString("telefono"),
-                        rs.getString("horario"),
-                        rs.getString("estado")
-                );
-                lista.add(s);
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, Integer.parseInt(id));
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                agregarLog("Servicio enviado a papelera con id: " + id);
+                return true;
             }
+            return false;
         } catch (java.sql.SQLException ex) {
-            System.out.println("Error al leer servicios: " + ex.getMessage());
+            System.out.println("Error al eliminar servicio: " + ex.getMessage());
+            return false;
         }
-        return lista;
     }
 
     public void insertarServicio(Servicio servicio) {
@@ -455,23 +611,69 @@ public class Database {
         }
     }
 
-    public boolean eliminarServicio(String id) {
-        String sql = "DELETE FROM servicios WHERE id=?";
+    public ObservableList<Servicio> getServicios() {
+        ObservableList<Servicio> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM servicios WHERE eliminado=0";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Servicio s = new Servicio(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("tipo"),
+                        rs.getString("direccion"),
+                        rs.getString("telefono"),
+                        rs.getString("horario"),
+                        rs.getString("estado")
+                );
+                lista.add(s);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer servicios: " + ex.getMessage());
+        }
+        return lista;
+    }
+
+    public ObservableList<Servicio> getServiciosEliminados() {
+        ObservableList<Servicio> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM servicios WHERE eliminado=1";
+        try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Servicio s = new Servicio(
+                        String.valueOf(rs.getInt("id")),
+                        rs.getString("nombre"),
+                        rs.getString("tipo"),
+                        rs.getString("direccion"),
+                        rs.getString("telefono"),
+                        rs.getString("horario"),
+                        rs.getString("estado")
+                );
+                lista.add(s);
+            }
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Error al leer servicios eliminados: " + ex.getMessage());
+        }
+        return lista;
+    }
+    public boolean restaurarServicio(String id) {
+        String sql = "UPDATE servicios SET eliminado=0 WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(id));
             int filas = ps.executeUpdate();
             if (filas > 0) {
-                agregarLog("Servicio eliminado con id: " + id);
+                agregarLog("Servicio restaurado con id: " + id);
                 return true;
             }
             return false;
         } catch (java.sql.SQLException ex) {
-            System.out.println("Error al eliminar servicio: " + ex.getMessage());
+            System.out.println("Error al restaurar servicio: " + ex.getMessage());
             return false;
         }
     }
-
 
     public String getNextEventoId() {
         return "E" + String.format("%03d", nextEventoId++);
@@ -607,6 +809,7 @@ public class Database {
             return false;
         }
     }
+
     // LOGS
     public void agregarLog(String mensaje) {
         String timestamp = java.time.LocalDateTime.now().format(

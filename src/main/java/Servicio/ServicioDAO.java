@@ -73,7 +73,12 @@ public class ServicioDAO {
         btnNuevo.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 4 12; -fx-font-size: 12px;");
         btnNuevo.setOnAction(e -> mostrarDialogoAlta());
 
-        filterBar.getChildren().addAll(txtSearch, new Label("Estado"), cbEstado, spacer, btnNuevo);
+        Button btnPapelera = new Button("🗑 Papelera");
+        btnPapelera.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 4 12; -fx-font-size: 12px;");
+        btnPapelera.setOnAction(e -> mostrarDialogoPapelera());
+
+        filterBar.getChildren().addAll(txtSearch, new Label("Estado"), cbEstado, spacer, btnPapelera, btnNuevo);
+
 
         table = new TableView<>();
         table.setPrefHeight(280);
@@ -204,7 +209,53 @@ public class ServicioDAO {
         }
         table.setItems(filtrados);
     }
+    private HBox crearLabelObligatorio(String texto) {
+        Label lbl = new Label(texto + ":");
+        Label asterisco = new Label(" *");
+        asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+        return new HBox(lbl, asterisco);
+    }
+    private void bloquearEspacioSilencioso(TextField campo) {
+        campo.setTextFormatter(new TextFormatter<String>(change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            return change;
+        }));
+    }
+    private void filtrarCampoSilencioso(TextField campo, String regex) {
+        campo.setTextFormatter(new TextFormatter<String>(change -> {
+            String nuevo = change.getControlNewText();
+            if (!nuevo.isEmpty() && Character.isWhitespace(nuevo.charAt(0))) {
+                return null;
+            }
+            if (change.isAdded() && !nuevo.matches(regex)) {
+                return null;
+            }
+            return change;
+        }));
+    }
+    private String validarCampos(TextField txtNombre, ComboBox<String> cbTipo, TextField txtDireccion,
+                                 TextField txtTelefono, TextField txtHorario) {
+        java.util.List<String> faltantes = new java.util.ArrayList<>();
+        if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) faltantes.add("Nombre");
+        if (cbTipo.getValue() == null) faltantes.add("Tipo");
+        if (txtDireccion.getText() == null || txtDireccion.getText().trim().isEmpty()) faltantes.add("Dirección");
+        if (txtTelefono.getText() == null || txtTelefono.getText().trim().isEmpty()) faltantes.add("Teléfono");
+        if (txtHorario.getText() == null || txtHorario.getText().trim().isEmpty()) faltantes.add("Horario");
 
+        if (!faltantes.isEmpty()) {
+            return "⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes);
+        }
+        if (!txtTelefono.getText().trim().matches("[0-9\\s\\-]{3,15}")) {
+            return "⚠ Teléfono: entre 3 y 15 caracteres (números, espacios y guiones)";
+        }
+        if (!txtHorario.getText().trim().matches("24hs|Cerrado|([01]\\d|2[0-3]):[0-5]\\d-([01]\\d|2[0-3]):[0-5]\\d")) {
+            return "⚠ Horario: use 24hs, Cerrado o HH:MM-HH:MM (ej: 08:00-20:00)";
+        }
+        return null;
+    }
     private Label crearAvisoEspacio() {
         Label aviso = new Label("⚠ No se permiten espacios al comienzo del campo.");
         aviso.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
@@ -273,99 +324,50 @@ public class ServicioDAO {
         txtTelefono.setPromptText("Teléfono");
         txtTelefono.setStyle("-fx-font-size: 12px;");
 
-        TextField txtHorario = new TextField();
-            Label lblErrorNombre = new Label();
-            lblErrorNombre.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-            lblErrorNombre.setWrapText(true);
-            lblErrorNombre.setMaxWidth(Double.MAX_VALUE);
-            lblErrorNombre.setPrefWidth(320);
-
-            Label lblErrorTipo = new Label();
-            lblErrorTipo.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-            lblErrorTipo.setWrapText(true);
-            lblErrorTipo.setMaxWidth(Double.MAX_VALUE);
-            lblErrorTipo.setPrefWidth(320);
-
-            Label lblErrorDireccion = new Label();
-            lblErrorDireccion.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-            lblErrorDireccion.setWrapText(true);
-            lblErrorDireccion.setMaxWidth(Double.MAX_VALUE);
-            lblErrorDireccion.setPrefWidth(320);
-
-            Label lblErrorTelefono = new Label();
-            lblErrorTelefono.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-            lblErrorTelefono.setWrapText(true);
-            lblErrorTelefono.setMaxWidth(Double.MAX_VALUE);
-            lblErrorTelefono.setPrefWidth(320);
-            txtHorario.setPromptText("Horario (ej: 24h, Cerrado, 08:00/20:00)");
+            TextField txtHorario = new TextField();
+            txtHorario.setPromptText("Horario (ej: 24hs, Cerrado, 08:00-20:00)");
             txtHorario.setStyle("-fx-font-size: 12px;");
 
+            Label lblError = new Label();
+            lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+            lblError.setWrapText(true);
+            lblError.setPrefWidth(420);
+            lblError.setMinHeight(Region.USE_PREF_SIZE);
+            lblError.setVisible(false);
+            lblError.setManaged(false);
 
+            bloquearEspacioSilencioso(txtNombre);
+            bloquearEspacioSilencioso(txtDireccion);
+            filtrarCampoSilencioso(txtTelefono, "[0-9\\s\\-]{0,15}");
+            filtrarCampoSilencioso(txtHorario, "[0-9:\\-hsCerado]{0,20}");
 
-        grid.add(new Label("Nombre*:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Tipo*:"), 0, 1);
-        grid.add(cbTipo, 1, 1);
-        grid.add(new Label("Dirección*:"), 0, 2);
-        grid.add(txtDireccion, 1, 2);
-        grid.add(new Label("Teléfono:"), 0, 3);
-        grid.add(txtTelefono, 1, 3);
-        grid.add(new Label("Horario:"), 0, 4);
-        grid.add(txtHorario, 1, 4);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 6);
-        GridPane.setColumnSpan(lblErrorTipo, 2);
-        grid.add(lblErrorTipo, 0, 7);
-        GridPane.setColumnSpan(lblErrorDireccion, 2);
-        grid.add(lblErrorDireccion, 0, 8);
-        GridPane.setColumnSpan(lblErrorTelefono, 2);
-        grid.add(lblErrorTelefono, 0, 9);
-
-        Label lblEspacio = crearAvisoEspacio();
-        bloquearEspacioInicial(txtNombre, lblEspacio);
-        bloquearEspacioInicial(txtDireccion, lblEspacio);
-        filtrarCampo(txtTelefono, lblEspacio, "[0-9\\s\\-]{0,15}", "⚠ Solo se permiten números, espacios y guiones (máx. 15)");
-        filtrarCampo(txtHorario, lblEspacio, "[0-9:/hCerado]{0,20}", "⚠ Formato: 24h, Cerrado o HH:MM/HH:MM");
-        grid.add(lblEspacio, 0, 5, 2, 1);
+            grid.setMinWidth(460);
+            grid.add(crearLabelObligatorio("Nombre"), 0, 0);
+            grid.add(txtNombre, 1, 0);
+            grid.add(crearLabelObligatorio("Tipo"), 0, 1);
+            grid.add(cbTipo, 1, 1);
+            grid.add(crearLabelObligatorio("Dirección"), 0, 2);
+            grid.add(txtDireccion, 1, 2);
+            grid.add(crearLabelObligatorio("Teléfono"), 0, 3);
+            grid.add(txtTelefono, 1, 3);
+            grid.add(crearLabelObligatorio("Horario"), 0, 4);
+            grid.add(txtHorario, 1, 4);
+            GridPane.setColumnSpan(lblError, 2);
+            grid.add(lblError, 0, 5);
 
         dialog.getDialogPane().setContent(grid);
-
             Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
-
             btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
-                boolean valido = true;
-
-                if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
-                    lblErrorNombre.setText("El nombre es obligatorio");
-                    valido = false;
-                } else {
-                    lblErrorNombre.setText("");
-                }
-
-                if (cbTipo.getValue() == null || cbTipo.getValue().trim().isEmpty()) {
-                    lblErrorTipo.setText("El tipo es obligatorio");
-                    valido = false;
-                } else {
-                    lblErrorTipo.setText("");
-                }
-
-                if (txtDireccion.getText() == null || txtDireccion.getText().trim().isEmpty()) {
-                    lblErrorDireccion.setText("La dirección es obligatoria");
-                    valido = false;
-                } else {
-                    lblErrorDireccion.setText("");
-                }
-
-                String tel = txtTelefono.getText().trim();
-                if (tel.length() < 3 || !tel.matches("[0-9\\s\\-]{3,15}")) {
-                    lblErrorTelefono.setText("El teléfono debe tener entre 3 y 15 caracteres (números, espacios y guiones)");
-                    valido = false;
-                } else {
-                    lblErrorTelefono.setText("");
-                }
-
-                if (!valido) {
+                String mensaje = validarCampos(txtNombre, cbTipo, txtDireccion, txtTelefono, txtHorario);
+                if (mensaje != null) {
+                    lblError.setText(mensaje);
+                    lblError.setVisible(true);
+                    lblError.setManaged(true);
+                    dialog.getDialogPane().getScene().getWindow().sizeToScene();
                     ev.consume();
+                } else {
+                    lblError.setVisible(false);
+                    lblError.setManaged(false);
                 }
             });
 
@@ -383,6 +385,49 @@ public class ServicioDAO {
             filtrar();
         });
 
+    }
+    private void mostrarDialogoPapelera() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Papelera de Servicios");
+        dialog.setHeaderText("Servicios eliminados");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        TableView<Servicio> tablaPapelera = new TableView<>();
+        tablaPapelera.setPrefSize(500, 250);
+
+        TableColumn<Servicio, String> colNombre = new TableColumn<>("Nombre");
+        colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
+        colNombre.setPrefWidth(150);
+
+        TableColumn<Servicio, String> colTipo = new TableColumn<>("Tipo");
+        colTipo.setCellValueFactory(c -> c.getValue().tipoProperty());
+        colTipo.setPrefWidth(120);
+
+        TableColumn<Servicio, Void> colAccion = new TableColumn<>("Acción");
+        colAccion.setPrefWidth(100);
+        colAccion.setCellFactory(col -> new TableCell<Servicio, Void>() {
+            private final Button btnRestaurar = new Button("Restaurar");
+            {
+                btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
+                btnRestaurar.setOnAction(e -> {
+                    Servicio s = getTableView().getItems().get(getIndex());
+                    db.restaurarServicio(s.getId());
+                    tablaPapelera.setItems(db.getServiciosEliminados());
+                    filtrar();
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnRestaurar);
+            }
+        });
+
+        tablaPapelera.getColumns().addAll(colNombre, colTipo, colAccion);
+        tablaPapelera.setItems(db.getServiciosEliminados());
+
+        dialog.getDialogPane().setContent(tablaPapelera);
+        dialog.showAndWait();
     }
 
     private void mostrarDialogoEditar(Servicio servicio) {
@@ -413,52 +458,29 @@ public class ServicioDAO {
         txtTelefono.setStyle("-fx-font-size: 12px;");
 
         TextField txtHorario = new TextField(servicio.getHorario().trim());
-        Label lblErrorNombre = new Label();
-        lblErrorNombre.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorNombre.setWrapText(true);
-        lblErrorNombre.setMaxWidth(Double.MAX_VALUE);
-        lblErrorNombre.setPrefWidth(320);
-
-        Label lblErrorTipo = new Label();
-        lblErrorTipo.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorTipo.setWrapText(true);
-        lblErrorTipo.setMaxWidth(Double.MAX_VALUE);
-        lblErrorTipo.setPrefWidth(320);
-
-        Label lblErrorDireccion = new Label();
-        lblErrorDireccion.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorDireccion.setWrapText(true);
-        lblErrorDireccion.setMaxWidth(Double.MAX_VALUE);
-        lblErrorDireccion.setPrefWidth(320);
-
-        Label lblErrorTelefono = new Label();
-        lblErrorTelefono.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
-        lblErrorTelefono.setWrapText(true);
-        lblErrorTelefono.setMaxWidth(Double.MAX_VALUE);
-        lblErrorTelefono.setPrefWidth(320);
         txtHorario.setStyle("-fx-font-size: 12px;");
 
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
+        lblError.setWrapText(true);
+        lblError.setPrefWidth(420);
+        lblError.setMinHeight(Region.USE_PREF_SIZE);
+        lblError.setVisible(false);
+        lblError.setManaged(false);
 
-
-        grid.add(new Label("Nombre*:"), 0, 0);
+        grid.setMinWidth(460);
+        grid.add(crearLabelObligatorio("Nombre"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Tipo*:"), 0, 1);
+        grid.add(crearLabelObligatorio("Tipo"), 0, 1);
         grid.add(cbTipo, 1, 1);
-        grid.add(new Label("Dirección*:"), 0, 2);
+        grid.add(crearLabelObligatorio("Dirección"), 0, 2);
         grid.add(txtDireccion, 1, 2);
-        grid.add(new Label("Teléfono*:"), 0, 3);
+        grid.add(crearLabelObligatorio("Teléfono"), 0, 3);
         grid.add(txtTelefono, 1, 3);
-        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(crearLabelObligatorio("Horario"), 0, 4);
         grid.add(txtHorario, 1, 4);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 7);
-        GridPane.setColumnSpan(lblErrorTipo, 2);
-        grid.add(lblErrorTipo, 0, 8);
-        GridPane.setColumnSpan(lblErrorDireccion, 2);
-        grid.add(lblErrorDireccion, 0, 9);
-        GridPane.setColumnSpan(lblErrorTelefono, 2);
-        grid.add(lblErrorTelefono, 0, 10);
-
+        GridPane.setColumnSpan(lblError, 2);
+        grid.add(lblError, 0, 5);
 
         if ("Inactivo".equals(servicio.getEstado())) {
             txtNombre.setDisable(true);
@@ -470,54 +492,30 @@ public class ServicioDAO {
             Label lblAviso = new Label("⚠ Servicio inactivo: no se puede editar. Reactívelo primero.");
             lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
             lblAviso.setWrapText(true);
-            lblAviso.setMaxWidth(320);
-            grid.add(lblAviso, 0, 5, 2, 1);
+            lblAviso.setPrefWidth(420);
+            lblAviso.setMinHeight(Region.USE_PREF_SIZE);
+            grid.add(lblAviso, 0, 6, 2, 1);
 
             dialog.getDialogPane().lookupButton(guardarBtn).setDisable(true);
         }
-        Label lblEspacio = crearAvisoEspacio();
-        bloquearEspacioInicial(txtNombre, lblEspacio);
-        bloquearEspacioInicial(txtDireccion, lblEspacio);
-        filtrarCampo(txtTelefono, lblEspacio, "[0-9\\s\\-]{0,15}", "⚠ Solo se permiten números, espacios y guiones (máx. 15)");
-        filtrarCampo(txtHorario, lblEspacio, "[0-9:/hCerado]{0,20}", "⚠ Formato: 24h, Cerrado o HH:MM/HH:MM");
-        grid.add(lblEspacio, 0, 6, 2, 1);
+        bloquearEspacioSilencioso(txtNombre);
+        bloquearEspacioSilencioso(txtDireccion);
+        filtrarCampoSilencioso(txtTelefono, "[0-9\\s\\-]{0,15}");
+        filtrarCampoSilencioso(txtHorario, "[0-9:\\-hsCerado]{0,20}");
         dialog.getDialogPane().setContent(grid);
         Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
 
         btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
-            boolean valido = true;
-
-            if (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty()) {
-                lblErrorNombre.setText("El nombre es obligatorio");
-                valido = false;
-            } else {
-                lblErrorNombre.setText("");
-            }
-
-            if (cbTipo.getValue() == null || cbTipo.getValue().trim().isEmpty()) {
-                lblErrorTipo.setText("El tipo es obligatorio");
-                valido = false;
-            } else {
-                lblErrorTipo.setText("");
-            }
-
-            if (txtDireccion.getText() == null || txtDireccion.getText().trim().isEmpty()) {
-                lblErrorDireccion.setText("La dirección es obligatoria");
-                valido = false;
-            } else {
-                lblErrorDireccion.setText("");
-            }
-
-            String tel = txtTelefono.getText().trim();
-            if (tel.length() < 3 || !tel.matches("[0-9\\s\\-]{3,15}")) {
-                lblErrorTelefono.setText("El teléfono debe tener entre 3 y 15 caracteres (números, espacios y guiones)");
-                valido = false;
-            } else {
-                lblErrorTelefono.setText("");
-            }
-
-            if (!valido) {
+            String mensaje = validarCampos(txtNombre, cbTipo, txtDireccion, txtTelefono, txtHorario);
+            if (mensaje != null) {
+                lblError.setText(mensaje);
+                lblError.setVisible(true);
+                lblError.setManaged(true);
+                dialog.getDialogPane().getScene().getWindow().sizeToScene();
                 ev.consume();
+            } else {
+                lblError.setVisible(false);
+                lblError.setManaged(false);
             }
         });
 
