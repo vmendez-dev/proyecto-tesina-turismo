@@ -15,14 +15,9 @@
 
                 <VBox spacing="4.0">
                     <children>
-                        <Label text="Gestión de Alojamientos" textFill="#0f172a">
+                        <Label text="Gestión Alojamientos" textFill="#0f172a">
                             <font>
                                 <Font name="Segoe UI Bold" size="22.0" />
-                            </font>
-                        </Label>
-                        <Label text="Listado de alojamientos registrados en el sistema" textFill="#64748b">
-                            <font>
-                                <Font size="13.0" />
                             </font>
                         </Label>
                     </children>
@@ -57,7 +52,7 @@
                         </VBox>
                         <VBox alignment="BOTTOM_CENTER">
                             <children>
-                                <Button fx:id="btnNuevo" onAction="#abrirFormularioNuevo" prefHeight="35.0" styleClass="btn-primary" text="+ Nuevo Alojamiento" />
+                                <Button fx:id="btnNuevo" onAction="#abrirFormularioNuevo" prefHeight="35.0" styleClass="btn-primary" text=" + " />
                             </children>
                         </VBox>
                     </children>
@@ -71,7 +66,6 @@
                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                             </columnResizePolicy>
                             <columns>
-                                <TableColumn fx:id="colId" prefWidth="40.0" text="ID" />
                                 <TableColumn fx:id="colNombre" prefWidth="160.0" text="Nombre / Establecimiento" />
                                 <TableColumn fx:id="colTipo" prefWidth="80.0" text="Tipo" />
                                 <TableColumn fx:id="colDireccion" prefWidth="160.0" text="Dirección" />

@@ -5,99 +5,167 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fitToWidth="true" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.AlojamientoFormController">
-    <content>
-        <VBox spacing="20.0">
+<BorderPane prefHeight="530.0" prefWidth="620.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.AlojamientoFormController">
+
+    <!-- 1. ENCABEZADO FIJO ARRIBA -->
+    <top>
+        <VBox spacing="4.0">
             <padding>
-                <Insets bottom="30.0" left="40.0" right="40.0" top="20.0" />
+                <Insets bottom="10.0" left="25.0" right="25.0" top="15.0" />
             </padding>
             <children>
-                <VBox spacing="4.0">
-                    <children>
-                        <Label fx:id="lblTituloForm" text="Nuevo Alojamiento" textFill="#0f172a">
-                            <font>
-                                <Font name="Segoe UI Bold" size="22.0" />
-                            </font>
-                        </Label>
-                        <Label fx:id="lblSubtituloForm" text="Completar los datos para registrar un nuevo establecimiento." textFill="#64748b">
-                            <font>
-                                <Font size="13.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </VBox>
-
-                <VBox spacing="16.0" styleClass="card">
-                    <children>
-                        <Label text="Datos Generales" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
-                        <TextField fx:id="txtNombre" promptText="Nombre / Establecimiento" />
-
-                        <HBox spacing="15.0">
-                            <children>
-                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                    <children>
-                                        <Label text="Tipo *" textFill="#475569" />
-                                        <ComboBox fx:id="cbTipo" maxWidth="Infinity" promptText="Seleccionar Tipo" />
-                                    </children>
-                                </VBox>
-                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                    <children>
-                                        <Label text="Categoría *" textFill="#475569" />
-                                        <ComboBox fx:id="cbCategoria" maxWidth="Infinity" promptText="Seleccionar Categoría" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </HBox>
-
-                        <TextField fx:id="txtDireccion" promptText="Dirección / Ubicación" />
-
-                        <Separator />
-
-                        <Label text="Capacidad y Contacto" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
-                        <HBox spacing="15.0">
-                            <children>
-                                <TextField fx:id="txtTelefono" promptText="Teléfono de Contacto" HBox.hgrow="ALWAYS" />
-                                <TextField fx:id="txtCapacidad" promptText="Plazas / Capacidad (ej. 4)" HBox.hgrow="ALWAYS" />
-                            </children>
-                        </HBox>
-
-                        <Separator />
-
-                        <Label text="Datos del Dueño" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
-                        <HBox spacing="15.0">
-                            <children>
-                                <TextField fx:id="txtNombreDueno" promptText="Nombre Completo del Dueño" HBox.hgrow="ALWAYS" />
-                                <TextField fx:id="txtDniDueno" promptText="DNI del Dueño" HBox.hgrow="ALWAYS" />
-                            </children>
-                        </HBox>
-
-                        <Separator />
-
-                        <Label text="Descripción y Estado" textFill="#0f172a"><font><Font name="System Bold" size="14.0" /></font></Label>
-                        <HBox spacing="15.0">
-                            <children>
-                                <TextArea fx:id="txtDescripcion" prefRowCount="3" promptText="Breve descripción del establecimiento..." HBox.hgrow="ALWAYS" />
-                                <VBox spacing="4.0" prefWidth="180.0">
-                                    <children>
-                                        <Label text="Estado" textFill="#475569" />
-                                        <ComboBox fx:id="cbEstado" maxWidth="Infinity" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </HBox>
-
-                        <HBox alignment="CENTER_RIGHT" spacing="12.0">
-                            <padding>
-                                <Insets top="10.0" />
-                            </padding>
-                            <children>
-                                <Button fx:id="btnCancelar" onAction="#cancelar" styleClass="btn-secondary" text="Cancelar" />
-                                <Button fx:id="btnGuardar" onAction="#guardar" styleClass="btn-primary" text="Confirmar Registro" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
+                <Label fx:id="lblTituloForm" text="Datos del Alojamiento" textFill="#0f172a">
+                    <font>
+                        <Font name="Segoe UI Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Label fx:id="lblSubtituloForm" text="Los campos marcados con (*) son obligatorios." textFill="#64748b">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
             </children>
         </VBox>
-    </content>
-</ScrollPane>
+    </top>
+
+    <!-- 2. CAMPOS SCROLLEABLES AL CENTRO -->
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent;">
+            <content>
+                <VBox spacing="15.0">
+                    <padding>
+                        <Insets bottom="15.0" left="25.0" right="25.0" top="5.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="14.0" styleClass="card">
+                            <children>
+                                <!-- SECCIÓN 1: INFORMACIÓN GENERAL -->
+                                <Label text="Información General" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Label>
+
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label text="Nombre del Establecimiento *" textFill="#475569" />
+                                        <TextField fx:id="txtNombre" promptText="Ej: Posada Serrana" />
+                                    </children>
+                                </VBox>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Tipo *" textFill="#475569" />
+                                                <ComboBox fx:id="cbTipo" maxWidth="Infinity" promptText="Seleccionar Tipo" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Categoría *" textFill="#475569" />
+                                                <ComboBox fx:id="cbCategoria" maxWidth="Infinity" promptText="Seleccionar Categoría" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <Separator />
+
+                                <!-- SECCIÓN 2: UBICACIÓN Y CAPACIDAD -->
+                                <Label text="Ubicación y Capacidad" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Label>
+
+                                <VBox spacing="4.0">
+                                    <children>
+                                        <Label text="Dirección *" textFill="#475569" />
+                                        <TextField fx:id="txtDireccion" promptText="Ej: Av. San Martín 450" />
+                                    </children>
+                                </VBox>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Capacidad (Plazas) *" textFill="#475569" />
+                                                <TextField fx:id="txtCapacidad" promptText="Ej: 6" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Teléfono de Contacto *" textFill="#475569" />
+                                                <TextField fx:id="txtTelefono" promptText="Ej: 3541-558899" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <Separator />
+
+                                <!-- SECCIÓN 3: SERVICIOS Y COMODIDADES -->
+                                <Label text="Servicios y Comodidades" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Label>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <CheckBox fx:id="chkWifi" text="Wifi" textFill="#475569" />
+                                        <CheckBox fx:id="chkCochera" text="Cochera" textFill="#475569" />
+                                        <CheckBox fx:id="chkPileta" text="Pileta" textFill="#475569" />
+                                        <CheckBox fx:id="chkDesayuno" text="Desayuno" textFill="#475569" />
+                                        <CheckBox fx:id="chkClimatizacion" text="Climatización" textFill="#475569" />
+                                    </children>
+                                </HBox>
+
+                                <Separator />
+
+                                <!-- SECCIÓN 4: PROPIETARIO / TITULAR -->
+                                <Label text="Datos del Propietario (Opcional)" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Label>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Nombre Completo" textFill="#475569" />
+                                                <TextField fx:id="txtNombreDueno" promptText="Nombre y Apellido" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="DNI" textFill="#475569" />
+                                                <TextField fx:id="txtDniDueno" promptText="Sin puntos" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <Separator />
+
+                                <!-- SECCIÓN 5: DESCRIPCIÓN -->
+                                <Label text="Descripción" textFill="#0f172a">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Label>
+                                <TextArea fx:id="txtDescripcion" prefRowCount="2" prefHeight="55.0" promptText="Breve descripción u observaciones del establecimiento..." wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- 3. BOTONERA FIJA ABAJO (NUNCA SE TAPA) -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="12.0" style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+            <padding>
+                <Insets bottom="12.0" left="25.0" right="25.0" top="12.0" />
+            </padding>
+            <children>
+                <Button fx:id="btnCancelar" onAction="#cancelar" styleClass="btn-secondary" text="Cancelar" />
+                <Button fx:id="btnGuardar" onAction="#guardar" styleClass="btn-primary" text="Guardar" />
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

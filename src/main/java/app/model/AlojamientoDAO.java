@@ -18,7 +18,7 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
     @Override
     public boolean insertar(Alojamiento a) {
         String sql = "INSERT INTO alojamientos (nombre, tipo, categoria, direccion, telefono, capacidad, " +
-                "nombre_dueno, dni_dueno, descripcion, foto_url, estado, fecha_registro) " +
+                "nombre_dueno, dni_dueno, descripcion, amenities, foto_url, estado, fecha_registro) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -33,9 +33,10 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
             stmt.setString(7, a.getNombreDueno());
             stmt.setString(8, a.getDniDueno());
             stmt.setString(9, a.getDescripcion());
-            stmt.setString(10, a.getFotoUrl());
-            stmt.setString(11, a.getEstado());
-            stmt.setDate(12, a.getFechaRegistro() != null ? Date.valueOf(a.getFechaRegistro()) : Date.valueOf(java.time.LocalDate.now()));
+            stmt.setString(10, a.getAmenities());
+            stmt.setString(11, a.getFotoUrl());
+            stmt.setString(12, a.getEstado());
+            stmt.setDate(13, a.getFechaRegistro() != null ? Date.valueOf(a.getFechaRegistro()) : Date.valueOf(java.time.LocalDate.now()));
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -48,7 +49,7 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
     @Override
     public boolean actualizar(Alojamiento a) {
         String sql = "UPDATE alojamientos SET nombre=?, tipo=?, categoria=?, direccion=?, telefono=?, " +
-                "capacidad=?, nombre_dueno=?, dni_dueno=?, descripcion=?, foto_url=?, estado=? " +
+                "capacidad=?, nombre_dueno=?, dni_dueno=?, descripcion=?, amenities=?, foto_url=?, estado=? " +
                 "WHERE id_alojamiento=?";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -63,9 +64,10 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
             stmt.setString(7, a.getNombreDueno());
             stmt.setString(8, a.getDniDueno());
             stmt.setString(9, a.getDescripcion());
-            stmt.setString(10, a.getFotoUrl());
-            stmt.setString(11, a.getEstado());
-            stmt.setInt(12, a.getIdAlojamiento());
+            stmt.setString(10, a.getAmenities());
+            stmt.setString(11, a.getFotoUrl());
+            stmt.setString(12, a.getEstado());
+            stmt.setInt(13, a.getIdAlojamiento());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -113,6 +115,7 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
                         rs.getString("nombre_dueno"),
                         rs.getString("dni_dueno"),
                         rs.getString("descripcion"),
+                        rs.getString("amenities"),
                         rs.getString("foto_url"),
                         rs.getString("estado"),
                         rs.getDate("fecha_registro") != null ? rs.getDate("fecha_registro").toLocalDate() : null
@@ -150,6 +153,7 @@ public class AlojamientoDAO implements CRUD<Alojamiento> {
                             rs.getString("nombre_dueno"),
                             rs.getString("dni_dueno"),
                             rs.getString("descripcion"),
+                            rs.getString("amenities"),
                             rs.getString("foto_url"),
                             rs.getString("estado"),
                             rs.getDate("fecha_registro") != null ? rs.getDate("fecha_registro").toLocalDate() : null

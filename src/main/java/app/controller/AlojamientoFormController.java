@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AlojamientoFormController implements Initializable {
@@ -29,22 +31,28 @@ public class AlojamientoFormController implements Initializable {
     @FXML private TextField txtNombreDueno;
     @FXML private TextField txtDniDueno;
     @FXML private TextArea txtDescripcion;
-    @FXML private ComboBox<String> cbEstado;
+    @FXML private CheckBox chkWifi;
+    @FXML private CheckBox chkCochera;
+    @FXML private CheckBox chkPileta;
+    @FXML private CheckBox chkDesayuno;
+    @FXML private CheckBox chkClimatizacion;
     @FXML private Button btnGuardar;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbTipo.setItems(FXCollections.observableArrayList("Cabaña", "Hotel", "Hostal", "Posada"));
-        cbCategoria.setItems(FXCollections.observableArrayList("1 Estrella", "2 Estrellas", "3 Estrellas", "4 Estrellas", "5 Estrellas"));
-        cbEstado.setItems(FXCollections.observableArrayList("Activo", "Inactivo"));
-        cbEstado.getSelectionModel().select("Activo");
+        cbTipo.setItems(FXCollections.observableArrayList(
+                "Albergue", "Apart Hotel", "Cabaña", "Camping", "Complejo Turístico","Departamento / Casa", "Glamping", "Hostel", "Hostería", "Hotel", "Posada", "Residencial"
+        ));
+        cbCategoria.setItems(FXCollections.observableArrayList(
+                "1 Estrella", "2 Estrellas", "3 Estrellas", "4 Estrellas", "5 Estrellas", "Estándar / Sin Categoría"
+        ));
     }
 
     public void setAlojamientoParaModificar(Alojamiento a) {
         this.alojamientoEnEdicion = a;
-        lblTituloForm.setText("Modificar Alojamiento");
-        lblSubtituloForm.setText("Edita los datos del establecimiento seleccionado.");
-        btnGuardar.setText("Guardar Cambios");
+        lblTituloForm.setText("Datos del Alojamiento");
+        lblSubtituloForm.setText("Modifique los campos necesarios y guarde los cambios.");
+        btnGuardar.setText("Guardar");
 
         txtNombre.setText(a.getNombre());
         cbTipo.setValue(a.getTipo());
@@ -55,7 +63,14 @@ public class AlojamientoFormController implements Initializable {
         txtNombreDueno.setText(a.getNombreDueno());
         txtDniDueno.setText(a.getDniDueno());
         txtDescripcion.setText(a.getDescripcion());
-        cbEstado.setValue(a.getEstado());
+
+        if (a.getAmenities() != null) {
+            chkWifi.setSelected(a.getAmenities().contains("Wifi"));
+            chkCochera.setSelected(a.getAmenities().contains("Cochera"));
+            chkPileta.setSelected(a.getAmenities().contains("Pileta"));
+            chkDesayuno.setSelected(a.getAmenities().contains("Desayuno"));
+            chkClimatizacion.setSelected(a.getAmenities().contains("Climatización"));
+        }
     }
 
     public void setAlGuardarCallback(Runnable callback) {
@@ -73,26 +88,27 @@ public class AlojamientoFormController implements Initializable {
 
             if (alojamientoEnEdicion == null) {
                 Alojamiento nuevo = new Alojamiento();
+                nuevo.setEstado("Activo");
                 mapearCampos(nuevo, capacidad);
 
                 if (alojamientoDAO.insertar(nuevo)) {
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Alojamiento registrado correctamente.");
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Registro Exitoso", "El nuevo alojamiento fue dado de alta en el sistema.");
                     cerrarVentana();
                 } else {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo registrar en la base de datos.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Base de Datos", "No se pudo registrar el alojamiento. Intente nuevamente.");
                 }
             } else {
                 mapearCampos(alojamientoEnEdicion, capacidad);
 
                 if (alojamientoDAO.actualizar(alojamientoEnEdicion)) {
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Alojamiento actualizado correctamente.");
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa", "Los datos del establecimiento se modificaron correctamente.");
                     cerrarVentana();
                 } else {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el registro.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Base de Datos", "No se pudieron actualizar los datos del establecimiento.");
                 }
             }
         } catch (NumberFormatException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Dato Inválido", "La capacidad debe ser un número entero.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Dato no válido", "La capacidad debe ser un número entero mayor a cero.");
         } catch (IllegalArgumentException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Dato Inválido", e.getMessage());
         }
@@ -113,14 +129,25 @@ public class AlojamientoFormController implements Initializable {
         a.setNombreDueno(txtNombreDueno.getText().trim());
         a.setDniDueno(txtDniDueno.getText().trim());
         a.setDescripcion(txtDescripcion.getText().trim());
-        a.setEstado(cbEstado.getValue());
+        a.setAmenities(obtenerAmenitiesSeleccionadas());
+    }
+
+    private String obtenerAmenitiesSeleccionadas() {
+        List<String> seleccionados = new ArrayList<>();
+        if (chkWifi.isSelected()) seleccionados.add("Wifi");
+        if (chkCochera.isSelected()) seleccionados.add("Cochera");
+        if (chkPileta.isSelected()) seleccionados.add("Pileta");
+        if (chkDesayuno.isSelected()) seleccionados.add("Desayuno");
+        if (chkClimatizacion.isSelected()) seleccionados.add("Climatización");
+        return String.join(", ", seleccionados);
     }
 
     private boolean validarCampos() {
         if (txtNombre.getText().trim().isEmpty() || cbTipo.getValue() == null
                 || cbCategoria.getValue() == null || txtCapacidad.getText().trim().isEmpty()
-                || txtDireccion.getText().trim().isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos Obligatorios", "Complete los campos obligatorios (*).");
+                || txtDireccion.getText().trim().isEmpty()|| txtTelefono.getText() == null
+                || txtTelefono.getText().trim().isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos", "Nombre, Tipo, Categoría, Plazas, Dirección y Telefono son obligatorios.");
             return false;
         }
         return true;
@@ -139,6 +166,7 @@ public class AlojamientoFormController implements Initializable {
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
+
         alert.showAndWait();
     }
 }

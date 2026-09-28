@@ -205,8 +205,9 @@ public class AlojamientoController implements Initializable {
     private boolean validarCampos() {
         if (txtNombre.getText().trim().isEmpty() || cbTipo.getValue() == null
                 || cbCategoria.getValue() == null || txtCapacidad.getText().trim().isEmpty()
-                || txtDireccion.getText().trim().isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos", "Nombre, Tipo, Categoría, Plazas y Dirección son obligatorios.");
+                || txtDireccion.getText().trim().isEmpty() || txtTelefono.getText() == null
+                || txtTelefono.getText().trim().isEmpty()){
+            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos", "Nombre, Tipo, Categoría, Plazas, Dirección y Telefono son obligatorios.");
             return false;
         }
         return true;

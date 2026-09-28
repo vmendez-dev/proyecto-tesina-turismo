@@ -35,7 +35,6 @@ public class AlojamientoDashboardController implements Initializable {
     @FXML private ComboBox<String> cbFiltroEstado;
 
     @FXML private TableView<Alojamiento> tablaAlojamientos;
-    @FXML private TableColumn<Alojamiento, Integer> colId;
     @FXML private TableColumn<Alojamiento, String> colNombre;
     @FXML private TableColumn<Alojamiento, String> colTipo;
     @FXML private TableColumn<Alojamiento, String> colDireccion;
@@ -66,10 +65,10 @@ public class AlojamientoDashboardController implements Initializable {
     }
 
     private void configurarFiltrosDesplegables() {
-        cbFiltroTipo.setItems(FXCollections.observableArrayList("Todos", "Cabaña", "Hotel", "Hostal", "Posada"));
+        cbFiltroTipo.setItems(FXCollections.observableArrayList("Todos", "Albergue", "Apart Hotel", "Cabaña", "Camping", "Complejo Turístico","Departamento / Casa", "Glamping", "Hostel", "Hostería", "Hotel", "Posada", "Residencial"));
         cbFiltroTipo.getSelectionModel().selectFirst();
 
-        cbFiltroCategoria.setItems(FXCollections.observableArrayList("Todas", "1 Estrella", "2 Estrellas", "3 Estrellas", "4 Estrellas", "5 Estrellas"));
+        cbFiltroCategoria.setItems(FXCollections.observableArrayList("Todas", "1 Estrella", "2 Estrellas", "3 Estrellas", "4 Estrellas", "5 Estrellas", "Estándar / Sin Categoría"));
         cbFiltroCategoria.getSelectionModel().selectFirst();
 
         cbFiltroEstado.setItems(FXCollections.observableArrayList("Todos", "Activo", "Inactivo"));
@@ -77,7 +76,6 @@ public class AlojamientoDashboardController implements Initializable {
     }
 
     private void configurarColumnasTablaPrincipal() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("idAlojamiento"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
@@ -214,7 +212,7 @@ public class AlojamientoDashboardController implements Initializable {
             formCtrl.setAlGuardarCallback(this::cargarDatos);
 
             Stage stage = new Stage();
-            stage.setTitle("Registrar Nuevo Alojamiento");
+            stage.setTitle("Nuevo Alojamiento");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(root));
             stage.show();
@@ -243,29 +241,67 @@ public class AlojamientoDashboardController implements Initializable {
     }
 
     private void mostrarDetalle(Alojamiento a) {
+        String tel = (a.getTelefono() != null && !a.getTelefono().trim().isEmpty())
+                ? a.getTelefono() : "No registrado";
+
+        String servicios = (a.getAmenities() != null && !a.getAmenities().trim().isEmpty())
+                ? a.getAmenities() : "Sin servicios declarados";
+
+        String titular = (a.getNombreDueno() != null && !a.getNombreDueno().trim().isEmpty())
+                ? a.getNombreDueno() + " (DNI: " + (a.getDniDueno() != null ? a.getDniDueno() : "-") + ")"
+                : "No especificado";
+
+        String desc = (a.getDescripcion() != null && !a.getDescripcion().trim().isEmpty())
+                ? a.getDescripcion() : "Sin observaciones adicionales.";
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Detalle del Alojamiento");
         alert.setHeaderText(a.getNombre());
         alert.setContentText(
-                "Resumen: " + a.obtenerResumen() + "\n\n" +
-                        "Dirección: " + a.getDireccion() + "\n" +
-                        "Teléfono: " + a.getTelefono() + "\n" +
-                        "Dueño: " + a.getNombreDueno() + " (DNI: " + a.getDniDueno() + ")\n" +
-                        "Estado: " + a.getEstado() + "\n" +
-                        "Descripción: " + (a.getDescripcion() != null ? a.getDescripcion() : "Sin descripción")
+                "• Tipo y Categoría: " + a.getTipo() + " (" + a.getCategoria() + ")\n" +
+                        "• Capacidad: " + a.getCapacidad() + " plazas\n" +
+                        "• Dirección: " + a.getDireccion() + "\n" +
+                        "• Teléfono: " + tel + "\n" +
+                        "• Servicios: " + servicios + "\n" +
+                        "• Titular: " + titular + "\n" +
+                        "• Estado: " + a.getEstado() + "\n\n" +
+                        "Descripción:\n" + desc
         );
         alert.showAndWait();
     }
 
     private void confirmarBajaLogica(Alojamiento a) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Dar de baja el alojamiento '" + a.getNombre() + "'?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Baja de Establecimiento");
         alert.setHeaderText(null);
-        alert.showAndWait();
+        alert.setContentText("¿Está seguro de que desea dar de baja '" + a.getNombre() + "'?\n\n" +
+                "El establecimiento pasará a estado 'Inactivo' y se mantendrá en el historial.");
 
-        if (alert.getResult() == ButtonType.YES) {
-            if (alojamientoDAO.eliminar(a.getIdAlojamiento())) {
-                cargarDatos();
+        // Botones con texto claro y descriptivo
+        ButtonType btnConfirmar = new ButtonType("Dar de baja", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btnCancelar = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(btnConfirmar, btnCancelar);
+
+        // Si tu ventana principal tiene scene, hereda estilos sin romper nada
+        try {
+            if (tablaAlojamientos != null && tablaAlojamientos.getScene() != null) {
+                alert.getDialogPane().getStylesheets().addAll(tablaAlojamientos.getScene().getStylesheets());
             }
-        }
+        } catch (Exception ignored) {}
+
+        alert.showAndWait().ifPresent(respuesta -> {
+            if (respuesta == btnConfirmar) {
+                boolean ok = alojamientoDAO.eliminar(a.getIdAlojamiento());
+                if (ok) {
+                    cargarDatos(); // Refresca la tabla y las métricas
+                } else {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error de Operación");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("No se pudo cambiar el estado del alojamiento en la base de datos.");
+                    errorAlert.showAndWait();
+                }
+            }
+        });
     }
 }

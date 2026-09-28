@@ -11,7 +11,9 @@ public class Alojamiento extends EntidadTuristica {
     private String nombreDueno;
     private String dniDueno;
     private String descripcion;
+    private String amenities;
     private String fotoUrl;
+
 
     public Alojamiento() {
         super();
@@ -19,7 +21,7 @@ public class Alojamiento extends EntidadTuristica {
 
     public Alojamiento(int id, String nombre, String tipo, String categoria,
                        String direccion, String telefono, int capacidad, String nombreDueno,
-                       String dniDueno, String descripcion, String fotoUrl, String estado,
+                       String dniDueno, String descripcion, String amenities, String fotoUrl, String estado,
                        LocalDate fechaRegistro) {
         super(id, nombre, direccion, estado, fechaRegistro);
         validarCapacidad(capacidad);
@@ -30,6 +32,7 @@ public class Alojamiento extends EntidadTuristica {
         this.nombreDueno = nombreDueno;
         this.dniDueno = dniDueno;
         this.descripcion = descripcion;
+        this.amenities = amenities;
         this.fotoUrl = fotoUrl;
     }
 
@@ -76,6 +79,9 @@ public class Alojamiento extends EntidadTuristica {
 
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public String getAmenities() { return amenities; }
+    public void setAmenities(String amenities) { this.amenities = amenities; }
 
     public String getFotoUrl() { return fotoUrl; }
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
