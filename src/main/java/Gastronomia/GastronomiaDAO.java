@@ -98,7 +98,7 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
 
         TableColumn<Gastronomia, String> colEspecialidad = new TableColumn<>("Especialidad");
         colEspecialidad.setCellValueFactory(c -> c.getValue().especialidadProperty());
-        colEspecialidad.setPrefWidth(130);
+        colEspecialidad.setPrefWidth(400);
 
 
 
@@ -126,6 +126,10 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             String soloFecha = (fechaCompleta != null && fechaCompleta.contains(" "))
                     ? fechaCompleta.split(" ")[0]
                     : fechaCompleta;
+            if (soloFecha != null && soloFecha.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                String[] p = soloFecha.split("-");
+                soloFecha = p[2] + "/" + p[1] + "/" + p[0];
+            }
             return new javafx.beans.property.SimpleStringProperty(soloFecha);
         });
         colFecha.setPrefWidth(110);
@@ -142,7 +146,9 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
                 btnEditar.setStyle("-fx-background-color: #e0f2fe; -fx-text-fill: #0284c7; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnToggle.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnEliminar.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
-
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnToggle.setTooltip(new Tooltip("Activar / Desactivar"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar"));
                 btnEditar.setOnAction(e -> {
                     Gastronomia g = getTableView().getItems().get(getIndex());
                     mostrarDialogoEditar(g);
@@ -151,8 +157,12 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
                 btnToggle.setOnAction(e -> {
                     Gastronomia g = getTableView().getItems().get(getIndex());
                     String nuevoEstado = g.getEstado().equals("Activo") ? "Inactivo" : "Activo";
-                    db.cambiarEstadoGastronomia(g.getId(), nuevoEstado);
-                    filtrar();
+                    if (db.cambiarEstadoGastronomia(g.getId(), nuevoEstado)) {
+                        filtrar();
+                        mostrarExito("Estado cambiado a " + nuevoEstado + " correctamente.");
+                    } else {
+                        mostrarError("No se pudo cambiar el estado.\n" + db.getUltimoError());
+                    }
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -206,6 +216,22 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             }
             return change;
         };
+    }
+
+    private void mostrarExito(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Operación exitosa");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Error");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
     }
            //------ALTA------//
 
@@ -291,6 +317,9 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             if (txtEspecialidad.getText() == null || txtEspecialidad.getText().trim().isEmpty()) {
                 faltantes.add("Especialidad");
             }
+            if (cbTipo.getValue() == null) {
+                faltantes.add("Tipo");
+            }
             if (!faltantes.isEmpty()) {
                 lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
                 lblError.setVisible(true);
@@ -315,8 +344,12 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         });
 
         dialog.showAndWait().ifPresent(g -> {
-            db.insertarGastronomia(g);
-            filtrar();
+            if (db.insertarGastronomia(g)) {
+                filtrar();
+                mostrarExito("Establecimiento registrado correctamente.");
+            } else {
+                mostrarError("No se pudo registrar el establecimiento.\n" + db.getUltimoError());
+            }
         });
     }
              //------EDITAR------//
@@ -421,6 +454,9 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             if (txtEspecialidad.getText() == null || txtEspecialidad.getText().trim().isEmpty()) {
                 faltantes.add("Especialidad");
             }
+            if (cbTipo.getValue() == null) {
+                faltantes.add("Tipo");
+            }
             if (!faltantes.isEmpty()) {
                 lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
                 lblError.setVisible(true);
@@ -442,8 +478,12 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         });
 
         dialog.showAndWait().ifPresent(g -> {
-            db.actualizarGastronomia(g);
-            filtrar();
+            if (db.actualizarGastronomia(g)) {
+                filtrar();
+                mostrarExito("Establecimiento modificado correctamente.");
+            } else {
+                mostrarError("No se pudo modificar el establecimiento.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -457,6 +497,9 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             if (db.eliminarGastronomia(gastronomia.getId())) {
                 filtrar();
+                mostrarExito("Establecimiento eliminado correctamente.");
+            } else {
+                mostrarError("No se pudo eliminar el establecimiento.\n" + db.getUltimoError());
             }
         }
     }
@@ -467,15 +510,15 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
             dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 
             TableView<Gastronomia> tablaPapelera = new TableView<>();
-            tablaPapelera.setPrefSize(500, 250);
+            tablaPapelera.setPrefSize(600, 250);
 
             TableColumn<Gastronomia, String> colNombre = new TableColumn<>("Nombre");
             colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
-            colNombre.setPrefWidth(150);
+            colNombre.setPrefWidth(210);
 
             TableColumn<Gastronomia, String> colTipo = new TableColumn<>("Tipo");
             colTipo.setCellValueFactory(c -> c.getValue().tipoProperty());
-            colTipo.setPrefWidth(100);
+            colTipo.setPrefWidth(260);
 
             TableColumn<Gastronomia, Void> colAccion = new TableColumn<>("Acción");
             colAccion.setPrefWidth(100);
@@ -485,9 +528,13 @@ public class GastronomiaDAO {         //variables que la clase necesita recordar
                     btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                     btnRestaurar.setOnAction(e -> {
                         Gastronomia g = getTableView().getItems().get(getIndex());
-                        db.restaurarGastronomia(g.getId());
-                        tablaPapelera.setItems(db.getGastronomiasEliminadas());
-                        filtrar();
+                        if (db.restaurarGastronomia(g.getId())) {
+                            tablaPapelera.setItems(db.getGastronomiasEliminadas());
+                            filtrar();
+                            mostrarExito("Establecimiento restaurado correctamente.");
+                        } else {
+                            mostrarError("No se pudo restaurar el establecimiento.");
+                        }
                     });
                 }
                 @Override

@@ -88,7 +88,7 @@ public class EventoDAO {
 
         TableColumn<Evento, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
-        colNombre.setPrefWidth(150);
+        colNombre.setPrefWidth(260);
 
         TableColumn<Evento, String> colFecha = new TableColumn<>("Fecha");
         colFecha.setCellValueFactory(c -> {
@@ -101,7 +101,7 @@ public class EventoDAO {
 
         TableColumn<Evento, String> colLugar = new TableColumn<>("Lugar");
         colLugar.setCellValueFactory(c -> c.getValue().lugarProperty());
-        colLugar.setPrefWidth(130);
+        colLugar.setPrefWidth(230);
 
         TableColumn<Evento, String> colDesc = new TableColumn<>("Descripción");
         colDesc.setCellValueFactory(c -> c.getValue().descripcionProperty());
@@ -141,7 +141,9 @@ public class EventoDAO {
                 btnEditar.setStyle("-fx-background-color: #e0f2fe; -fx-text-fill: #0284c7; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnToggle.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnEliminar.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
-
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnToggle.setTooltip(new Tooltip("Cambiar estado"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar"));
                 btnEditar.setOnAction(e -> {
                     Evento ev = getTableView().getItems().get(getIndex());
                     mostrarDialogoEditar(ev);
@@ -152,9 +154,13 @@ public class EventoDAO {
                     String[] estados = {"Activo", "Finalizado", "Cancelado"};
                     int idx = java.util.Arrays.asList(estados).indexOf(ev.getEstado());
                     String nuevo = estados[(idx + 1) % estados.length];
-                    db.cambiarEstadoEvento(ev.getId(), nuevo);
-                    ev.setEstado(nuevo);
-                    table.refresh();
+                    if (db.cambiarEstadoEvento(ev.getId(), nuevo)) {
+                        ev.setEstado(nuevo);
+                        table.refresh();
+                        mostrarExito("Estado cambiado a " + nuevo + " correctamente.");
+                    } else {
+                        mostrarError("No se pudo cambiar el estado.\n" + db.getUltimoError());
+                    }
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -185,7 +191,7 @@ public class EventoDAO {
         for (Evento e : db.getEventos()) {
             boolean matchSearch = search.isEmpty() ||
                     e.getNombre().toLowerCase().contains(search.toLowerCase()) ||
-                    e.getLugar().toLowerCase().contains(search.toLowerCase());
+                    (e.getLugar() != null && e.getLugar().toLowerCase().contains(search.toLowerCase()));
             boolean matchEstado = estado.equals("Todos") || e.getEstado().equals(estado);
             if (matchSearch && matchEstado) {
                 filtrados.add(e);
@@ -207,6 +213,21 @@ public class EventoDAO {
             }
             return change;
         };
+    }
+    private void mostrarExito(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Operación exitosa");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Error");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
     }
     private void  mostrarDialogoAlta() {
         Dialog<Evento> dialog = new Dialog<>();
@@ -231,7 +252,12 @@ public class EventoDAO {
         lblErrorNombre.setMaxWidth(Double.MAX_VALUE);
         lblErrorNombre.setPrefWidth(320);
         TextField txtFecha = new TextField();
-        txtFecha.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> { String newText = change.getControlNewText(); if (newText.matches("[0-9/\\-]*")) { return change; } return null; }));
+        txtFecha.setTextFormatter(new TextFormatter<String>(change -> {
+            String t = change.getControlNewText();
+            if (t.length() > 40) return null;
+            if (!t.isEmpty() && Character.isWhitespace(t.charAt(0))) return null;
+            return change;
+        }));
         txtFecha.setPromptText("Fecha (dd/mm/aaaa)");
         txtFecha.setStyle("-fx-font-size: 12px;");
         Label lblErrorFecha = new Label();
@@ -293,27 +319,21 @@ public class EventoDAO {
         txtLugar.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
         txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
 
+        for (Label l : new Label[]{lblErrorNombre, lblErrorFecha, lblErrorLugar, lblErrorDesc, lblErrorHorario}) {
+            l.managedProperty().bind(l.textProperty().isEmpty().not());
+            l.visibleProperty().bind(l.textProperty().isEmpty().not());
+        }
+
         grid.add(crearLabelObligatorio("Nombre"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Horario:"), 0, 6);
-        grid.add(txtHorario, 1, 6);
-        GridPane.setColumnSpan(lblErrorHorario, 2);
-        grid.add(lblErrorHorario, 0, 12);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 6);
+        grid.add(new VBox(2, txtNombre, lblErrorNombre), 1, 0);
         grid.add(crearLabelObligatorio("Fecha"), 0, 1);
-        grid.add(txtFecha, 1, 1);
-        GridPane.setColumnSpan(lblErrorFecha, 2);
-        grid.add(lblErrorFecha, 0, 7);
-        grid.add(crearLabelObligatorio("Lugar"), 0, 2);
-        grid.add(txtLugar, 1, 2);
-        GridPane.setColumnSpan(lblErrorLugar, 2);
-        grid.add(lblErrorLugar, 0, 8);
+        grid.add(new VBox(2, txtFecha, lblErrorFecha), 1, 1);
+        grid.add(new Label("Lugar:"), 0, 2);
+        grid.add(new VBox(2, txtLugar, lblErrorLugar), 1, 2);
         grid.add(crearLabelObligatorio("Descripción"), 0, 3);
-        grid.add(txtDesc, 1, 3);
-        grid.add(lblContador, 1 , 4);
-        GridPane.setColumnSpan(lblErrorDesc, 2);
-        grid.add(lblErrorDesc, 0, 9);
+        grid.add(new VBox(2, txtDesc, lblContador, lblErrorDesc), 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(new VBox(2, txtHorario, lblErrorHorario), 1, 4);
 
 
         dialog.getDialogPane().setContent(grid);
@@ -324,8 +344,8 @@ public class EventoDAO {
                 lblErrorNombre.setText("El nombre es obligatorio");
                 txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!Character.isLetter(txtNombre.getText().charAt(0))) {
-                lblErrorNombre.setText("Debe comenzar con una letra, sin espacios al inicio");
+            } else if (!Character.isLetterOrDigit(txtNombre.getText().charAt(0))) {
+                lblErrorNombre.setText("Debe comenzar con una letra o número, sin espacios al principio");
                 txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -337,21 +357,14 @@ public class EventoDAO {
                 lblErrorFecha.setText("La fecha es obligatoria");
                 txtFecha.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!txtFecha.getText().matches("(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}")) {
-                lblErrorFecha.setText("Formato inválido. Usá dd/mm/aaaa (ej: 15/12/2026)");
-                txtFecha.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
             } else {
                 lblErrorFecha.setText("");
                 txtFecha.setStyle("-fx-font-size: 12px;");
             }
 
-            if (txtLugar.getText() == null || txtLugar.getText().trim().isEmpty()) {
-                lblErrorLugar.setText("El lugar es obligatorio");
-                txtLugar.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtLugar.getText().charAt(0))) {
-                lblErrorLugar.setText("Debe comenzar con una letra, sin espacios al inicio");
+            if (txtLugar.getText() != null && !txtLugar.getText().trim().isEmpty()
+                    && !Character.isLetterOrDigit(txtLugar.getText().charAt(0))) {
+                lblErrorLugar.setText("Debe comenzar con una letra o número, sin espacios al inicio");
                 txtLugar.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -363,8 +376,8 @@ public class EventoDAO {
                 lblErrorDesc.setText("La descripción es obligatoria");
                 txtDesc.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!Character.isLetter(txtDesc.getText().charAt(0))) {
-                lblErrorDesc.setText("Debe comenzar con una letra, sin espacios al inicio");
+            } else if (!Character.isLetterOrDigit(txtDesc.getText().charAt(0))) {
+                lblErrorDesc.setText("Debe comenzar con una letra o número, sin espacios al principio");
                 txtDesc.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -405,8 +418,12 @@ public class EventoDAO {
         });
 
         dialog.showAndWait().ifPresent(e -> {
-            db.insertarEvento(e);
-            filtrar();
+            if (db.insertarEvento(e)) {
+                filtrar();
+                mostrarExito("Evento registrado correctamente.");
+            } else {
+                mostrarError("No se pudo registrar el evento.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -437,7 +454,12 @@ public class EventoDAO {
         lblErrorNombre.setPrefWidth(320);
 
         TextField txtFecha = new TextField(evento.getFecha());
-        txtFecha.setTextFormatter(new javafx.scene.control.TextFormatter<String>(change -> { String newText = change.getControlNewText(); if (newText.matches("[0-9/\\-]*")) { return change; } return null; }));
+        txtFecha.setTextFormatter(new TextFormatter<String>(change -> {
+            String t = change.getControlNewText();
+            if (t.length() > 40) return null;
+            if (!t.isEmpty() && Character.isWhitespace(t.charAt(0))) return null;
+            return change;
+        }));
         txtFecha.setStyle(esBloqueado ? estiloDeshabilitado : estiloNormal);
         txtFecha.setDisable(esBloqueado);
         Label lblErrorFecha = new Label();
@@ -467,6 +489,9 @@ public class EventoDAO {
         TextArea txtDesc = new TextArea(descTexto);
         txtDesc.setStyle(esBloqueado ? estiloDeshabilitado : estiloNormal);
         txtDesc.setDisable(esBloqueado);
+        if (esBloqueado) {
+            txtDesc.setStyle("-fx-font-size: 12px; -fx-control-inner-background: #e9ecef; -fx-text-fill: #6c757d;");
+        }
         Label lblErrorHorario = new Label();
         lblErrorHorario.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px;");
         lblErrorHorario.setWrapText(true);
@@ -501,34 +526,30 @@ public class EventoDAO {
         txtNombre.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
         txtLugar.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
         txtDesc.setTextFormatter(new TextFormatter<String>(bloqueoEspacio()));
+        for (Label l : new Label[]{lblErrorNombre, lblErrorFecha, lblErrorLugar, lblErrorDesc, lblErrorHorario}) {
+            l.managedProperty().bind(l.textProperty().isEmpty().not());
+            l.visibleProperty().bind(l.textProperty().isEmpty().not());
+        }
 
         grid.add(crearLabelObligatorio("Nombre"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Horario:"), 0, 11);
-        grid.add(txtHorario, 1, 11);
-        GridPane.setColumnSpan(lblErrorHorario, 2);
-        grid.add(lblErrorHorario, 0, 12);
-        GridPane.setColumnSpan(lblErrorNombre, 2);
-        grid.add(lblErrorNombre, 0, 7);
+        grid.add(new VBox(2, txtNombre, lblErrorNombre), 1, 0);
         grid.add(crearLabelObligatorio("Fecha"), 0, 1);
-        grid.add(txtFecha, 1, 1);
-        GridPane.setColumnSpan(lblErrorFecha, 2);
-        grid.add(lblErrorFecha, 0, 8);
-        grid.add(crearLabelObligatorio("Lugar"), 0, 2);
-        grid.add(txtLugar, 1, 2);
-        GridPane.setColumnSpan(lblErrorLugar, 2);
-        grid.add(lblErrorLugar, 0, 9);
+        grid.add(new VBox(2, txtFecha, lblErrorFecha), 1, 1);
+        grid.add(new Label("Lugar:"), 0, 2);
+        grid.add(new VBox(2, txtLugar, lblErrorLugar), 1, 2);
         grid.add(crearLabelObligatorio("Descripción"), 0, 3);
-        grid.add(txtDesc, 1, 3);
-        grid.add(lblContador, 1, 4);
-        GridPane.setColumnSpan(lblErrorDesc, 2);
-        grid.add(lblErrorDesc, 0, 10);
+        grid.add(new VBox(2, txtDesc, lblContador, lblErrorDesc), 1, 3);
+        grid.add(new Label("Horario:"), 0, 4);
+        grid.add(new VBox(2, txtHorario, lblErrorHorario), 1, 4);
 
         if (esBloqueado) {
-            Label lblAviso = new Label("⚠ Evento " + evento.getEstado().toLowerCase() + ": no se puede editar.");
+            Label lblAviso = new Label("⚠ Evento " + evento.getEstado().toLowerCase() + ": no se puede editar. Reactívelo primero.");
             lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-font-weight: bold;");
+            lblAviso.setWrapText(true);
+            lblAviso.setPrefWidth(340);
+            lblAviso.setMinHeight(Region.USE_PREF_SIZE);
             GridPane.setColumnSpan(lblAviso, 2);
-            grid.add(lblAviso, 0, 6);
+            grid.add(lblAviso, 0, 5);
         }
 
         dialog.getDialogPane().setContent(grid);
@@ -540,8 +561,8 @@ public class EventoDAO {
                 lblErrorNombre.setText("El nombre es obligatorio");
                 txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!Character.isLetter(txtNombre.getText().charAt(0))) {
-                lblErrorNombre.setText("Debe comenzar con una letra, sin espacios al inicio");
+            } else if (!Character.isLetterOrDigit(txtNombre.getText().charAt(0))) {
+                lblErrorNombre.setText("Debe comenzar con una letra o número, sin espacios al principio");
                 txtNombre.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -553,21 +574,15 @@ public class EventoDAO {
                 lblErrorFecha.setText("La fecha es obligatoria");
                 txtFecha.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!txtFecha.getText().matches("(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}")) {
-                lblErrorFecha.setText("Formato inválido. Usá dd/mm/aaaa (ej: 15/12/2026)");
-                txtFecha.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
+
             } else {
                 lblErrorFecha.setText("");
                 txtFecha.setStyle(esBloqueado ? estiloDeshabilitado : estiloNormal);
             }
 
-            if (txtLugar.getText() == null || txtLugar.getText().trim().isEmpty()) {
-                lblErrorLugar.setText("El lugar es obligatorio");
-                txtLugar.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
-                valido = false;
-            } else if (!Character.isLetter(txtLugar.getText().charAt(0))) {
-                lblErrorLugar.setText("Debe comenzar con una letra, sin espacios al inicio");
+            if (txtLugar.getText() != null && !txtLugar.getText().trim().isEmpty()
+                    && !Character.isLetterOrDigit(txtLugar.getText().charAt(0))) {
+                lblErrorLugar.setText("Debe comenzar con una letra o número, sin espacios al inicio");
                 txtLugar.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -579,8 +594,8 @@ public class EventoDAO {
                 lblErrorDesc.setText("La descripción es obligatoria");
                 txtDesc.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
-            } else if (!Character.isLetter(txtDesc.getText().charAt(0))) {
-                lblErrorDesc.setText("Debe comenzar con una letra, sin espacios al inicio");
+            } else if (!Character.isLetterOrDigit(txtDesc.getText().charAt(0))) {
+                lblErrorDesc.setText("Debe comenzar con una letra o número, sin espacios al principio");
                 txtDesc.setStyle("-fx-border-color: #dc2626; -fx-border-width: 1.5px; -fx-border-radius: 4;");
                 valido = false;
             } else {
@@ -621,8 +636,12 @@ public class EventoDAO {
         });
 
         dialog.showAndWait().ifPresent(e -> {
-            db.actualizarEvento(e);
-            filtrar();
+            if (db.actualizarEvento(e)) {
+                filtrar();
+                mostrarExito("Evento modificado correctamente.");
+            } else {
+                mostrarError("No se pudo modificar el evento.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -636,6 +655,9 @@ public class EventoDAO {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             if (db.eliminarEvento(evento.getId())) {
                 filtrar();
+                mostrarExito("Evento eliminado correctamente.");
+            } else {
+                mostrarError("No se pudo eliminar el evento.\n" + db.getUltimoError());
             }
         }
     }
@@ -664,9 +686,13 @@ public class EventoDAO {
                 btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnRestaurar.setOnAction(e -> {
                     Evento ev = getTableView().getItems().get(getIndex());
-                    db.restaurarEvento(ev.getId());
-                    tablaPapelera.setItems(db.getEventosEliminados());
-                    filtrar();
+                    if (db.restaurarEvento(ev.getId())) {
+                        tablaPapelera.setItems(db.getEventosEliminados());
+                        filtrar();
+                        mostrarExito("Evento restaurado correctamente.");
+                    } else {
+                        mostrarError("No se pudo restaurar el evento.");
+                    }
                 });
             }
             @Override

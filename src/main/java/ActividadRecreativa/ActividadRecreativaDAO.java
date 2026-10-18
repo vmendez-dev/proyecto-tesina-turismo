@@ -131,7 +131,9 @@ public class ActividadRecreativaDAO {
                 btnEditar.setStyle("-fx-background-color: #e0f2fe; -fx-text-fill: #0284c7; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnToggle.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnEliminar.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
-
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnToggle.setTooltip(new Tooltip("Activar / Desactivar"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar"));
                 btnEditar.setOnAction(e -> {
                     ActividadRecreativa a = getTableView().getItems().get(getIndex());
                     mostrarDialogoEditar(a);
@@ -140,8 +142,12 @@ public class ActividadRecreativaDAO {
                 btnToggle.setOnAction(e -> {
                     ActividadRecreativa a = getTableView().getItems().get(getIndex());
                     String nuevoEstado = a.getEstado().equals("Activa") ? "Inactiva" : "Activa";
-                    db.cambiarEstadoActividad(a.getId(), nuevoEstado);
-                    filtrar();
+                    if (db.cambiarEstadoActividad(a.getId(), nuevoEstado)) {
+                        filtrar();
+                        mostrarExito("Estado cambiado a " + nuevoEstado + " correctamente.");
+                    } else {
+                        mostrarError("No se pudo cambiar el estado.\n" + db.getUltimoError());
+                    }
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -185,7 +191,21 @@ public class ActividadRecreativaDAO {
         asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
         return new HBox(lbl, asterisco);
     }
+    private void mostrarExito(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Operación exitosa");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
 
+    private void mostrarError(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Error");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
     private void mostrarDialogoAlta() {
         Dialog<ActividadRecreativa> dialog = new Dialog<>();
         dialog.setTitle("Nueva Actividad");
@@ -235,6 +255,7 @@ public class ActividadRecreativaDAO {
         lblError.setWrapText(true);
         lblError.setMaxWidth(Double.MAX_VALUE);
         lblError.setPrefWidth(320);
+        lblError.setMinHeight(40);
         lblError.setVisible(false);
 
         java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
@@ -254,7 +275,7 @@ public class ActividadRecreativaDAO {
         grid.add(crearLabelObligatorio("Descripción"), 0, 1);
         grid.add(txtDesc, 1, 1);
         grid.add(lblContador, 1, 2);
-        grid.add(crearLabelObligatorio("Duración"), 0, 3);
+        grid.add(new Label("Duración:"), 0, 3);
         grid.add(txtDuracion, 1, 3);
         grid.add(new Label("Horario:"), 0, 4);
         grid.add(txtHorario, 1, 4);
@@ -271,9 +292,6 @@ public class ActividadRecreativaDAO {
             }
             if (txtDesc.getText() == null || txtDesc.getText().trim().isEmpty()) {
                 faltantes.add("Descripción");
-            }
-            if (txtDuracion.getText() == null || txtDuracion.getText().trim().isEmpty()) {
-                faltantes.add("Duración");
             }
 
             if (!faltantes.isEmpty()) {
@@ -294,8 +312,12 @@ public class ActividadRecreativaDAO {
         });
 
         dialog.showAndWait().ifPresent(a -> {
-            db.insertarActividad(a);
-            filtrar();
+            if (db.insertarActividad(a)) {
+                filtrar();
+                mostrarExito("Actividad registrada correctamente.");
+            } else {
+                mostrarError("No se pudo registrar la actividad.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -349,6 +371,7 @@ public class ActividadRecreativaDAO {
         lblError.setWrapText(true);
         lblError.setMaxWidth(Double.MAX_VALUE);
         lblError.setPrefWidth(320);
+        lblError.setMinHeight(40);
         lblError.setVisible(false);
 
         java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
@@ -368,7 +391,7 @@ public class ActividadRecreativaDAO {
         grid.add(crearLabelObligatorio("Descripción"), 0, 1);
         grid.add(txtDesc, 1, 1);
         grid.add(lblContador, 1, 2);
-        grid.add(crearLabelObligatorio("Duración"), 0, 3);
+        grid.add(new Label("Duración:"), 0, 3);
         grid.add(txtDuracion, 1, 3);
         grid.add(new Label("Horario:"), 0, 4);
         grid.add(txtHorario, 1, 4);
@@ -380,7 +403,7 @@ public class ActividadRecreativaDAO {
         if (esBloqueado) {
             txtNombre.setStyle(estiloDeshabilitado);
             txtNombre.setDisable(true);
-            txtDesc.setStyle(estiloDeshabilitado);
+            txtDesc.setStyle("-fx-font-size: 12px; -fx-control-inner-background: #e9ecef; -fx-text-fill: #6c757d;");
             txtDesc.setDisable(true);
             txtDuracion.setStyle(estiloDeshabilitado);
             txtDuracion.setDisable(true);
@@ -409,9 +432,6 @@ public class ActividadRecreativaDAO {
             if (txtDesc.getText() == null || txtDesc.getText().trim().isEmpty()) {
                 faltantes.add("Descripción");
             }
-            if (txtDuracion.getText() == null || txtDuracion.getText().trim().isEmpty()) {
-                faltantes.add("Duración");
-            }
 
             if (!faltantes.isEmpty()) {
                 lblError.setText("⚠ Los siguientes campos son obligatorios: " + String.join(", ", faltantes));
@@ -431,8 +451,12 @@ public class ActividadRecreativaDAO {
         });
 
         dialog.showAndWait().ifPresent(a -> {
-            db.actualizarActividad(a);
-            filtrar();
+            if (db.actualizarActividad(a)) {
+                filtrar();
+                mostrarExito("Actividad modificada correctamente.");
+            } else {
+                mostrarError("No se pudo modificar la actividad.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -446,6 +470,9 @@ public class ActividadRecreativaDAO {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             if (db.eliminarActividad(actividad.getId())) {
                 filtrar();
+                mostrarExito("Actividad eliminada correctamente.");
+            } else {
+                mostrarError("No se pudo eliminar la actividad.\n" + db.getUltimoError());
             }
         }
     }
@@ -474,9 +501,13 @@ public class ActividadRecreativaDAO {
                 btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnRestaurar.setOnAction(e -> {
                     ActividadRecreativa a = getTableView().getItems().get(getIndex());
-                    db.restaurarActividad(a.getId());
-                    tablaPapelera.setItems(db.getActividadesEliminadas());
-                    filtrar();
+                    if (db.restaurarActividad(a.getId())) {
+                        tablaPapelera.setItems(db.getActividadesEliminadas());
+                        filtrar();
+                        mostrarExito("Actividad restaurada correctamente.");
+                    } else {
+                        mostrarError("No se pudo restaurar la actividad.");
+                    }
                 });
             }
             @Override

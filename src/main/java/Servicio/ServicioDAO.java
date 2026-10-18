@@ -90,11 +90,11 @@ public class ServicioDAO {
 
         TableColumn<Servicio, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c -> c.getValue().nombreProperty());
-        colNombre.setPrefWidth(150);
+        colNombre.setPrefWidth(210);
 
         TableColumn<Servicio, String> colTipo = new TableColumn<>("Tipo");
         colTipo.setCellValueFactory(c -> c.getValue().tipoProperty());
-        colTipo.setPrefWidth(120);
+        colTipo.setPrefWidth(170);
         colTipo.setCellFactory(col -> new TableCell<Servicio, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -110,6 +110,9 @@ public class ServicioDAO {
                         case "Hospital" -> "#16a34a";
                         case "Defensa Civil" -> "#f59e0b";
                         case "Protección Civil" -> "#8b5cf6";
+                        case "Emergencia Médica" -> "#0891b2";
+                        case "Seguridad Ciudadana" -> "#92400e";
+                        case "Farmacia" -> "#db2777";
                         default -> "#64748b";
                     };
                     setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-font-size: 12px;");
@@ -119,7 +122,7 @@ public class ServicioDAO {
 
         TableColumn<Servicio, String> colDireccion = new TableColumn<>("Dirección");
         colDireccion.setCellValueFactory(c -> c.getValue().direccionProperty());
-        colDireccion.setPrefWidth(180);
+        colDireccion.setPrefWidth(260);
 
         TableColumn<Servicio, String> colTelefono = new TableColumn<>("Teléfono");
         colTelefono.setCellValueFactory(c -> c.getValue().telefonoProperty());
@@ -127,7 +130,7 @@ public class ServicioDAO {
 
         TableColumn<Servicio, String> colHorario = new TableColumn<>("Horario");
         colHorario.setCellValueFactory(c -> c.getValue().horarioProperty());
-        colHorario.setPrefWidth(100);
+        colHorario.setPrefWidth(180);
 
         TableColumn<Servicio, String> colEstado = new TableColumn<>("Estado");
         colEstado.setCellValueFactory(c -> c.getValue().estadoProperty());
@@ -159,7 +162,9 @@ public class ServicioDAO {
                 btnEditar.setStyle("-fx-background-color: #e0f2fe; -fx-text-fill: #0284c7; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnToggle.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnEliminar.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
-
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnToggle.setTooltip(new Tooltip("Activar / Desactivar"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar"));
                 btnEditar.setOnAction(e -> {
                     Servicio s = getTableView().getItems().get(getIndex());
                     mostrarDialogoEditar(s);
@@ -168,9 +173,13 @@ public class ServicioDAO {
                 btnToggle.setOnAction(e -> {
                     Servicio s = getTableView().getItems().get(getIndex());
                     String nuevoEstado = s.getEstado().equals("Activo") ? "Inactivo" : "Activo";
-                    db.cambiarEstadoServicio(s.getId(), nuevoEstado);
-                    s.setEstado(nuevoEstado);
-                    table.refresh();
+                    if (db.cambiarEstadoServicio(s.getId(), nuevoEstado)) {
+                        s.setEstado(nuevoEstado);
+                        table.refresh();
+                        mostrarExito("Estado cambiado a " + nuevoEstado + " correctamente.");
+                    } else {
+                        mostrarError("No se pudo cambiar el estado.\n" + db.getUltimoError());
+                    }
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -251,9 +260,7 @@ public class ServicioDAO {
         if (!txtTelefono.getText().trim().matches("[0-9\\s\\-]{3,15}")) {
             return "⚠ Teléfono: entre 3 y 15 caracteres (números, espacios y guiones)";
         }
-        if (!txtHorario.getText().trim().matches("24hs|Cerrado|([01]\\d|2[0-3]):[0-5]\\d-([01]\\d|2[0-3]):[0-5]\\d")) {
-            return "⚠ Horario: use 24hs, Cerrado o HH:MM-HH:MM (ej: 08:00-20:00)";
-        }
+
         return null;
     }
     private Label crearAvisoEspacio() {
@@ -293,6 +300,21 @@ public class ServicioDAO {
             return change;
         }));
     }
+    private void mostrarExito(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Operación exitosa");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
+
+    private void mostrarError(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Error");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
 
         private void mostrarDialogoAlta() {
         Dialog<Servicio> dialog = new Dialog<>();
@@ -311,8 +333,8 @@ public class ServicioDAO {
         txtNombre.setPromptText("Nombre");
         txtNombre.setStyle("-fx-font-size: 12px;");
 
-        ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList(
-                "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica"));
+            ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList(
+                    "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica", "Seguridad Ciudadana", "Farmacia"));
         cbTipo.setValue("Policía");
         cbTipo.setStyle("-fx-font-size: 12px;");
 
@@ -325,7 +347,7 @@ public class ServicioDAO {
         txtTelefono.setStyle("-fx-font-size: 12px;");
 
             TextField txtHorario = new TextField();
-            txtHorario.setPromptText("Horario (ej: 24hs, Cerrado, 08:00-20:00)");
+            txtHorario.setPromptText("Ej: Lun a Vie 9:00 a 13:00 / 17:00 a 20:00 hs");
             txtHorario.setStyle("-fx-font-size: 12px;");
 
             Label lblError = new Label();
@@ -339,7 +361,7 @@ public class ServicioDAO {
             bloquearEspacioSilencioso(txtNombre);
             bloquearEspacioSilencioso(txtDireccion);
             filtrarCampoSilencioso(txtTelefono, "[0-9\\s\\-]{0,15}");
-            filtrarCampoSilencioso(txtHorario, "[0-9:\\-hsCerado]{0,20}");
+            filtrarCampoSilencioso(txtHorario, ".{0,50}");
 
             grid.setMinWidth(460);
             grid.add(crearLabelObligatorio("Nombre"), 0, 0);
@@ -380,10 +402,14 @@ public class ServicioDAO {
                 return null;
             });
 
-        dialog.showAndWait().ifPresent(s -> {
-            db.insertarServicio(s);
-            filtrar();
-        });
+            dialog.showAndWait().ifPresent(s -> {
+                if (db.insertarServicio(s)) {
+                    filtrar();
+                    mostrarExito("Servicio registrado correctamente.");
+                } else {
+                    mostrarError("No se pudo registrar el servicio.\n" + db.getUltimoError());
+                }
+            });
 
     }
     private void mostrarDialogoPapelera() {
@@ -411,9 +437,13 @@ public class ServicioDAO {
                 btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnRestaurar.setOnAction(e -> {
                     Servicio s = getTableView().getItems().get(getIndex());
-                    db.restaurarServicio(s.getId());
-                    tablaPapelera.setItems(db.getServiciosEliminados());
-                    filtrar();
+                    if (db.restaurarServicio(s.getId())) {
+                        tablaPapelera.setItems(db.getServiciosEliminados());
+                        filtrar();
+                        mostrarExito("Servicio restaurado correctamente.");
+                    } else {
+                        mostrarError("No se pudo restaurar el servicio.");
+                    }
                 });
             }
             @Override
@@ -447,7 +477,7 @@ public class ServicioDAO {
         txtNombre.setStyle("-fx-font-size: 12px;");
 
         ComboBox<String> cbTipo = new ComboBox<>(FXCollections.observableArrayList(
-                "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica"));
+                "Policía", "Bomberos", "Hospital", "Defensa Civil", "Protección Civil", "Emergencia Médica","Seguridad Ciudadana","Farmacia"));
         cbTipo.setValue(servicio.getTipo());
         cbTipo.setStyle("-fx-font-size: 12px;");
 
@@ -488,6 +518,12 @@ public class ServicioDAO {
             txtDireccion.setDisable(true);
             txtTelefono.setDisable(true);
             txtHorario.setDisable(true);
+            String estiloGris = "-fx-font-size: 12px; -fx-background-color: #e9ecef; -fx-text-fill: #6c757d;";
+            txtNombre.setStyle(estiloGris);
+            cbTipo.setStyle(estiloGris);
+            txtDireccion.setStyle(estiloGris);
+            txtTelefono.setStyle(estiloGris);
+            txtHorario.setStyle(estiloGris);
 
             Label lblAviso = new Label("⚠ Servicio inactivo: no se puede editar. Reactívelo primero.");
             lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
@@ -501,7 +537,7 @@ public class ServicioDAO {
         bloquearEspacioSilencioso(txtNombre);
         bloquearEspacioSilencioso(txtDireccion);
         filtrarCampoSilencioso(txtTelefono, "[0-9\\s\\-]{0,15}");
-        filtrarCampoSilencioso(txtHorario, "[0-9:\\-hsCerado]{0,20}");
+        filtrarCampoSilencioso(txtHorario, ".{0,50}");
         dialog.getDialogPane().setContent(grid);
         Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
 
@@ -530,8 +566,12 @@ public class ServicioDAO {
         });
 
         dialog.showAndWait().ifPresent(s -> {
-            db.actualizarServicio(s);
-            filtrar();
+            if (db.actualizarServicio(s)) {
+                filtrar();
+                mostrarExito("Servicio modificado correctamente.");
+            } else {
+                mostrarError("No se pudo modificar el servicio.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -545,6 +585,9 @@ public class ServicioDAO {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             if (db.eliminarServicio(servicio.getId())) {
                 filtrar();
+                mostrarExito("Servicio eliminado correctamente.");
+            } else {
+                mostrarError("No se pudo eliminar el servicio.\n" + db.getUltimoError());
             }
         }
     }

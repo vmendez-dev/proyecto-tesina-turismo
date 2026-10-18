@@ -26,6 +26,7 @@ public class Database {
     private int nextEventoId = 1;
 
     private final List<String> logs;
+    private String ultimoError = "";
 
     private Database() {
         atractivosMap = new ConcurrentHashMap<>();
@@ -150,7 +151,7 @@ public class Database {
         return lista;
     }
 
-    public void insertarActividad(ActividadRecreativa actividad) {
+    public boolean insertarActividad(ActividadRecreativa actividad) {
         String sql = "INSERT INTO actividades (nombre, descripcion, duracion, precio, estado, horario) VALUES (?, ?, ?, ?, ?, ?)";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -162,13 +163,16 @@ public class Database {
             ps.setString(6, actividad.getHorario());
             ps.executeUpdate();
             agregarLog("Actividad creada: " + actividad.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             agregarLog("ERROR al crear actividad: " + ex.getMessage());
             System.out.println("Error SQL: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void actualizarActividad(ActividadRecreativa actividad) {
+    public boolean actualizarActividad(ActividadRecreativa actividad) {
         String sql = "UPDATE actividades SET nombre=?, descripcion=?, duracion=?, precio=?, estado=?, horario=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -181,11 +185,15 @@ public class Database {
             ps.setInt(7, Integer.parseInt(actividad.getId()));
             ps.executeUpdate();
             agregarLog("Actividad actualizada: " + actividad.getNombre());
+            return true;                                   // NUEVA
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al actualizar actividad: " + ex.getMessage());
+            ultimoError = ex.getMessage();                 // NUEVA
+            return false;                                  // NUEVA
         }
     }
-    public void cambiarEstadoActividad(String id, String nuevoEstado) {
+
+    public boolean cambiarEstadoActividad(String id, String nuevoEstado) {
         String sql = "UPDATE actividades SET estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -193,11 +201,13 @@ public class Database {
             ps.setInt(2, Integer.parseInt(id));
             ps.executeUpdate();
             agregarLog("Actividad id " + id + " → " + nuevoEstado);
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al cambiar estado de la actividad: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
-
     public boolean eliminarActividad(String id) {
         String sql = "UPDATE actividades SET eliminado=1 WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
@@ -282,7 +292,7 @@ public class Database {
         return lista;
     }
 
-    public void insertarAtractivo(PuntoTuristico atractivo) {
+    public boolean insertarAtractivo(PuntoTuristico atractivo) {
         String sql = "INSERT INTO puntos_turisticos (nombre, tipo, ubicacion, descripcion, estado, horario) VALUES (?, ?, ?, ?, ?, ?)";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -294,13 +304,16 @@ public class Database {
             ps.setString(6, atractivo.getHorario());
             ps.executeUpdate();
             agregarLog("Atractivo creado: " + atractivo.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             agregarLog("ERROR al crear atractivo: " + ex.getMessage());
             System.out.println("Error SQL: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void actualizarAtractivo(PuntoTuristico atractivo) {
+    public boolean actualizarAtractivo(PuntoTuristico atractivo) {
         String sql = "UPDATE puntos_turisticos SET nombre=?, tipo=?, ubicacion=?, descripcion=?, estado=?, horario=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -313,12 +326,15 @@ public class Database {
             ps.setInt(7, Integer.parseInt(atractivo.getId()));
             ps.executeUpdate();
             agregarLog("Atractivo actualizado: " + atractivo.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al actualizar atractivo: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void cambiarEstadoAtractivo(String id, String nuevoEstado) {
+    public boolean cambiarEstadoAtractivo(String id, String nuevoEstado) {
         String sql = "UPDATE puntos_turisticos SET estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -326,8 +342,11 @@ public class Database {
             ps.setInt(2, Integer.parseInt(id));
             ps.executeUpdate();
             agregarLog("Atractivo id " + id + " → " + nuevoEstado);
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al cambiar estado del atractivo: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
@@ -436,39 +455,47 @@ public class Database {
         return "G" + String.format("%03d", nextGastronomiaId++);
     }
 
-    public void insertarGastronomia(Gastronomia gastronomia) {
-        String sql = "INSERT INTO gastronomia (nombre, tipo_cocina, especialidad, estado) VALUES (?, ?, ?, ?)";
+    public boolean insertarGastronomia(Gastronomia gastronomia) {
+        String sql = "INSERT INTO gastronomia (nombre, tipo_cocina, tipo_id, especialidad, estado) VALUES (?, ?, ?, ?, ?)";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, gastronomia.getNombre());
             ps.setString(2, gastronomia.getTipo());
-            ps.setString(3, gastronomia.getEspecialidad());
-            ps.setString(4, gastronomia.getEstado());
+            ps.setInt(3, Integer.parseInt(gastronomia.getTipoId()));
+            ps.setString(4, gastronomia.getEspecialidad());
+            ps.setString(5, gastronomia.getEstado());
             ps.executeUpdate();
             agregarLog("Gastronomía creada: " + gastronomia.getNombre());
+            return true;                                   // NUEVA
         } catch (java.sql.SQLException e) {
             agregarLog("ERROR al crear gastronomía: " + e.getMessage());
             System.out.println("Error SQL: " + e.getMessage());
+            ultimoError = e.getMessage();                  // NUEVA
+            return false;                                  // NUEVA
         }
     }
 
-    public void actualizarGastronomia(Gastronomia gastronomia) {
-        String sql = "UPDATE gastronomia SET nombre=?, tipo_cocina=?, especialidad=?, estado=? WHERE id=?";
+    public boolean actualizarGastronomia(Gastronomia gastronomia) {
+        String sql = "UPDATE gastronomia SET nombre=?, tipo_cocina=?, tipo_id=?, especialidad=?, estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, gastronomia.getNombre());
             ps.setString(2, gastronomia.getTipo());
-            ps.setString(3, gastronomia.getEspecialidad());
-            ps.setString(4, gastronomia.getEstado());
-            ps.setInt(5, Integer.parseInt(gastronomia.getId()));
+            ps.setInt(3, Integer.parseInt(gastronomia.getTipoId()));
+            ps.setString(4, gastronomia.getEspecialidad());
+            ps.setString(5, gastronomia.getEstado());
+            ps.setInt(6, Integer.parseInt(gastronomia.getId()));
             ps.executeUpdate();
             agregarLog("Gastronomía actualizada: " + gastronomia.getNombre());
+            return true;
         } catch (java.sql.SQLException e) {
             System.out.println("Error al actualizar gastronomía: " + e.getMessage());
+            ultimoError = e.getMessage();
+            return false;
         }
     }
 
-    public void cambiarEstadoGastronomia(String id, String nuevoEstado) {
+    public boolean cambiarEstadoGastronomia(String id, String nuevoEstado) {
         String sql = "UPDATE gastronomia SET estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -476,8 +503,11 @@ public class Database {
             ps.setInt(2, Integer.parseInt(id));
             ps.executeUpdate();
             agregarLog("Gastronomía id " + id + " → " + nuevoEstado);
+            return true;
         } catch (java.sql.SQLException e) {
             System.out.println("Error al cambiar estado: " + e.getMessage());
+            ultimoError = e.getMessage();
+            return false;
         }
     }
 
@@ -562,7 +592,7 @@ public class Database {
         }
     }
 
-    public void insertarServicio(Servicio servicio) {
+    public boolean insertarServicio(Servicio servicio) {
         String sql = "INSERT INTO servicios (nombre, tipo, direccion, telefono, horario, estado) VALUES (?, ?, ?, ?, ?, ?)";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -574,13 +604,16 @@ public class Database {
             ps.setString(6, servicio.getEstado());
             ps.executeUpdate();
             agregarLog("Servicio creado: " + servicio.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             agregarLog("ERROR al crear servicio: " + ex.getMessage());
             System.out.println("Error SQL: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void actualizarServicio(Servicio servicio) {
+    public boolean actualizarServicio(Servicio servicio) {
         String sql = "UPDATE servicios SET nombre=?, tipo=?, direccion=?, telefono=?, horario=?, estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -593,12 +626,15 @@ public class Database {
             ps.setInt(7, Integer.parseInt(servicio.getId()));
             ps.executeUpdate();
             agregarLog("Servicio actualizado: " + servicio.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al actualizar servicio: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void cambiarEstadoServicio(String id, String nuevoEstado) {
+    public boolean cambiarEstadoServicio(String id, String nuevoEstado) {
         String sql = "UPDATE servicios SET estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -606,8 +642,11 @@ public class Database {
             ps.setInt(2, Integer.parseInt(id));
             ps.executeUpdate();
             agregarLog("Servicio id " + id + " → " + nuevoEstado);
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al cambiar estado del servicio: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
@@ -679,7 +718,7 @@ public class Database {
         return "E" + String.format("%03d", nextEventoId++);
     }
 
-    public void insertarEvento(Evento evento) {
+    public boolean insertarEvento(Evento evento) {
         String sql = "INSERT INTO eventos (nombre, fecha, horario, lugar, descripcion, estado) VALUES (?, ?, ?, ?, ?, ?)";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -691,13 +730,16 @@ public class Database {
             ps.setString(6, evento.getEstado());
             ps.executeUpdate();
             agregarLog("Evento creado: " + evento.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             agregarLog("ERROR al crear evento: " + ex.getMessage());
             System.out.println("Error SQL: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void actualizarEvento(Evento evento) {
+    public boolean actualizarEvento(Evento evento) {
         String sql = "UPDATE eventos SET nombre=?, fecha=?, horario=?, lugar=?, descripcion=?, estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -710,12 +752,15 @@ public class Database {
             ps.setInt(7, Integer.parseInt(evento.getId()));
             ps.executeUpdate();
             agregarLog("Evento actualizado: " + evento.getNombre());
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al actualizar evento: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
-    public void cambiarEstadoEvento(String id, String nuevoEstado) {
+    public boolean cambiarEstadoEvento(String id, String nuevoEstado) {
         String sql = "UPDATE eventos SET estado=? WHERE id=?";
         try (java.sql.Connection conn = Conexion.ConexionMySQL.getConnection();
              java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -723,8 +768,11 @@ public class Database {
             ps.setInt(2, Integer.parseInt(id));
             ps.executeUpdate();
             agregarLog("Evento id " + id + " → " + nuevoEstado);
+            return true;
         } catch (java.sql.SQLException ex) {
             System.out.println("Error al cambiar estado del evento: " + ex.getMessage());
+            ultimoError = ex.getMessage();
+            return false;
         }
     }
 
@@ -808,6 +856,11 @@ public class Database {
             System.out.println("Error al restaurar evento: " + ex.getMessage());
             return false;
         }
+
+    }
+
+    public String getUltimoError() {
+        return ultimoError;
     }
 
     // LOGS

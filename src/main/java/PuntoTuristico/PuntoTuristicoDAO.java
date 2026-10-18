@@ -54,6 +54,7 @@ public class PuntoTuristicoDAO {
 
         txtSearch = new TextField();
         txtSearch.setPromptText("Buscar atractivo...");
+        txtSearch.setPromptText("Buscar atractivo...");
         txtSearch.setPrefWidth(150);
         txtSearch.setStyle("-fx-background-radius: 4; -fx-border-color: #cbd5e1; -fx-border-radius: 4; -fx-padding: 4 8; -fx-font-size: 12px;");
         txtSearch.textProperty().addListener((obs, old, val) -> filtrar());
@@ -61,7 +62,7 @@ public class PuntoTuristicoDAO {
         cbEstado = new ComboBox<>();
         cbEstado.getItems().addAll("Todos", "Disponible", "En mantenimiento", "Cerrado");
         cbEstado.getSelectionModel().selectFirst();
-        cbEstado.setPrefWidth(100);
+        cbEstado.setPrefWidth(150);
         cbEstado.setStyle("-fx-font-size: 12px;");
         cbEstado.setOnAction(e -> filtrar());
 
@@ -104,7 +105,7 @@ public class PuntoTuristicoDAO {
 
         TableColumn<PuntoTuristico, String> colEstado = new TableColumn<>("Estado");
         colEstado.setCellValueFactory(c -> c.getValue().estadoProperty());
-        colEstado.setPrefWidth(100);
+        colEstado.setPrefWidth(130);
         colEstado.setCellFactory(col -> new TableCell<PuntoTuristico, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -139,7 +140,9 @@ public class PuntoTuristicoDAO {
                 btnEditar.setStyle("-fx-background-color: #e0f2fe; -fx-text-fill: #0284c7; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnToggle.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnEliminar.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #dc2626; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
-
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnToggle.setTooltip(new Tooltip("Cambiar estado"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar"));
                 btnEditar.setOnAction(e -> {
                     PuntoTuristico p = getTableView().getItems().get(getIndex());
                     mostrarDialogoEditar(p);
@@ -150,8 +153,12 @@ public class PuntoTuristicoDAO {
                     String[] estados = {"Disponible", "En mantenimiento", "Cerrado"};
                     int idx = java.util.Arrays.asList(estados).indexOf(p.getEstado());
                     String nuevo = estados[(idx + 1) % estados.length];
-                    db.cambiarEstadoAtractivo(p.getId(), nuevo);
-                    filtrar();
+                    if (db.cambiarEstadoAtractivo(p.getId(), nuevo)) {
+                        filtrar();
+                        mostrarExito("Estado cambiado a " + nuevo + " correctamente.");
+                    } else {
+                        mostrarError("No se pudo cambiar el estado.\n" + db.getUltimoError());
+                    }
                 });
 
                 btnEliminar.setOnAction(e -> {
@@ -195,7 +202,21 @@ public class PuntoTuristicoDAO {
         asterisco.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
         return new HBox(lbl, asterisco);
     }
+    private void mostrarExito(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Operación exitosa");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
 
+    private void mostrarError(String mensaje) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Error");
+        a.setHeaderText(null);
+        a.setContentText(mensaje);
+        a.showAndWait();
+    }
     private void mostrarDialogoAlta() {
         Dialog<PuntoTuristico> dialog = new Dialog<>();
         dialog.setTitle("Nuevo Atractivo");
@@ -247,6 +268,7 @@ public class PuntoTuristicoDAO {
         lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
         lblError.setWrapText(true);
         lblError.setMaxWidth(320);
+        lblError.setMinHeight(Region.USE_PREF_SIZE);
         lblError.setVisible(false);
 
         java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
@@ -310,10 +332,13 @@ public class PuntoTuristicoDAO {
             }
             return null;
         });
-
         dialog.showAndWait().ifPresent(p -> {
-            db.insertarAtractivo(p);
-            filtrar();
+            if (db.insertarAtractivo(p)) {
+                filtrar();
+                mostrarExito("Atractivo registrado correctamente.");
+            } else {
+                mostrarError("No se pudo registrar el atractivo.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -363,11 +388,29 @@ public class PuntoTuristicoDAO {
         cbEstado.setStyle("-fx-font-size: 12px;");
         TextField txtHorario = new TextField(punto.getHorario());
         txtHorario.setStyle("-fx-font-size: 12px;");
+        boolean esCerrado = "Cerrado".equals(punto.getEstado());
+        String estiloDeshabilitado = "-fx-font-size: 12px; -fx-background-color: #e9ecef; -fx-text-fill: #6c757d;";
+        String estiloAreaDeshabilitada = "-fx-font-size: 12px; -fx-control-inner-background: #e9ecef; -fx-text-fill: #6c757d;";
+
+        if (esCerrado) {
+            txtNombre.setStyle(estiloDeshabilitado);
+            txtUbicacion.setStyle(estiloDeshabilitado);
+            txtDesc.setStyle(estiloAreaDeshabilitada);
+            cbTipo.setStyle(estiloDeshabilitado);
+            txtHorario.setStyle(estiloDeshabilitado);
+
+            txtNombre.setDisable(true);
+            txtUbicacion.setDisable(true);
+            txtDesc.setDisable(true);
+            cbTipo.setDisable(true);
+            txtHorario.setDisable(true);
+        }
 
         Label lblError = new Label();
         lblError.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 12px;");
         lblError.setWrapText(true);
         lblError.setMaxWidth(320);
+        lblError.setMinHeight(Region.USE_PREF_SIZE);
         lblError.setVisible(false);
 
         java.util.function.UnaryOperator<TextFormatter.Change> bloqueoEspacio = change -> {
@@ -395,9 +438,19 @@ public class PuntoTuristicoDAO {
         grid.add(txtHorario, 1, 5);
         GridPane.setColumnSpan(lblError, 2);
         grid.add(lblError, 0, 6);
+        if (esCerrado) {
+            Label lblAviso = new Label("⚠ Atractivo cerrado: no se puede editar. Reactívelo primero.");
+            lblAviso.setStyle("-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-font-weight: bold;");
+            lblAviso.setWrapText(true);
+            lblAviso.setPrefWidth(340);
+            lblAviso.setMinHeight(Region.USE_PREF_SIZE);
+            GridPane.setColumnSpan(lblAviso, 2);
+            grid.add(lblAviso, 0, 7);
+        }
         dialog.getDialogPane().setContent(grid);
 
         Button btnGuardar = (Button) dialog.getDialogPane().lookupButton(guardarBtn);
+        btnGuardar.setDisable(esCerrado);
         btnGuardar.addEventFilter(javafx.event.ActionEvent.ACTION, ev -> {
             java.util.List<String> faltantes = new java.util.ArrayList<>();
 
@@ -432,8 +485,12 @@ public class PuntoTuristicoDAO {
         });
 
         dialog.showAndWait().ifPresent(p -> {
-            db.actualizarAtractivo(p);
-            filtrar();
+            if (db.actualizarAtractivo(p)) {
+                filtrar();
+                mostrarExito("Atractivo modificado correctamente.");
+            } else {
+                mostrarError("No se pudo modificar el atractivo.\n" + db.getUltimoError());
+            }
         });
     }
 
@@ -447,6 +504,9 @@ public class PuntoTuristicoDAO {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             if (db.eliminarAtractivo(punto.getId())) {
                 filtrar();
+                mostrarExito("Atractivo eliminado correctamente.");
+            } else {
+                mostrarError("No se pudo eliminar el atractivo.\n" + db.getUltimoError());
             }
         }
     }
@@ -479,9 +539,13 @@ public class PuntoTuristicoDAO {
                 btnRestaurar.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 3; -fx-padding: 2 6; -fx-font-size: 11px;");
                 btnRestaurar.setOnAction(e -> {
                     PuntoTuristico p = getTableView().getItems().get(getIndex());
-                    db.restaurarAtractivo(p.getId());
-                    tablaPapelera.setItems(db.getAtractivosEliminados());
-                    filtrar();
+                    if (db.restaurarAtractivo(p.getId())) {
+                        tablaPapelera.setItems(db.getAtractivosEliminados());
+                        filtrar();
+                        mostrarExito("Atractivo restaurado correctamente.");
+                    } else {
+                        mostrarError("No se pudo restaurar el atractivo.");
+                    }
                 });
             }
             @Override
