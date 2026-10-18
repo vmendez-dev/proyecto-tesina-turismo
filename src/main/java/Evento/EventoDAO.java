@@ -241,6 +241,13 @@ public class EventoDAO {
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(15));
+        ColumnConstraints c0 = new ColumnConstraints();
+        c0.setMinWidth(Region.USE_PREF_SIZE);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(c0, c1);
+        grid.setMinWidth(460);
+        dialog.setResizable(true);
 
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre");
@@ -393,12 +400,15 @@ public class EventoDAO {
                     lblErrorHorario.setText("");
                     txtHorario.setStyle("-fx-font-size: 12px;");
                 }
+
             } else {
                 lblErrorHorario.setText("");
                 txtHorario.setStyle("-fx-font-size: 12px;");
             }
             if (!valido) {
                 event.consume();
+                javafx.application.Platform.runLater(() ->
+                        dialog.getDialogPane().getScene().getWindow().sizeToScene());
             }
         });
         txtNombre.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -439,6 +449,13 @@ public class EventoDAO {
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(15));
+        ColumnConstraints c0 = new ColumnConstraints();
+        c0.setMinWidth(Region.USE_PREF_SIZE);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(c0, c1);
+        grid.setMinWidth(460);
+        dialog.setResizable(true);
         boolean esBloqueado = "Finalizado".equals(evento.getEstado()) || "Cancelado".equals(evento.getEstado());
         String estiloDeshabilitado = "-fx-font-size: 12px; -fx-background-color: #e9ecef; -fx-text-fill: #6c757d;";
         String estiloNormal = "-fx-font-size: 12px;";
@@ -618,6 +635,8 @@ public class EventoDAO {
 
             if (!valido) {
                 event.consume();
+                javafx.application.Platform.runLater(() ->
+                        dialog.getDialogPane().getScene().getWindow().sizeToScene());
             }
         });
         txtNombre.textProperty().addListener((obs, oldVal, newVal) -> {
