@@ -1,0 +1,16 @@
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\MainApp.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\database\DatabaseConnection.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\controllers\UsuariosController.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\dao\UsuarioDAO.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\database\SchemaInitializer.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\controllers\DashboardController.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\controllers\LoginController.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\model\Usuario.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\database\Database.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\utils\SessionManager.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\utils\ValidationUtils.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\services\CatalogService.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\utils\CountryProvinceService.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\services\AlojamientoService.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\services\TuristaService.java
+C:\Users\Usuario\Documents\ISAUI\PR2\Sistema-Turismo-interfaces-integradas\Sistema-Turismo\src\main\java\com\usuarios\utils\NotificationManager.java
